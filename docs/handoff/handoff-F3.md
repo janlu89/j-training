@@ -1,72 +1,73 @@
-# Handoff F3 — Editor schede
+# Handoff F3 — Plan editor
 
-Data: 2026-10-14
-Branch / ultimo commit: `feature/f2-plans` (PR #6 → `dev`); `dev` contiene F1 (PR #5); `master` = release F0
+Date: 2026-10-14
+Branch / last commit: `feature/f2-plans` (PR #6 → `dev`); `dev` contains F1 (PR #5); `master` = F0 release
 
-## Fatto (F2)
-- **Archivio schede**: ogni scheda importata resta, con un nome (`Phase.name`); una sola attiva per costruzione.
-  Dalla lista e dal dettaglio: **Rendi attiva** / **Archivia**, stato sempre visibile (Attiva / Archiviata).
-- **Import CSV** (`/plans/import`): parser puro su PapaParse (`,` `;` tab, virgola decimale, BOM, CRLF), validazione per
-  cella con numero di riga del foglio, fasi miste rifiutate, file > 1 MB rifiutati; anteprima con giorni e conteggi,
-  nome modificabile, avviso "fase già importata", opzione "usala come scheda attiva"; link **Scarica una scheda di esempio**
-  (`public/examples/scheda-esempio.csv`).
-- **Transazione unica** (`PlanRepository.savePlan`): archivia l'attiva + crea fase, giorni, esercizi; errore → rollback totale.
-- **Allenamento** (`/workout`): mostra **solo il giorno proposto per oggi** (`suggestDay`): giorno associato al giorno della
-  settimana corrente → "Allenamento di oggi"; associazioni presenti ma non oggi → "Oggi riposo" + prossimo previsto;
-  nessuna associazione → rotazione dopo l'ultima sessione (pronta per F4). Selettore G1/G2/… per scegliere un altro giorno.
-- **Dettaglio scheda** (`/plans/:id`): tutti i giorni ripiegabili, giorno della settimana modificabile.
-- **Navigazione**: Allenamento · Schede · Storico · Analisi; impostazioni con l'ingranaggio nell'header.
-- **E2E** Playwright 1.63 (profilo Pixel 7, locale it-IT, orologio fisso) anche in CI.
+## Done (F2)
+- **Plans archive**: every imported plan stays, with a name (`Phase.name`); only one is active, by construction.
+  From the list and the detail: **Make active** / **Archive**, status always visible (Active / Archived).
+- **CSV import** (`/plans/import`): pure parser on PapaParse (`,` `;` tab, decimal comma, BOM, CRLF), per-cell
+  validation with the spreadsheet row number, mixed phases rejected, files > 1 MB rejected; preview with days and
+  counts, editable name, "phase already imported" warning, "use it as the active plan" option; **Download an example
+  plan** link (`public/examples/scheda-esempio.csv`).
+- **Single transaction** (`PlanRepository.savePlan`): archives the active plan + creates phase, days, exercises;
+  an error rolls everything back.
+- **Workout** (`/workout`): shows **only the day proposed for today** (`suggestDay`): the day linked to the current
+  weekday → "Today's workout"; weekdays set but not today → "Rest today" + the next one planned; no weekdays →
+  rotation after the last session (ready for F4). A D1/D2/… picker to choose another day.
+- **Plan detail** (`/plans/:id`): every day collapsible, weekday editable.
+- **Navigation**: Workout · Plans · History · Analytics; settings from the gear in the header.
+- **E2E** with Playwright 1.63 (Pixel 7 profile, it-IT locale, fixed clock), also in CI.
 
-## Decisioni prese (con il perché)
-- **Fasi riviste con Gianluca** (`docs/piano-sviluppo.md`): F3 diventa "Editor schede" (anche senza CSV); F4 include
-  salva/salta giornata e modifica rapida della posizione attrezzi; F5 cronometro per singolo esercizio.
-- **Etichetta "Giorno N" non salvata**: derivata da `ordine` via i18n (`TrainingDay.label` rimosso).
-- **`PlanRepository` aggregato** accanto ai repository per tabella: possiede letture multi-tabella e transazioni
-  dell'invariante "una sola scheda attiva".
-- **`suggestDay` pura + `CLOCK` injection token**: logica di "oggi" testabile senza date reali; `linkedSignal` per la
-  selezione del giorno (segue il suggerimento finché l'utente non sceglie).
-- **PapaParse** dichiarato in `allowedCommonJsDependencies` (solo UMD); è nel chunk lazy della pagina di import.
-- **Playwright 1.63.0** e non 1.64.x: versioni più recenti pubblicate da meno di due settimane.
-- **Accessibilità**: le icone font (`pButtonIcon`, glifi CSS) finivano nel nome accessibile → `aria-hidden` ovunque;
-  `<select>` con `[selected]` sulle option (il `[value]` sulla select arriva prima delle option).
-- **Link-pulsante**: lo stile globale dei link esclude `.p-button`.
+## Decisions (and why)
+- **Phases revised with Gianluca** (`docs/development-plan.md`): F3 becomes the "Plan editor" (without CSV too);
+  F4 includes save/skip day and a quick edit of the equipment position; F5 a timer per exercise.
+- **"Day N" label not stored**: derived from `ordine` through i18n (`TrainingDay.label` removed).
+- **Aggregate `PlanRepository`** next to the per-table repositories: it owns multi-table reads and the transactions
+  of the "only one active plan" invariant.
+- **Pure `suggestDay` + `CLOCK` injection token**: the "today" logic is testable without real dates; `linkedSignal`
+  for the selected day (it follows the suggestion until the user chooses).
+- **PapaParse** listed in `allowedCommonJsDependencies` (UMD only); it is in the lazy chunk of the import page.
+- **Playwright 1.63.0**, not 1.64.x: newer versions were published less than two weeks earlier.
+- **Accessibility**: font icons (`pButtonIcon`, CSS glyphs) ended up in the accessible name → `aria-hidden`
+  everywhere; `<select>` with `[selected]` on the options (the `[value]` on the select arrives before the options).
+- **Button links**: the global link style excludes `.p-button`.
 
-## File creati/modificati (percorsi)
+## Files created/changed (paths)
 - `src/app/core/models/{phase,training-day,plan,plan-import}.model.ts`
 - `src/app/core/repositories/plan.repository.ts`
 - `src/app/core/services/{plan-import.service,workout-plan.service,day-suggestion,clock}.ts`, `plan-csv/*`
 - `src/app/features/workout/**`, `src/app/features/plans/**`
 - `src/app/shared/ui/{plan-days,exercise-item}/**`, `src/app/shared/pipes/*`, `src/styles/_page.scss`
 - `e2e/**`, `playwright.config.ts`, `.github/workflows/ci.yml`, `public/examples/scheda-esempio.csv`
-- `docs/piano-sviluppo.md`, `docs/piano-architettura.md`
+- `docs/development-plan.md`, `docs/architecture.md`
 
-## Stato test (unit / e2e / manuale)
-- Unit: 81/81 (parser, transazioni e rollback, attiva/archivia, suggerimento del giorno, servizi, shell).
-- E2E: 8/8 (import, solo il giorno di oggi, scelta di un altro giorno, riposo, archivio attiva/archivia,
-  esempio scaricabile, errori del file, giorno della settimana persistente).
-- Manuale: browser integrato a 375 px ok. Telefono reale: ok (Gianluca, 2026-10-14). Richiesta: la scelta del giorno
-  diventi una lista di etichette con pulsante ▶ verso la pagina dedicata del giorno → pianificata in F4.
+## Test status (unit / e2e / manual)
+- Unit: 81/81 (parser, transactions and rollback, activate/archive, day suggestion, services, shell).
+- E2E: 8/8 (import, only today's day, choosing another day, rest day, archive activate/archive,
+  downloadable example, file errors, persistent weekday).
+- Manual: built-in browser at 375 px ok. Real phone: ok (Gianluca, 2026-10-14). Request: the day picker should become
+  a list of labels with a ▶ button to a dedicated day page → planned in F4.
 
-## Problemi aperti / debito tecnico
-- **Licenza MIT** da aggiungere.
-- **Release su `master`** di F1+F2 da fare (merge accorpati).
-- **APK con Capacitor** (memoria privata dell'app) + backup automatico su file: decisione per F7/F8.
-- **Eliminazione scheda** non ancora disponibile: arriva con l'editor (F3).
+## Open issues / technical debt
+- **MIT license** to be added.
+- **Release to `master`** of F1+F2 still to do (merges batched).
+- **APK with Capacitor** (app-private storage) + automatic backup to file: decision for F7/F8.
+- **Deleting a plan** not available yet: it comes with the editor (F3).
 
-## Prossima fase: obiettivo e primo passo
-**F3 — Editor schede**, per chi non ha un CSV e per correggere le schede importate:
-- **Scheda**: crea da zero (nome, fase, giorni), rinomina, elimina (con conferma; se ha sessioni registrate, proporre
-  di archiviarla invece di eliminarla, per non perdere lo storico).
-- **Giorni**: aggiungi, rinomina il giorno originale (`csvGiorno`), riordina, elimina (con i suoi esercizi), giorno della settimana.
-- **Esercizi**: aggiungi, modifica tutti i campi (nome, tipo, attrezzo, serie, ripetizioni, **posizione attrezzi**,
-  ultimo kg, unità di carico, **recupero**, RIR, stato, note), riordina, sposta in un altro giorno, elimina.
-  Eliminazione = stato `rimosso` (soft delete, storico intatto); i 4 stati selezionabili.
-- **Default di recupero per tipo** (promessa agli amici di Gianluca): scegliendo il tipo nel form, se il recupero non è
-  stato toccato si propone **multiarticolare 150 s**, **isolamento 75 s**; sempre modificabile.
-- `isManual: true` per gli esercizi creati nell'editor.
-- Form con validazione e messaggi tradotti; mobile first (form a tutta larghezza, tastiera numerica per i numeri).
+## Next phase: goal and first step
+**F3 — Plan editor**, for those without a CSV and to fix imported plans:
+- **Plan**: create from scratch (name, phase, days), rename, delete (with confirmation; if it has recorded sessions,
+  offer to archive it instead of deleting it, so the history is not lost).
+- **Days**: add, rename the original day (`csvGiorno`), reorder, delete (with its exercises), weekday.
+- **Exercises**: add, edit every field (name, type, equipment, sets, reps, **equipment position**, last kg, load
+  unit, **rest**, RIR, status, notes), reorder, move to another day, delete.
+  Delete = status `rimosso` (soft delete, history intact); the 4 statuses can be chosen.
+- **Default rest by type** (a promise to Gianluca's friends): when the type is chosen in the form and the rest was not
+  touched, **compound 150 s** and **isolation 75 s** are proposed; always editable.
+- `isManual: true` for exercises created in the editor.
+- Forms with validation and translated messages; mobile first (full-width forms, numeric keyboard for numbers).
 
-Primo passo: branch `feature/f3-editor` da `dev` aggiornato (dopo il merge della PR #6); definire nel `PlanRepository`
-le operazioni di scrittura (createPlan vuota, rename, delete con controllo sessioni, add/update/reorder/delete di
-giorni ed esercizi) con test su fake-indexeddb, poi le pagine `/plans/new` e `/plans/:id/edit`.
+First step: branch `feature/f3-editor` from an updated `dev` (after PR #6 is merged); define in `PlanRepository`
+the write operations (empty createPlan, rename, delete with a sessions check, add/update/reorder/delete of days and
+exercises) with tests on fake-indexeddb, then the `/plans/new` and `/plans/:id/edit` pages.

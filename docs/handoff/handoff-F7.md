@@ -1,90 +1,90 @@
-# Handoff F7 — Export e backup
+# Handoff F7 — Export and backup
 
-Data: 2026-10-14
-Branch / ultimo commit: `feature/f5-rest-timer` (PR → `dev`, contiene **F5 e F6** insieme, su richiesta di
-Gianluca); `dev` contiene F1 (#5), F2 (#6), F3 (#7), F4 (#8); `master` = release F0
+Date: 2026-10-14
+Branch / last commit: `feature/f5-rest-timer` (PR → `dev`, holding **F5 and F6** together, at Gianluca's request);
+`dev` contains F1 (#5), F2 (#6), F3 (#7), F4 (#8); `master` = F0 release
 
-## Fatto (F5 — Correzioni di F4 e cronometro; F6 — Storico e analisi)
-- **Salva giornata anche senza spunte**: il riepilogo propone "Salva anche le serie non spuntate (N)", selezionato
-  di default se nessuna serie è spuntata; serie, chiusura e carichi in scheda in un'unica transazione (`saveDay`).
-- **Togli serie** accanto ad "Aggiungi serie", anche sotto il numero del piano; l'ultima serie spuntata viene tolta
-  insieme alla registrazione.
-- **Interfaccia più sobria**: icone piccole in grigio ardesia (▶, ✓, matita, stato vuoto), card "Giornata in corso"
-  chiara; area di tocco ≥ 44 px invariata.
-- **Schede**: toggle "Attiva" (`ToggleSwitch`) al posto di "Rendi attiva" / "Archivia", in lista e nel dettaglio.
-- **Cronometro di recupero**, sempre **avviato a mano** (nessun avvio automatico alla spunta, come chiesto da
-  Gianluca): tra le serie dal chip "⏱ N s" dell'esercizio (recupero della scheda), tra gli esercizi dal pulsante
-  "⏱ Recupero 2:00" **tra una card esercizio e la successiva** ("Prossimo esercizio · Curl"), **2 minuti di default**
-  modificabili in Impostazioni (1:00–3:00). Barra sopra la bottom nav, visibile su tutte le pagine, −15 / +15 / stop.
-  Due versioni intermedie (righe tra le serie, avvio automatico all'ultima serie) sono state tolte: non erano ciò che
-  Gianluca intendeva.
-- **Suono di fine recupero**: negli **ultimi 5 secondi un bip al secondo** (880 Hz), a zero un **"via"** lungo e più
-  acuto (1,32 kHz), poi un doppio bip ogni 1,5 s con vibrazione; **si ferma da solo 15 secondi dopo lo zero** (e il
-  recupero si chiude) oppure con "Ferma l'allarme"; aggiungere tempo nel conto alla rovescia lo interrompe.
-- **Storico** (`/history`): allenamenti salvati e saltati per data (mai le bozze), dettaglio con le serie di ogni
-  esercizio in ordine di scheda (`/history/session/:id`), vista Esercizi e storico per nome esatto tra schede
-  diverse con il numero di fase (`/history/exercise/:name`); unità di carico sempre visibile.
-- **Analisi** (`/analytics`): filtri esercizio e ripetizioni in una riga; riquadri "Ultimo" e "Migliore" a parità di
-  ripetizioni; grafico a linea del carico a parità di ripetizioni; colonne delle ripetizioni per settimana (ultime
-  12, settimane vuote incluse); ogni grafico ha la tabella con gli stessi dati.
+## Done (F5 — F4 fixes and rest timer; F6 — History and analytics)
+- **Save the day even without ticks**: the summary offers "Also save the unticked sets (N)", selected by default when
+  no set is ticked; sets, closing and loads in the plan in a single transaction (`saveDay`).
+- **Remove set** next to "Add set", even below the planned number; the last ticked set is removed together with its
+  record.
+- **Quieter UI**: small slate-grey icons (▶, ✓, pencil, empty state), a light "Workout in progress" card;
+  touch area ≥ 44 px unchanged.
+- **Plans**: "Active" toggle (`ToggleSwitch`) instead of "Make active" / "Archive", in the list and in the detail.
+- **Rest timer**, always **started by hand** (no automatic start when a set is ticked, as Gianluca asked):
+  between sets from the exercise's "⏱ N s" chip (the plan's rest), between exercises from the "⏱ Rest 2:00" button
+  **between one exercise card and the next** ("Next exercise · Curl"), **2 minutes by default**, editable in the
+  settings (1:00–3:00). A bar above the bottom nav, visible on every page, −15 / +15 / stop.
+  Two intermediate versions (rows between sets, automatic start at the last set) were removed: they were not what
+  Gianluca meant.
+- **End-of-rest sound**: **one beep per second in the last 5 seconds** (880 Hz), a long, higher **"go"** at zero
+  (1.32 kHz), then a double beep every 1.5 s with vibration; **it stops by itself 15 seconds after zero** (and the
+  rest closes) or with "Stop alarm"; adding time during the countdown stops it.
+- **History** (`/history`): saved and skipped workouts by date (never drafts), detail with the sets of every exercise
+  in plan order (`/history/session/:id`), Exercises view and history by exact name across different plans with the
+  phase number (`/history/exercise/:name`); load unit always visible.
+- **Analytics** (`/analytics`): exercise and reps filters on one row; "Last" and "Best" tiles at equal reps; line
+  chart of the load at equal reps; columns of reps per week (last 12, empty weeks included); every chart has a table
+  with the same data.
 
-## Decisioni prese (con il perché)
-- **Diagnosi della prova F4**: "non salva" significava che lo Storico restava vuoto (era il segnaposto di F6), non un
-  errore di salvataggio. La correzione del salvataggio senza spunte resta valida: era una deviazione dalla specifica.
-- **PR F4 unita da console** (squash, CI verde) con l'autorizzazione esplicita di Gianluca; F5 ribasata su `dev`.
-- **Cronometro su timestamp + Web Worker**: il tempo residuo è sempre `fine − ora`; il worker sveglia la pagina con
-  regolarità quando il main thread è rallentato in background. `tsconfig.worker.json` + `webWorkerTsConfig`.
-- **Servizio root + barra nella shell**: il recupero sopravvive alla navigazione. Pulsanti nativi nella barra: con
-  `ButtonDirective` di PrimeNG il bundle iniziale passava da 599 a 679 kB (budget 650).
-- **Audio sbloccato dal tocco che avvia il recupero** (`RestAlarm.prepare`): i browser mobili permettono l'audio solo
-  dopo un gesto dell'utente. Nessun file audio: suoni generati e **programmati tutti insieme sull'orologio audio**
-  all'inizio del conto alla rovescia, quindi puntuali anche se i timer della pagina sono rallentati.
-- **Wake lock** ripreso al ritorno in primo piano e rilasciato quando il recupero si chiude (a mano o da solo).
-- **Recupero tra esercizi come preferenza del dispositivo** (`AppSettings.exerciseRestSeconds`, campo non
-  indicizzato: nessuna nuova versione Dexie), letto con un `resource` da `RestSettingsService`.
-- **Righe di serie come differenza dal piano** (`setDelta` con segno): le modifiche al piano durante l'allenamento
-  restano coerenti.
-- **`HistoryRepository`** come lato lettura separato (SRP); le bozze sono escluse in un solo punto (`finishedLogs`).
-- **Grafici**: Chart.js 4.5 tramite PrimeNG Chart, caricato solo con la pagina Analisi (224 kB, 66 kB gzip).
-  Serie singola in arancione 600 (validato sul bianco con lo script della skill dataviz), niente legenda, griglia a
-  filo, nessun riempimento sotto la linea (l'asse non parte da zero e l'area esagererebbe), tabella per ogni grafico.
-- **Contrasto**: binario del toggle spento ardesia 500 (4,8:1), acceso arancione 600 (3,6:1).
-- **Etichette con `for`/`id`** nei filtri di Analisi: una `<select>` dentro la `<label>` aggiunge il valore al nome.
+## Decisions (and why)
+- **Diagnosis of the F4 test**: "it does not save" meant the History stayed empty (it was the F6 placeholder), not a
+  save error. The fix for saving without ticks stays valid: it was a deviation from the spec.
+- **F4 PR merged from the GitHub console** (squash, CI green); F5 rebased on `dev`.
+- **Timer on timestamps + Web Worker**: the remaining time is always `end − now`; the worker wakes the page up
+  regularly when the main thread is throttled in the background. `tsconfig.worker.json` + `webWorkerTsConfig`.
+- **Root service + bar in the shell**: the rest survives navigation. Native buttons in the bar: with PrimeNG's
+  `ButtonDirective` the initial bundle went from 599 to 679 kB (budget 650).
+- **Audio unlocked by the tap that starts the rest** (`RestAlarm.prepare`): mobile browsers allow audio only after a
+  user gesture. No audio files: generated sounds, **all scheduled at once on the audio clock** at the start of the
+  countdown, so they are on time even when the page's timers are throttled.
+- **Wake lock** taken again when back in the foreground and released when the rest closes (by hand or by itself).
+- **Rest between exercises as a device preference** (`AppSettings.exerciseRestSeconds`, not indexed: no new Dexie
+  version), read with a `resource` by `RestSettingsService`.
+- **Set rows as a difference from the plan** (signed `setDelta`): changes to the plan during the workout stay
+  consistent.
+- **`HistoryRepository`** as a separate read side (SRP); drafts are excluded in one place (`finishedLogs`).
+- **Charts**: Chart.js 4.5 through PrimeNG Chart, loaded only with the Analytics page (224 kB, 66 kB gzip).
+  A single series in orange 600 (contrast checked against white), no legend, flush grid, no fill under the line
+  (the axis does not start at zero and an area would exaggerate), a table for every chart.
+- **Contrast**: toggle track off slate 500 (4.8:1), on orange 600 (3.6:1).
+- **Labels with `for`/`id`** in the Analytics filters: a `<select>` inside a `<label>` adds its value to the name.
 
-## File creati/modificati (percorsi)
-- `src/app/core/services/rest-timer/**` (servizio, worker, ticker, allarme, wake lock), `src/app/core/layout/rest-timer-bar/**`
+## Files created/changed (paths)
+- `src/app/core/services/rest-timer/**` (service, worker, ticker, alarm, wake lock), `src/app/core/layout/rest-timer-bar/**`
 - `src/app/core/repositories/{workout-session,history}.repository.ts`, `src/app/core/services/analytics/**`
 - `src/app/core/models/{rest-timer,history,workout}.model.ts`
-- `src/app/features/workout/day/**` (store, righe, log esercizio, riepilogo), `src/app/features/plans/active-switch/**`
+- `src/app/features/workout/day/**` (store, rows, exercise log, summary), `src/app/features/plans/active-switch/**`
 - `src/app/core/services/rest-timer/rest-settings.service.ts`, `src/app/features/settings/**`, `src/app/core/models/settings.model.ts`
 - `src/app/features/history/**`, `src/app/features/analytics/**`, `src/app/shared/pipes/local-date.pipe.ts`
 - `src/app/app.{ts,html,scss}`, `src/styles.scss`, `src/app/core/theme/j-training.preset.ts`
 - `angular.json`, `tsconfig*.json`, `package.json` (chart.js), `public/i18n/*.json`
 - `e2e/{workout,history,plan-import}.spec.ts`
 
-## Stato test (unit / e2e / manuale)
-- Unit: 211/211 (salvataggio atomico con serie non spuntate; cronometro con orologio e ticker finti: conto alla
-  rovescia, countdown a −5 s, chiusura da solo 15 s dopo lo zero, +15 che lo ferma, ritorno dal background; suoni
-  programmati e vibrazione; wake lock; recupero tra esercizi manuale e impostazione; storico; analisi).
-- E2E: 25/25 (salvataggio a fine allenamento e togli serie; nessun recupero automatico alla spunta; recupero a mano
-  e "Ferma l'allarme"; countdown e chiusura da solo 15 s dopo lo zero; pulsante tra gli esercizi 2:00 e 1:30 dalle
-  impostazioni; toggle schede; storico e analisi con quattro settimane di dati inseriti dall'app).
-- Manuale: browser integrato a 390 px ok; screenshot dei grafici dall'E2E (Pixel 7). Telefono reale: ok (Gianluca, 2026-10-14).
+## Test status (unit / e2e / manual)
+- Unit: 211/211 (atomic save with unticked sets; timer with fake clock and ticker: countdown, beeps from −5 s,
+  closing by itself 15 s after zero, +15 stopping it, back from the background; scheduled sounds and vibration;
+  wake lock; rest between exercises by hand and as a setting; history; analytics).
+- E2E: 25/25 (save at the end of the workout and remove set; no automatic rest on tick; rest by hand
+  and "Stop alarm"; countdown and closing by itself 15 s after zero; button between exercises at 2:00 and at 1:30
+  from the settings; plans toggle; history and analytics with four weeks of data entered through the app).
+- Manual: built-in browser at 390 px ok; chart screenshots from the E2E (Pixel 7). Real phone: ok (Gianluca, 2026-10-14).
 
-## Problemi aperti / debito tecnico
-- **Wake lock solo in contesto sicuro**: su `http://192.168.1.231:4200` non è disponibile; da verificare su GitHub
-  Pages (HTTPS) o con port forwarding USB su `localhost`.
-- **Notifiche con l'app in background**: non previste; richiedono il service worker (F8).
-- Valori digitati e non spuntati in memoria (non sopravvivono alla chiusura forzata dell'app).
-- Aprendo il form esercizio dall'allenamento la bottom nav evidenzia "Schede".
-- Altre `<select>` dentro `<label>` (dettaglio scheda, editor, form esercizio): passare a `for`/`id` come in Analisi.
-- **Licenza MIT** da aggiungere. **Release su `master`** di F1–F6 da fare.
+## Open issues / technical debt
+- **Wake lock only in a secure context**: not available on `http://192.168.1.231:4200`; to be checked on GitHub
+  Pages (HTTPS) or with USB port forwarding on `localhost`.
+- **Notifications with the app in the background**: not planned; they need the service worker (F8).
+- Typed but unticked values live in memory (they do not survive a forced close of the app).
+- Opening the exercise form from the workout highlights "Plans" in the bottom nav.
+- Other `<select>` elements inside a `<label>` (plan detail, editor, exercise form): switch to `for`/`id` as in Analytics.
+- **MIT license** to be added. **Release to `master`** of F1–F6 still to do.
 
-## Prossima fase: obiettivo e primo passo
-**F7 — Export e backup**: export di una fase in CSV e XLSX (piano + tutti i `SetLog`, stampabile e leggibile da
-un'AI) con ExcelJS 4.4; backup JSON completo e versionato `{ schemaVersion, exportedAt, phases, days, exercises,
-sessions, setLogs }`; restore su un altro browser identico all'originale (transazione unica, conferma prima di
-sovrascrivere).
+## Next phase: goal and first step
+**F7 — Export and backup**: export of a phase to CSV and XLSX (plan + every `SetLog`, printable and readable by an
+AI) with ExcelJS 4.4; full, versioned JSON backup `{ schemaVersion, exportedAt, phases, days, exercises,
+sessions, setLogs }`; restore on another browser identical to the original (single transaction, confirmation before
+overwriting).
 
-Primo passo: branch `feature/f7-export` da `dev` aggiornato (dopo il merge della PR F5+F6); `BackupService`
-(export/import JSON con validazione dello schema) con test su fake-indexeddb, poi la sezione Backup in Impostazioni.
+First step: branch `feature/f7-export` from an updated `dev` (after the F5+F6 PR is merged); `BackupService`
+(JSON export/import with schema validation) with tests on fake-indexeddb, then the Backup section in the settings.

@@ -1,100 +1,100 @@
 # J-Training
 
-App personale per il tracciamento degli allenamenti in palestra, pensata per lo smartphone e
-installabile come app (PWA). Importa la scheda da CSV o la crea a mano, registra kg e ripetizioni
-per ogni serie, gestisce il recupero con un cronometro e mostra storico e progressione per esercizio.
+A personal gym workout tracker designed for the smartphone and installable as an app (PWA). Import a plan
+from CSV or build it by hand, log kg and reps for every set, time your rests and follow the history and progression
+of each exercise.
 
-**Solo frontend**: nessun backend e nessun login. Tutti i dati restano sul dispositivo (IndexedDB)
-e si spostano tra dispositivi con il backup.
+**Frontend only**: no backend and no login. All data stays on the device (IndexedDB) and moves between devices
+with a backup file.
 
-**App**: <https://janlu89.github.io/j-training/>
+**App**: <https://janlu89.github.io/j-training/> (Italian and English, switchable in the settings)
 
-## Funzionalità
+## Features
 
-- **Schede**: import da CSV con anteprima e validazione, editor completo (giorni, esercizi, recuperi,
-  stati), archivio con una sola scheda attiva.
-- **Allenamento**: giorno proposto in base al giorno della settimana o alla rotazione, log per serie con
-  precompilazione dei carichi, bozza salvata a ogni serie, salva o salta la giornata.
-- **Cronometro di recupero** su timestamp e Web Worker, con suoni negli ultimi secondi, vibrazione e
-  schermo sempre acceso.
-- **Storico e analisi**: allenamenti per data, storico per esercizio, progressione del carico a parità
-  di ripetizioni e ripetizioni settimanali, ogni grafico con la sua tabella.
-- **Export e backup**: scheda e serie in Excel (da stampare) o CSV (per un'AI); backup JSON completo e
-  versionato, ripristino validato in un'unica transazione; promemoria settimanale se ci sono allenamenti
-  non salvati.
-- **PWA**: installabile, funziona offline, avvisa quando c'è una nuova versione; italiano e inglese.
+- **Plans**: CSV import with preview and validation, full editor (days, exercises, rests, statuses), archive with a
+  single active plan.
+- **Workout**: the day is proposed from the weekday or the rotation, every set is logged with prefilled loads, the
+  draft is saved at every set, the day can be saved or skipped.
+- **Rest timer** based on timestamps and a Web Worker, with sounds in the last seconds, vibration and the screen
+  kept on.
+- **History and analytics**: workouts by date, history per exercise, load progression at equal reps and weekly
+  reps, every chart with its data table.
+- **Export and backup**: plan and sets to Excel (to print) or CSV (for an AI); full, versioned JSON backup and a
+  restore validated and applied in a single transaction; a weekly reminder when workouts have not been backed up.
+- **PWA**: installable, works offline, tells when a new version is available.
 
-## Installazione sul telefono
+## Install on your phone
 
-- **Android (Chrome)**: apri l'app, poi Impostazioni → App → "Installa l'app" (oppure il menu di Chrome →
-  "Installa app"). Chrome la installa come app vera, con la sua icona, e protegge i dati dalla pulizia
-  automatica del browser.
-- **iPhone (Safari)**: Condividi → "Aggiungi alla schermata Home".
+- **Android (Chrome)**: open the app, then Settings → App → "Install the app" (or Chrome's menu → "Install app").
+  Chrome installs it as a real app with its own icon and protects its data from the browser's automatic cleanup.
+- **iPhone (Safari)**: Share → "Add to Home Screen".
 
-Per spostare i dati su un altro dispositivo: Impostazioni → Backup → "Esporta backup", poi
-"Ripristina da file" sul nuovo dispositivo.
+To move your data to another device: Settings → Backup → "Export backup", then "Restore from file" on the new
+device.
 
-## Scelte architetturali
+## Architecture choices
 
-| Scelta                                               | Perché                                                                                             |
-| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Standalone, zoneless, signals, OnPush                | Change detection esplicita e prevedibile, nessun NgModule                                          |
-| Dexie solo nei repository (regola ESLint)            | I componenti non conoscono lo storage; query reattive con `liveQuery` → `toSignal`                 |
-| Piano (`Exercise`) separato dall'eseguito (`SetLog`) | Le discrepanze sono dati, non sovrascritture; storico per nome esercizio tra schede diverse        |
-| Transazioni per ogni scrittura multi-tabella         | Invarianti per costruzione: una sola scheda attiva, un solo allenamento in corso                   |
-| Validazione "parse, don't validate" del backup       | Un ripristino non può produrre uno stato che l'app non avrebbe potuto creare                       |
-| ExcelJS caricato su richiesta                        | ~1 MB scaricato solo al primo export; bundle iniziale sotto i 650 kB                               |
-| Service worker Angular con prefetch completo         | Tutto disponibile offline, anche l'export, in palestra senza rete                                  |
-| PWA invece di un'app nativa                          | Un solo codice, aggiornamenti automatici, nessun costo di store; archiviazione permanente e backup |
+| Choice                                           | Why                                                                                         |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| Standalone, zoneless, signals, OnPush            | Explicit, predictable change detection, no NgModules                                        |
+| Dexie only inside repositories (ESLint rule)     | Components know nothing about storage; reactive queries with `liveQuery` → `toSignal`       |
+| Plan (`Exercise`) separate from sets (`SetLog`)  | Discrepancies are data, not overwrites; history by exercise name across different plans    |
+| A transaction for every multi-table write        | Invariants by construction: a single active plan, a single workout in progress              |
+| "Parse, don't validate" for the backup           | A restore can never produce a state the app could not have created                          |
+| ExcelJS loaded on demand                         | ~1 MB downloaded only on the first export; initial bundle under 650 kB                      |
+| Angular service worker with full prefetch        | Everything available offline, export included, in a gym without signal                      |
+| PWA instead of a native app                      | One codebase, automatic updates, no store costs; persistent storage and backups             |
 
-Dettagli in [piano architetturale](docs/piano-architettura.md) e negli [handoff](docs/handoff/).
+The domain fields keep the Italian names of the CSV format (`esercizio`, `serie`, `rip`, ...), so a plan file maps
+one to one onto the data model. Details in the [architecture](docs/architecture.md) and the
+[handoffs](docs/handoff/).
 
 ## Stack
 
-| Area      | Tecnologia                                                   |
-| --------- | ------------------------------------------------------------ |
-| Framework | Angular 21 (standalone, zoneless, signals), service worker   |
-| UI        | PrimeNG 21, Chart.js                                         |
-| i18n      | Transloco (italiano / inglese, cambio lingua a runtime)      |
-| Storage   | Dexie su IndexedDB                                           |
-| File      | PapaParse (CSV), ExcelJS (XLSX)                              |
-| Test      | Vitest + fake-indexeddb, Playwright (Pixel 7, anche offline) |
-| Qualità   | angular-eslint, Prettier, CI su ogni PR                      |
-| Hosting   | GitHub Pages tramite GitHub Actions, deploy a ogni release   |
+| Area      | Technology                                                    |
+| --------- | ------------------------------------------------------------- |
+| Framework | Angular 21 (standalone, zoneless, signals), service worker    |
+| UI        | PrimeNG 21, Chart.js                                          |
+| i18n      | Transloco (Italian / English, runtime language switch)        |
+| Storage   | Dexie on IndexedDB                                            |
+| Files     | PapaParse (CSV), ExcelJS (XLSX)                               |
+| Tests     | Vitest + fake-indexeddb, Playwright (Pixel 7, offline too)    |
+| Quality   | angular-eslint, Prettier, CI on every PR                      |
+| Hosting   | GitHub Pages through GitHub Actions, deployed on every release |
 
-## Requisiti
+## Requirements
 
 - Node.js 24.x
 - npm 11.x
 
-## Comandi
+## Commands
 
-| Comando                           | Descrizione                                                  |
-| --------------------------------- | ------------------------------------------------------------ |
-| `npm ci`                          | Installa le dipendenze dal lockfile                          |
-| `npm start`                       | Avvia il server di sviluppo su `http://localhost:4200`       |
-| `npm test`                        | Esegue i test unitari in modalità watch                      |
-| `npm run test:ci`                 | Esegue i test unitari una sola volta (CI)                    |
-| `npm run e2e`                     | Test end-to-end: dev server e build di produzione con la PWA |
-| `npm run lint`                    | Analisi statica con angular-eslint                           |
-| `npm run format`                  | Formatta il codice con Prettier                              |
-| `npm run format:check`            | Verifica la formattazione senza modificare i file            |
-| `npm run build:prod`              | Build di produzione in `dist/`                               |
-| `npm run build:pages`             | Build di produzione per GitHub Pages (`/j-training/`)        |
-| `node scripts/generate-icons.mjs` | Rigenera le icone dell'app da un unico disegno               |
+| Command                           | Description                                                    |
+| --------------------------------- | -------------------------------------------------------------- |
+| `npm ci`                          | Install the dependencies from the lockfile                     |
+| `npm start`                       | Start the development server on `http://localhost:4200`        |
+| `npm test`                        | Run the unit tests in watch mode                               |
+| `npm run test:ci`                 | Run the unit tests once (CI)                                   |
+| `npm run e2e`                     | End-to-end tests: development server and production PWA build |
+| `npm run lint`                    | Static analysis with angular-eslint                            |
+| `npm run format`                  | Format the code with Prettier                                  |
+| `npm run format:check`            | Check the formatting without changing files                    |
+| `npm run build:prod`              | Production build in `dist/`                                    |
+| `npm run build:pages`             | Production build for GitHub Pages (`/j-training/`)             |
+| `node scripts/generate-icons.mjs` | Regenerate the app icons from a single drawing                 |
 
-## Documentazione
+## Documentation
 
-- [Piano architetturale](docs/piano-architettura.md): vincoli, stack, modello dati, decisioni funzionali
-- [Piano di sviluppo](docs/piano-sviluppo.md): fasi, versioni, branching, strategia di test
-- [Handoff](docs/handoff/): stato del progetto all'inizio di ogni fase
+- [Architecture](docs/architecture.md): constraints, stack, data model, functional decisions
+- [Development plan](docs/development-plan.md): phases, versions, branching, test strategy
+- [Handoffs](docs/handoff/): state of the project at the start of every phase
 
 ## Branching
 
-- `master`: produzione, deploy automatico su GitHub Pages
-- `dev`: integrazione, branch di default
-- `feature/*`: merge in `dev` con squash; release `dev` → `master` con merge commit
+- `master`: production, deployed automatically to GitHub Pages
+- `dev`: integration, default branch
+- `feature/*`: squash-merged into `dev`; releases `dev` → `master` with a merge commit
 
-## Licenza
+## License
 
 [MIT](LICENSE) © 2026 Gianluca Meola

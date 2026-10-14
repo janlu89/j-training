@@ -1,76 +1,75 @@
-# Handoff F8 — PWA e rilascio
+# Handoff F8 — PWA and release
 
-Data: 2026-10-14
-Branch / ultimo commit: `feature/f7-export` (PR → `dev`); `dev` contiene F1–F6 (#5–#9); `master` = release F0
+Date: 2026-10-14
+Branch / last commit: `feature/f7-export` (PR → `dev`); `dev` contains F1–F6 (#5–#9); `master` = F0 release
 
-## Fatto (F7 — Export e backup)
-- **Backup JSON** da Impostazioni → Backup: file `j-training-backup-AAAA-MM-GG.json` con
-  `{ schemaVersion: 1, exportedAt, phases, days, exercises, sessions, setLogs }`, tutti i record con i loro id.
-  Le impostazioni del dispositivo (lingua, recupero tra esercizi) non sono incluse.
-- **Ripristino da file**: il file viene letto e validato per intero; se è valido una finestra di conferma mostra
-  data del backup, schede, allenamenti e serie e avvisa che sostituirà tutti i dati del dispositivo. Confermato,
-  il ripristino avviene in **un'unica transazione** e l'app si riavvia su `/settings?restored=1` con il messaggio
-  "Backup ripristinato". Un file non valido è rifiutato con il motivo, la posizione del valore errato
-  (es. `setLogs[3].kg`) e "I dati di questo dispositivo non sono stati modificati".
-- **Export di una scheda** dal dettaglio scheda (sezione "Esporta la scheda"): **Excel** (fogli "Scheda" e "Serie")
-  e **CSV** (una tabella con la scheda e tutte le serie salvate), file `Nome - fase N.xlsx|csv`.
-- **Schede, dalla prova sul telefono**: le schede restano al loro posto, dalla più recente, quando si attivano o si
-  archiviano; prima l'attiva saliva in cima e spegnendo l'ultima si animavano anche gli altri toggle.
-- Segnaposto "ESITO_TELEFONO" sostituiti in `handoff-F4.md` (non registrato) e `handoff-F7.md` (ok).
+## Done (F7 — Export and backup)
+- **JSON backup** from Settings → Backup: file `j-training-backup-YYYY-MM-DD.json` with
+  `{ schemaVersion: 1, exportedAt, phases, days, exercises, sessions, setLogs }`, every record with its id.
+  Device preferences (language, rest between exercises) are not included.
+- **Restore from file**: the file is read and validated as a whole; when valid, a confirmation dialog shows the backup
+  date, plans, workouts and sets, and warns that it will replace all the data of the device. Once confirmed, the
+  restore runs in **a single transaction** and the app restarts on `/settings?restored=1` with the message
+  "Backup restored". An invalid file is refused with the reason, the location of the wrong value
+  (e.g. `setLogs[3].kg`) and "The data on this device has not been changed".
+- **Plan export** from the plan detail ("Export the plan" section): **Excel** ("Plan" and "Sets" sheets)
+  and **CSV** (one table with the plan and every saved set), file `Name - phase N.xlsx|csv`.
+- **Plans, from the phone test**: plans keep their place, newest first, when they are switched on or off; before, the
+  active one jumped to the top and switching off the last one animated the other toggles too.
+- "ESITO_TELEFONO" placeholders replaced in `handoff-F4.md` (not recorded) and `handoff-F7.md` (ok).
 
-## Decisioni prese (con il perché)
-- **Validazione scritta a mano, "parse, don't validate"** (`RecordReader` + un lettore per tabella): ogni record
-  viene ricostruito dai soli campi noti, con tipi e valori ammessi; i tipi di ritorno fanno controllare al
-  compilatore che nessun campo manchi. Nessuna nuova dipendenza (zod non è nel piano). Si ferma al primo
-  problema con il percorso del valore: un file scritto dall'app non ne ha.
-- **Integrità prima di scrivere**: id unici per tabella, riferimenti che l'app garantisce
-  (`days.phaseId`, `exercises.phaseId/dayId`, `sessions.phaseId`, `setLogs.sessionId`), una sola scheda attiva,
-  un solo allenamento in corso. `sessions.dayId` e `setLogs.exerciseId` **possono** puntare a un giorno eliminato
-  (lo storico sopravvive alla scheda) e non sono controllati.
-- **Versionamento**: `BACKUP_SCHEMA_VERSION = 1`; un file di una versione più recente è rifiutato ("aggiorna
-  l'app"), i file più vecchi andranno migrati in `parseBackup` quando la versione salirà.
-- **`exportedAt` in ISO 8601** (leggibile aprendo il file), timestamp dei record in epoch ms come salvati:
-  il ripristino è identico all'originale.
-- **Ripristino atomico con gli id originali** (`BackupRepository.replaceAll`): svuota e reinserisce le 5 tabelle
-  in una transazione; un errore a metà annulla tutto (testato). IndexedDB porta avanti il generatore di chiavi
-  oltre gli id espliciti, quindi i nuovi record continuano dopo il più alto ripristinato (testato).
-- **Riavvio dell'app dopo il ripristino** (`AppRestartService`): lo stato in memoria (serie digitate in
-  `WorkoutDrafts`, cronometro) ripartirebbe da id che ora indicano altri record; ricaricare l'app è più semplice
-  e sicuro che far invalidare a ogni feature il proprio stato, e non accoppia Impostazioni ad Allenamento.
-- **Conferma sempre**, anche su un dispositivo vuoto: regola unica e prevedibile per un'operazione distruttiva;
-  `ConfirmDialog` come per le eliminazioni dell'editor.
-- **Due formati, due pubblici**. Excel per le persone: intestazioni e valori tradotti (stati, unità, "Giorno 1 ·
-  sabato"), numeri e date veri, intestazione bloccata e filtrabile, stampa adattata in larghezza con
-  l'intestazione ripetuta, nome scheda e fase nell'intestazione di pagina, "Pagina N di M". CSV per strumenti e AI:
-  RFC 4180, colonne stabili con i nomi del formato di import (indipendenti dalla lingua), valori grezzi (codici,
-  punto decimale, date ISO), BOM UTF-8 e CRLF.
-- **CSV come tabella unica**: una riga per serie eseguita con accanto il piano; un esercizio mai eseguito compare
-  una volta senza serie; le serie di esercizi eliminati con il loro giorno chiudono la tabella. Un CSV è una
-  tabella: Excel, pandas e un'AI la leggono senza casi speciali (scartata l'alternativa a sezioni).
-- **Contenuto dell'export**: allenamenti salvati e saltati, mai la bozza in corso (come lo Storico); gli esercizi
-  rimossi non sono nel foglio "Scheda" ma le loro serie restano. `rir`, `recSecUsed` e `note` di `SetLog` non sono
-  mai valorizzati dall'app: non esportati in CSV/XLSX (il backup JSON li conserva).
-- **Date in Excel**: ExcelJS scrive le date in UTC; il giorno di calendario locale viene passato come mezzanotte
-  UTC, così un allenamento dopo mezzanotte non finisce sul giorno prima.
-- **ExcelJS caricato su richiesta** (`import()` nel servizio): chunk lazy da 947 kB (218 kB gzip) scaricato solo al
-  clic su Excel; bundle iniziale 602 kB (budget 650), pagina scheda 16 kB. `exceljs` in
-  `allowedCommonJsDependencies`.
-- **Download** con `<a download>` e Blob URL revocato dopo 10 s (revocarlo subito può annullare il download su
-  alcuni browser mobili). Messaggio con il nome del file salvato, utile sul telefono.
-- **Costanti di dominio nei modelli** (`EXERCISE_STATUSES`, `LOAD_UNITS`, `PHASE_STATUSES`, `SESSION_OUTCOMES`,
-  `BACKUP_TABLES`): parser CSV, form esercizio e backup usano la stessa fonte.
-- **Nessun escape anti-formula nel CSV**: i dati sono dell'utente e il file è pensato per un'AI, dove un apice
-  iniziale sarebbe rumore; l'XLSX scrive i testi come testo.
-- **Ordine delle schede indipendente dallo stato** (`importedAt` decrescente, poi id): con "attiva per prima" la
-  card cambiava posto al tocco e quella che scivolava sotto il dito prendeva lo stato hover (persistente sul
-  telefono), da cui l'animazione su tutti i toggle. La scheda attiva resta riconoscibile dal bordo arancione.
-  Misurato fotogramma per fotogramma nel browser prima e dopo la correzione.
+## Decisions (and why)
+- **Hand-written validation, "parse, don't validate"** (`RecordReader` + one reader per table): every record is
+  rebuilt from the known fields only, with their types and allowed values; the return types make the compiler check
+  that no field is missing. No new dependency (zod is not in the plan). It stops at the first problem with the path
+  of the value: a file written by the app has none.
+- **Integrity before writing**: unique ids per table, the references the app guarantees
+  (`days.phaseId`, `exercises.phaseId/dayId`, `sessions.phaseId`, `setLogs.sessionId`), a single active plan,
+  a single workout in progress. `sessions.dayId` and `setLogs.exerciseId` **may** point to a deleted day
+  (the history outlives the plan) and are not checked.
+- **Versioning**: `BACKUP_SCHEMA_VERSION = 1`; a file from a newer version is refused ("update the app"), older files
+  will be migrated in `parseBackup` when the version goes up.
+- **`exportedAt` in ISO 8601** (readable when the file is opened), record timestamps in epoch ms as stored:
+  the restore is identical to the original.
+- **Atomic restore with the original ids** (`BackupRepository.replaceAll`): clears and refills the 5 tables in one
+  transaction; an error halfway rolls everything back (tested). IndexedDB moves the key generator past the explicit
+  ids, so new records continue after the highest restored one (tested).
+- **App restart after the restore** (`AppRestartService`): in-memory state (sets typed in `WorkoutDrafts`, the timer)
+  would refer to ids that now point to other records; reloading the app is simpler and safer than having every
+  feature invalidate its own state, and it does not couple Settings to Workout.
+- **Always confirm**, even on an empty device: one predictable rule for a destructive operation;
+  `ConfirmDialog` as for the editor's deletions.
+- **Two formats, two audiences**. Excel for people: translated headers and values (statuses, units, "Day 1 ·
+  sabato"), real numbers and dates, frozen and filterable header, printing fitted to the page width with the header
+  repeated, plan name and phase in the page header, "Page N of M". CSV for tools and AI: RFC 4180, stable column
+  names from the import format (language independent), raw values (codes, dot as decimal separator, ISO dates),
+  UTF-8 BOM and CRLF.
+- **CSV as a single table**: one row per performed set next to the plan; an exercise never performed appears once
+  without sets; sets of exercises deleted with their day close the table. A CSV is a table: Excel, pandas and an AI
+  read it without special cases (the alternative with sections was discarded).
+- **Export content**: saved and skipped workouts, never the draft in progress (as in History); removed exercises are
+  not in the "Plan" sheet but their sets stay. `SetLog`'s `rir`, `recSecUsed` and `note` are never filled in by the
+  app: not exported to CSV/XLSX (the JSON backup keeps them).
+- **Dates in Excel**: ExcelJS writes dates in UTC; the local calendar day is passed as midnight UTC, so a workout just
+  after midnight does not end up on the previous day.
+- **ExcelJS loaded on demand** (`import()` in the service): a 947 kB lazy chunk (218 kB gzip) downloaded only on the
+  Excel click; initial bundle 602 kB (budget 650), plan page 16 kB. `exceljs` in `allowedCommonJsDependencies`.
+- **Download** with `<a download>` and a Blob URL revoked after 10 s (revoking it at once can cancel the download on
+  some mobile browsers). A message with the name of the saved file, useful on the phone.
+- **Domain constants in the models** (`EXERCISE_STATUSES`, `LOAD_UNITS`, `PHASE_STATUSES`, `SESSION_OUTCOMES`,
+  `BACKUP_TABLES`): CSV parser, exercise form and backup use the same source.
+- **No formula escaping in the CSV**: the data is the user's own and the file is meant for an AI, where a leading
+  apostrophe would be noise; the XLSX writes text as text.
+- **Plan order independent of the status** (`importedAt` descending, then id): with "active first" the card moved on
+  tap and the one sliding under the finger took the hover state (sticky on the phone), hence the animation on all
+  the toggles. The active plan is still recognisable by its orange border. Measured frame by frame in the browser
+  before and after the fix.
 
-## File creati/modificati (percorsi)
-- `src/app/core/models/{backup,plan-export}.model.ts`, costanti in `{exercise,phase,session}.model.ts`
-- `src/app/core/repositories/{backup,plan-export}.repository.ts`, `plan.repository.ts` (ordine delle schede)
-- `src/app/core/services/backup/**` (parser, lettore dei record, integrità, servizio)
-- `src/app/core/services/plan-export/**` (righe, CSV, XLSX, servizio)
+## Files created/changed (paths)
+- `src/app/core/models/{backup,plan-export}.model.ts`, constants in `{exercise,phase,session}.model.ts`
+- `src/app/core/repositories/{backup,plan-export}.repository.ts`, `plan.repository.ts` (plan order)
+- `src/app/core/services/backup/**` (parser, record reader, integrity, service)
+- `src/app/core/services/plan-export/**` (rows, CSV, XLSX, service)
 - `src/app/core/services/{file-download.service,app-restart.service,iso-date}.ts`
 - `src/app/features/settings/backup/**`, `src/app/features/settings/settings-page.{ts,html}`
 - `src/app/features/plans/detail/plan-export/**`, `src/app/features/plans/detail/plan-detail-page.{ts,html}`
@@ -78,41 +77,41 @@ Branch / ultimo commit: `feature/f7-export` (PR → `dev`); `dev` contiene F1–
 - `src/app/core/services/plan-csv/plan-csv-parser.ts`, `src/app/features/plans/exercise/exercise-form*.ts`
 - `public/i18n/{it,en}.json`, `angular.json`, `package.json` (exceljs ~4.4.0), `e2e/{backup,plan-export,plan-import}.spec.ts`
 
-## Stato test (unit / e2e / manuale)
-- Unit: 275/275 (ordine stabile delle schede, anche a parità di data). Backup: round trip identico su database vuoto, sostituzione con gli id originali, id successivi,
-  rollback di un ripristino fallito, impostazioni escluse e intatte, file troppo grande non letto, ogni tipo di
-  rifiuto con il percorso. Export: righe in ordine di scheda e di diario, CSV riletto con PapaParse, XLSX riletto con
-  ExcelJS (fogli, intestazioni, valori tradotti, date locali, stampa, filtri, inglese), nomi file sicuri.
-- E2E: 29/29 (+4): backup esportato e ripristinato su **un secondo browser** (contesto Playwright nuovo) e
-  riesportato **identico all'originale**; file non di backup rifiutato senza toccare i dati; Excel scaricato e
-  riletto; CSV scaricato e verificato riga per riga; le schede non cambiano posto attivandole o archiviandole.
-  Screenshot Pixel 7: conferma, errore, sezione export.
-- Manuale: telefono reale (Gianluca, 2026-10-15): sul vecchio server 4200 Impostazioni bianca e toggle rotti per la
-  cache di Vite (vedi sotto), non riproducibili su un server nuovo; dopo il riavvio l'app funziona; da lì la
-  correzione dell'ordine in Schede. Dopo la correzione: schede ferme al loro posto, backup, ripristino ed export
-  Excel/CSV ok (Gianluca, 2026-10-15).
+## Test status (unit / e2e / manual)
+- Unit: 275/275 (stable plan order, also with equal dates). Backup: identical round trip on an empty database,
+  replacement with the original ids, next ids, rollback of a failed restore, settings excluded and untouched, too
+  large file not read, every kind of refusal with its path. Export: rows in plan and diary order, CSV read back with
+  PapaParse, XLSX read back with ExcelJS (sheets, headers, translated values, local dates, printing, filters,
+  English), safe file names.
+- E2E: 29/29 (+4): backup exported and restored on **a second browser** (a new Playwright context) and exported again
+  **identical to the original**; a non-backup file refused without touching the data; Excel downloaded and read back;
+  CSV downloaded and checked row by row; plans keep their place when switched on or off.
+  Pixel 7 screenshots: confirmation, error, export section.
+- Manual: real phone (Gianluca, 2026-10-15): on the old 4200 server Settings was blank and the toggles broken because
+  of the Vite cache (see below), not reproducible on a fresh server; after the restart the app works; from there the
+  fix of the order in Plans. After the fix: plans stay in place, backup, restore and Excel/CSV export ok
+  (Gianluca, 2026-10-15).
 
-## Problemi aperti / debito tecnico
-- **Bug preesistente dell'editor (F3), E2E instabile**: rinominando un giorno e cambiando subito il giorno della
-  settimana, `updateDay` riscrive anche il nome con il valore precedente se la live query non ha ancora
-  riemesso (aggiornamento perso). "creates a plan from scratch and trains with it" fallisce circa 1 volta su 90;
-  la CI ha 1 retry. Correzione: aggiornare solo il campo cambiato.
-- `npm audit`: 2 moderate da `uuid` < 11 dentro ExcelJS (riguarda v3/v5/v6 con `buf`; ExcelJS usa solo v4 e il
-  bundle browser ha la sua copia). Nessuna correzione senza tornare a ExcelJS 3.
-- Server di sviluppo nella stessa cartella condividono `.angular/cache`: dopo un cambio di dipendenze un server
-  già avviato serve chunk di due ottimizzazioni diverse, cioè due copie di Angular (`getBaseHref` di null,
-  `NG01203: No value accessor`). Riavviarlo.
-- CSV aperto con doppio clic in Excel italiano: il separatore è la virgola e finisce in una colonna; per Excel
-  c'è l'XLSX (oppure Dati → Da testo/CSV).
-- Selettore file su Android con `accept=".json,application/json"`: da verificare sul telefono.
-- Ereditati da F7: wake lock solo su HTTPS; notifiche in background (F8); valori digitati e non spuntati solo in
-  memoria; bottom nav su "Schede" nel form esercizio aperto dall'allenamento; altre `<select>` dentro `<label>`;
-  **licenza MIT** e **release su `master`** di F1–F7 da fare.
+## Open issues / technical debt
+- **Pre-existing editor bug (F3), flaky E2E**: renaming a day and changing its weekday right after, `updateDay` also
+  writes back the previous name if the live query has not emitted again yet (lost update). "creates a plan from
+  scratch and trains with it" fails about once in 90 runs; CI has 1 retry. Fix: update only the changed field.
+- `npm audit`: 2 moderate from `uuid` < 11 inside ExcelJS (it concerns v3/v5/v6 with `buf`; ExcelJS only uses v4 and
+  the browser bundle has its own copy). No fix without going back to ExcelJS 3.
+- Development servers in the same folder share `.angular/cache`: after a dependency change, a server already running
+  serves chunks from two different optimisations, i.e. two copies of Angular (`getBaseHref` of null,
+  `NG01203: No value accessor`). Restart it.
+- CSV opened with a double click in Italian Excel: the separator is a comma and everything ends up in one column;
+  for Excel there is the XLSX (or Data → From Text/CSV).
+- File picker on Android with `accept=".json,application/json"`: to be checked on the phone.
+- Inherited from F7: wake lock only on HTTPS; background notifications (F8); typed but unticked values only in
+  memory; bottom nav on "Plans" in the exercise form opened from the workout; other `<select>` inside `<label>`;
+  **MIT license** and **release to `master`** of F1–F7 still to do.
 
-## Prossima fase: obiettivo e primo passo
-**F8 — PWA e rilascio**: service worker, manifest, icone, prompt di installazione, test su Android, v1.0.0
-(app installata sul telefono e funzionante offline).
+## Next phase: goal and first step
+**F8 — PWA and release**: service worker, manifest, icons, install prompt, Android test, v1.0.0
+(app installed on the phone and working offline).
 
-Primo passo: branch `feature/f8-pwa` da `dev` aggiornato (dopo il merge della PR F7); `ng add @angular/pwa`, poi
-`ngsw-config.json` con il chunk di ExcelJS (947 kB) caricato in modo lazy, così l'export funziona offline senza
-appesantire la prima installazione.
+First step: branch `feature/f8-pwa` from an updated `dev` (after the F7 PR is merged); `ng add @angular/pwa`, then
+`ngsw-config.json` with the ExcelJS chunk (947 kB) loaded lazily, so the export works offline without making the
+first install heavier.
