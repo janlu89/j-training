@@ -1,0 +1,14 @@
+# Normalizza i file di testo a LF nel repository e nella working copy,
+# coerente con .editorconfig e Prettier (endOfLine: lf).
+* text=auto eol=lf
+
+# Binari
+*.ico binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.xlsx binary
