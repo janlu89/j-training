@@ -1,0 +1,45 @@
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { Tag } from 'primeng/tag';
+import { WorkoutExercise } from '../../../../core/models';
+import { statusSeverity } from '../../../../shared/ui/exercise-item/exercise-status';
+import { SetInput, SetRow } from '../set-rows';
+
+export interface SetInputChange {
+  setNo: number;
+  input: SetInput;
+}
+
+/** One exercise of the workout: the plan at a glance and a row per set with kg, reps and ✓. */
+@Component({
+  selector: 'app-exercise-log',
+  imports: [RouterLink, TranslocoPipe, Tag],
+  templateUrl: './exercise-log.html',
+  styleUrl: './exercise-log.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ExerciseLog {
+  readonly entry = input.required<WorkoutExercise>();
+  readonly rows = input.required<readonly SetRow[]>();
+  /** Rows are read-only while another day has a workout in progress. */
+  readonly locked = input(false);
+  /** URL of this workout day, so the exercise form comes back here after saving. */
+  readonly returnTo = input.required<string>();
+
+  readonly inputChange = output<SetInputChange>();
+  readonly doneToggle = output<number>();
+  readonly addSet = output<void>();
+  readonly markAll = output<void>();
+
+  protected readonly exercise = computed(() => this.entry().exercise);
+  protected readonly headingId = computed(() => `exercise-${this.exercise().id}`);
+  protected readonly statusSeverity = computed(() => statusSeverity(this.exercise().stato));
+  protected readonly equipment = computed(() =>
+    [this.exercise().attrezzo, this.exercise().posizione].filter(Boolean).join(' · '),
+  );
+  /** "All done" is offered when at least two complete sets are still to be marked. */
+  protected readonly canMarkAll = computed(
+    () => this.rows().filter((row) => row.logId === undefined && row.values).length > 1,
+  );
+}

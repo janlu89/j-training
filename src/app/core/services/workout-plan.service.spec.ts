@@ -66,4 +66,31 @@ describe('WorkoutPlanService', () => {
       day: { day: { csvGiorno: 'B' } },
     });
   });
+
+  it('moves the rotation on after a skipped day but not while a workout is in progress', async () => {
+    const phaseId = await savePlan(false);
+    const today = (await firstValueFrom(service.watchToday()))!;
+    const [a, b] = today.plan.days.map(({ day }) => day.id);
+    const sessions = TestBed.inject(SessionRepository);
+    await sessions.add({ phaseId, dayId: a, startedAt: 1, endedAt: 1, outcome: 'skipped' });
+    await sessions.add({ phaseId, dayId: b, startedAt: 2 });
+
+    const after = (await firstValueFrom(service.watchToday()))!;
+
+    expect(after.suggestion?.day.day.id).toBe(b);
+    expect(after.lastSessions.get(a)?.outcome).toBe('skipped');
+    expect(after.lastSessions.has(b)).toBe(false);
+  });
+
+  it('keeps the most recent finished session of each day', async () => {
+    const phaseId = await savePlan(false);
+    const [a] = (await firstValueFrom(service.watchToday()))!.plan.days.map(({ day }) => day.id);
+    const sessions = TestBed.inject(SessionRepository);
+    await sessions.add({ phaseId, dayId: a, startedAt: 1, endedAt: 2, outcome: 'completed' });
+    await sessions.add({ phaseId, dayId: a, startedAt: 5, endedAt: 5, outcome: 'skipped' });
+
+    const today = (await firstValueFrom(service.watchToday()))!;
+
+    expect(today.lastSessions.get(a)?.startedAt).toBe(5);
+  });
 });

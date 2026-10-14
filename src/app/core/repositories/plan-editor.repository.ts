@@ -80,11 +80,17 @@ export class PlanEditorRepository {
 
   /**
    * Deletes a day and its exercises. Recorded sets keep exercise name and phase, so the
-   * history by exercise name is not affected.
+   * history by exercise name is not affected; a workout in progress on the day is closed as
+   * completed, so its sets are kept instead of being left in a draft that cannot be reopened.
    */
   deleteDay(dayId: number): Promise<void> {
     const { db } = this;
-    return db.transaction('rw', db.days, db.exercises, async () => {
+    return db.transaction('rw', db.days, db.exercises, db.sessions, async () => {
+      await db.sessions
+        .where('dayId')
+        .equals(dayId)
+        .filter((session) => session.endedAt === undefined)
+        .modify({ endedAt: Date.now(), outcome: 'completed' });
       await db.exercises.where('dayId').equals(dayId).delete();
       await db.days.delete(dayId);
     });

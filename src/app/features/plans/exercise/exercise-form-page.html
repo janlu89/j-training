@@ -1,9 +1,9 @@
 <p-confirmdialog />
 
 <div class="page">
-  <a class="back" [routerLink]="['/plans', id(), 'edit']">
+  <a class="back" [routerLink]="backUrl()">
     <i class="pi pi-arrow-left" aria-hidden="true"></i>
-    {{ 'editor.backToEditor' | transloco }}
+    {{ (fromWorkout() ? 'workout.day.backToWorkout' : 'editor.backToEditor') | transloco }}
   </a>
   <header class="page__header">
     <h2 class="page__title">
@@ -167,7 +167,7 @@
         <i class="pi pi-check" pButtonIcon aria-hidden="true"></i>
         <span pButtonLabel>{{ 'editor.save' | transloco }}</span>
       </button>
-      <a pButton severity="secondary" [routerLink]="['/plans', id(), 'edit']">
+      <a pButton severity="secondary" [routerLink]="backUrl()">
         <span pButtonLabel>{{ 'editor.confirm.cancel' | transloco }}</span>
       </a>
     </div>

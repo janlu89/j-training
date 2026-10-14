@@ -39,6 +39,9 @@ function optionalId(value: unknown): number | undefined {
   return value === undefined || value === null || value === '' ? undefined : numberAttribute(value);
 }
 
+/** Only a workout day may be a return target: the query parameter never leads anywhere else. */
+const WORKOUT_DAY_URL = /^\/workout\/day\/\d+$/;
+
 /** Adds or edits one exercise of a plan. */
 @Component({
   selector: 'app-exercise-form-page',
@@ -69,6 +72,8 @@ export class ExerciseFormPage {
   readonly id = input.required({ transform: numberAttribute });
   readonly dayId = input(undefined, { transform: optionalId });
   readonly exerciseId = input(undefined, { transform: optionalId });
+  /** Query parameter set when the form is opened during a workout. */
+  readonly returnTo = input<string>();
 
   protected readonly types = EXERCISE_TYPES;
   protected readonly equipment = EQUIPMENT;
@@ -86,6 +91,11 @@ export class ExerciseFormPage {
     }),
   });
   protected readonly isEdit = computed(() => this.exerciseId() !== undefined);
+  protected readonly fromWorkout = computed(() => WORKOUT_DAY_URL.test(this.returnTo() ?? ''));
+  /** After saving, cancelling or deleting: back to the workout day, else to the plan editor. */
+  protected readonly backUrl = computed(() =>
+    this.fromWorkout() ? this.returnTo()! : `/plans/${this.id()}/edit`,
+  );
   protected readonly days = computed(
     () => this.data.value()?.plan?.days.map(({ day }) => day) ?? [],
   );
@@ -134,7 +144,7 @@ export class ExerciseFormPage {
       } else {
         await this.editor.addExercise(value.dayId, exercise);
       }
-      await this.backToEditor();
+      await this.goBack();
     } finally {
       this.busy.set(false);
     }
@@ -156,12 +166,12 @@ export class ExerciseFormPage {
       rejectButtonProps: { severity: 'secondary' },
       accept: async () => {
         await this.editor.removeExercise(exerciseId);
-        await this.backToEditor();
+        await this.goBack();
       },
     });
   }
 
-  private backToEditor(): Promise<boolean> {
-    return this.router.navigate(['/plans', this.id(), 'edit']);
+  private goBack(): Promise<boolean> {
+    return this.router.navigateByUrl(this.backUrl());
   }
 }

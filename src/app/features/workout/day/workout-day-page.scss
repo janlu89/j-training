@@ -1,0 +1,44 @@
+@use '../../../../styles/page';
+@use '../../../../styles/form';
+
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 2rem;
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+}
+
+.conflict {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.conflict__text {
+  margin: 0;
+}
+
+.finish {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--p-content-border-color);
+}
+
+.finish__hint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+}
+
+.finish__hint--error {
+  color: var(--p-red-700);
+}
