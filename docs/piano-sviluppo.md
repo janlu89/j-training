@@ -7,7 +7,8 @@ Ultimo aggiornamento: 2026-10-15 (fasi F2–F5 riviste su richiesta di Gianluca;
 - Repository GitHub: `j-training` (pubblico, necessario per GitHub Pages gratuito)
 - Cartella locale: `A:\Personal dev projects\j-training`
 - URL produzione: `https://<utente>.github.io/j-training/` (`base-href` = `/j-training/`)
-- Gestione GitHub: GitHub CLI (`gh`), con script versionato in `scripts/`
+- Gestione GitHub: GitHub CLI (`gh`). La configurazione iniziale del repository (branch, regole di protezione,
+  Pages) è stata fatta in F0 con uno script PowerShell, rimosso dopo la v1.0.0 e recuperabile dalla storia git
 
 ## Versioni bloccate
 - Node 24.x
