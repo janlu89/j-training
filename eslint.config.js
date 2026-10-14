@@ -36,6 +36,24 @@ module.exports = defineConfig([
     },
   },
   {
+    // Data access goes through repositories: only the database layer may import Dexie.
+    files: ['src/**/*.ts'],
+    ignores: ['src/app/core/db/**', 'src/app/core/repositories/**', 'src/**/*.spec.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'dexie',
+              message: 'Use a repository from core/repositories instead of importing Dexie.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['**/*.html'],
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
     rules: {
