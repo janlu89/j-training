@@ -48,6 +48,29 @@ export const JTrainingPreset = definePreset(Aura, {
     },
   },
   components: {
+    // Aura's danger red 500 with white text is 3.8:1; red 700 is 6.5:1 (outlined: red 700 on white).
+    button: {
+      colorScheme: {
+        light: {
+          root: {
+            danger: {
+              background: '{red.700}',
+              hoverBackground: '{red.800}',
+              activeBackground: '{red.900}',
+              borderColor: '{red.700}',
+              hoverBorderColor: '{red.800}',
+              activeBorderColor: '{red.900}',
+            },
+          },
+          outlined: {
+            danger: { borderColor: '{red.300}', color: '{red.700}' },
+          },
+          text: {
+            danger: { color: '{red.700}' },
+          },
+        },
+      },
+    },
     // Used by SelectButton. Aura's unchecked text (slate 500 on slate 100) is 4.3:1, below AA;
     // the checked option was a barely visible white chip. Now: slate 600 (6.9:1) and navy on orange.
     togglebutton: {

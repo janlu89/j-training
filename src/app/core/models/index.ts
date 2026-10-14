@@ -1,6 +1,7 @@
 export * from './entity.model';
 export * from './exercise.model';
 export * from './phase.model';
+export * from './plan-editor.model';
 export * from './plan-import.model';
 export * from './plan.model';
 export * from './session.model';

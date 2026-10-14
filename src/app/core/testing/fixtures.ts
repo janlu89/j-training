@@ -1,9 +1,8 @@
-import { Exercise, NewEntity, NewPlanExercise, SetLog } from '../models';
+import { Exercise, ExerciseInput, NewEntity, NewPlanExercise, SetLog } from '../models';
 
 type PlannedExercise = Omit<NewEntity<Exercise>, 'phaseId' | 'dayId'>;
 
-const PLANNED_EXERCISE: PlannedExercise = {
-  ordine: 1,
+const EXERCISE_INPUT: ExerciseInput = {
   esercizio: 'Panca piana',
   tipo: 'multiarticolare',
   attrezzo: 'bilanciere',
@@ -16,8 +15,13 @@ const PLANNED_EXERCISE: PlannedExercise = {
   rir: '2',
   stato: 'attivo',
   note: '',
-  isManual: false,
 };
+
+const PLANNED_EXERCISE: PlannedExercise = { ...EXERCISE_INPUT, ordine: 1, isManual: false };
+
+export function newExerciseInput(overrides: Partial<ExerciseInput> = {}): ExerciseInput {
+  return { ...EXERCISE_INPUT, ...overrides };
+}
 
 export function newExercise(overrides: Partial<NewEntity<Exercise>> = {}): NewEntity<Exercise> {
   return { phaseId: 1, dayId: 1, ...PLANNED_EXERCISE, ...overrides };

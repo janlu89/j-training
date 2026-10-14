@@ -31,6 +31,8 @@ module.exports = defineConfig([
           style: 'kebab-case',
         },
       ],
+      // `const { id, ...rest } = record` is the idiomatic way to drop fields: allowed.
+      '@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }],
       '@angular-eslint/prefer-on-push-component-change-detection': 'error',
       '@angular-eslint/prefer-signals': 'error',
     },

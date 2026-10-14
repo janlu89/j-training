@@ -27,6 +27,10 @@
           <span pButtonLabel>{{ 'plans.activate' | transloco }}</span>
         </button>
       }
+      <a pButton severity="secondary" [routerLink]="['/plans', plan.phase.id, 'edit']">
+        <i class="pi pi-pencil" pButtonIcon aria-hidden="true"></i>
+        <span pButtonLabel>{{ 'plans.edit' | transloco }}</span>
+      </a>
     </div>
 
     <app-plan-days

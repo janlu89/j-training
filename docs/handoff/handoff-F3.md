@@ -45,7 +45,8 @@ Branch / ultimo commit: `feature/f2-plans` (PR #6 → `dev`); `dev` contiene F1 
 - Unit: 81/81 (parser, transazioni e rollback, attiva/archivia, suggerimento del giorno, servizi, shell).
 - E2E: 8/8 (import, solo il giorno di oggi, scelta di un altro giorno, riposo, archivio attiva/archivia,
   esempio scaricabile, errori del file, giorno della settimana persistente).
-- Manuale: browser integrato a 375 px ok. Telefono reale: ESITO_TELEFONO
+- Manuale: browser integrato a 375 px ok. Telefono reale: ok (Gianluca, 2026-10-14). Richiesta: la scelta del giorno
+  diventi una lista di etichette con pulsante ▶ verso la pagina dedicata del giorno → pianificata in F4.
 
 ## Problemi aperti / debito tecnico
 - **Licenza MIT** da aggiungere.

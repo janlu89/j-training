@@ -5,12 +5,7 @@
         <h2 class="page__title">{{ 'plans.title' | transloco }}</h2>
         <p class="page__subtitle">{{ 'plans.subtitle' | transloco }}</p>
       </header>
-      <div class="page__actions">
-        <a pButton routerLink="/plans/import">
-          <i class="pi pi-upload" pButtonIcon aria-hidden="true"></i>
-          <span pButtonLabel>{{ 'plans.import' | transloco }}</span>
-        </a>
-      </div>
+      <ng-container [ngTemplateOutlet]="createActions" />
       <ul class="list">
         @for (summary of summaries; track summary.phase.id) {
           <li>
@@ -30,10 +25,20 @@
       [title]="'plans.empty.title' | transloco"
       [message]="'plans.empty.message' | transloco"
     >
-      <a pButton routerLink="/plans/import">
-        <i class="pi pi-upload" pButtonIcon aria-hidden="true"></i>
-        <span pButtonLabel>{{ 'plans.import' | transloco }}</span>
-      </a>
+      <ng-container [ngTemplateOutlet]="createActions" />
     </app-empty-state>
   }
 }
+
+<ng-template #createActions>
+  <div class="page__actions">
+    <a pButton routerLink="/plans/import">
+      <i class="pi pi-upload" pButtonIcon aria-hidden="true"></i>
+      <span pButtonLabel>{{ 'plans.import' | transloco }}</span>
+    </a>
+    <a pButton severity="secondary" routerLink="/plans/new">
+      <i class="pi pi-plus" pButtonIcon aria-hidden="true"></i>
+      <span pButtonLabel>{{ 'plans.create' | transloco }}</span>
+    </a>
+  </div>
+</ng-template>

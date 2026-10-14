@@ -1,0 +1,115 @@
+@let day = planDay().day;
+@let label = 'plan.day' | transloco: { number: day.ordine };
+<section class="day" [attr.aria-label]="label">
+  <div class="day__head">
+    <h3 class="day__title">{{ label }}</h3>
+    <div class="day__tools">
+      <button
+        type="button"
+        class="icon-button"
+        [disabled]="isFirst()"
+        [attr.aria-label]="'editor.day.moveUp' | transloco: { day: label }"
+        (click)="move.emit(-1)"
+      >
+        <i class="pi pi-arrow-up" aria-hidden="true"></i>
+      </button>
+      <button
+        type="button"
+        class="icon-button"
+        [disabled]="isLast()"
+        [attr.aria-label]="'editor.day.moveDown' | transloco: { day: label }"
+        (click)="move.emit(1)"
+      >
+        <i class="pi pi-arrow-down" aria-hidden="true"></i>
+      </button>
+      <button
+        type="button"
+        class="icon-button icon-button--danger"
+        [attr.aria-label]="'editor.day.delete' | transloco: { day: label }"
+        (click)="remove.emit()"
+      >
+        <i class="pi pi-trash" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="day__fields">
+    <label class="field">
+      <span class="field__label">{{ 'editor.day.name' | transloco }}</span>
+      <input
+        #nameInput
+        pInputText
+        type="text"
+        maxlength="40"
+        [value]="day.csvGiorno"
+        [placeholder]="'editor.day.namePlaceholder' | transloco"
+        enterkeyhint="done"
+        (change)="rename.emit(nameInput.value.trim())"
+        (keydown.enter)="nameInput.blur()"
+      />
+    </label>
+    <label class="field">
+      <span class="field__label">{{ 'plan.weekday' | transloco }}</span>
+      <select #weekdaySelect (change)="onWeekday(weekdaySelect.value)">
+        <option value="" [selected]="!day.weekday">{{ 'plan.noWeekday' | transloco }}</option>
+        @for (weekday of weekdays; track weekday) {
+          <option [value]="weekday" [selected]="weekday === day.weekday">
+            {{ 'weekday.' + weekday | transloco }}
+          </option>
+        }
+      </select>
+    </label>
+  </div>
+
+  <ul class="exercises">
+    @for (
+      exercise of planDay().exercises;
+      track exercise.id;
+      let first = $first;
+      let last = $last
+    ) {
+      <li class="exercise">
+        <a class="exercise__link" [routerLink]="['/plans', planId(), 'exercises', exercise.id]">
+          <span class="exercise__name">{{ exercise.esercizio }}</span>
+          <span class="exercise__plan">
+            {{ 'exercise.sets' | transloco: { serie: exercise.serie, rip: exercise.rip } }}
+            @if (exercise.recSec !== null) {
+              · {{ 'exercise.rest' | transloco: { sec: exercise.recSec } }}
+            }
+          </span>
+        </a>
+        <button
+          type="button"
+          class="icon-button"
+          [disabled]="first"
+          [attr.aria-label]="'editor.exercise.moveUp' | transloco: { exercise: exercise.esercizio }"
+          (click)="moveExercise.emit({ exerciseId: exercise.id, direction: -1 })"
+        >
+          <i class="pi pi-arrow-up" aria-hidden="true"></i>
+        </button>
+        <button
+          type="button"
+          class="icon-button"
+          [disabled]="last"
+          [attr.aria-label]="
+            'editor.exercise.moveDown' | transloco: { exercise: exercise.esercizio }
+          "
+          (click)="moveExercise.emit({ exerciseId: exercise.id, direction: 1 })"
+        >
+          <i class="pi pi-arrow-down" aria-hidden="true"></i>
+        </button>
+      </li>
+    } @empty {
+      <li class="exercises__empty">{{ 'editor.day.noExercises' | transloco }}</li>
+    }
+  </ul>
+
+  <a
+    pButton
+    severity="secondary"
+    [routerLink]="['/plans', planId(), 'days', day.id, 'exercises', 'new']"
+  >
+    <i class="pi pi-plus" pButtonIcon aria-hidden="true"></i>
+    <span pButtonLabel>{{ 'editor.exercise.add' | transloco }}</span>
+  </a>
+</section>

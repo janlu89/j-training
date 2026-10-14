@@ -21,6 +21,9 @@
     <a pButton severity="secondary" [routerLink]="['/plans', phase.id]">
       <span pButtonLabel>{{ 'plans.open' | transloco }}</span>
     </a>
+    <a pButton severity="secondary" [routerLink]="['/plans', phase.id, 'edit']">
+      <span pButtonLabel>{{ 'plans.edit' | transloco }}</span>
+    </a>
     @if (phase.status === 'active') {
       <button pButton type="button" severity="secondary" (click)="deactivate.emit(phase.id)">
         <span pButtonLabel>{{ 'plans.deactivate' | transloco }}</span>

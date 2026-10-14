@@ -46,7 +46,9 @@
       "title": "Scheda non trovata",
       "message": "Questa scheda non esiste su questo dispositivo."
     },
-    "deactivate": "Archivia"
+    "deactivate": "Archivia",
+    "create": "Crea scheda",
+    "edit": "Modifica"
   },
   "plan": {
     "day": "Giorno {{number}}",
@@ -140,6 +142,79 @@
         "persisted": "I dati restano su questo dispositivo e il browser non li cancella per liberare spazio.",
         "notPersisted": "Se lo spazio scarseggia il browser potrebbe cancellare i dati. Installare l'app aiuta; fai backup regolari."
       }
+    }
+  },
+  "form": {
+    "required": "Campo obbligatorio.",
+    "min": "Il valore minimo è {{min}}.",
+    "range": "Inserisci un valore tra {{min}} e {{max}}."
+  },
+  "editor": {
+    "title": "Modifica scheda",
+    "backToPlan": "Torna alla scheda",
+    "backToEditor": "Torna alla modifica",
+    "save": "Salva",
+    "done": "Fine",
+    "noDays": "La scheda non ha ancora giorni: aggiungi il primo.",
+    "newPlan": {
+      "title": "Nuova scheda",
+      "subtitle": "Crea una scheda a mano, senza file CSV. Poi aggiungi giorni ed esercizi.",
+      "create": "Crea e aggiungi i giorni"
+    },
+    "plan": {
+      "name": "Nome della scheda",
+      "fase": "Fase",
+      "faseHint": "Numero progressivo della scheda (1, 2, 3…).",
+      "deleteTitle": "Elimina scheda",
+      "deleteHint": "Elimina la scheda con tutti i giorni e gli esercizi.",
+      "delete": "Elimina scheda",
+      "deleteConfirm": "Eliminare la scheda «{{name}}» con tutti i giorni e gli esercizi?",
+      "hasSessions": "Questa scheda ha allenamenti registrati: non può essere eliminata per non perdere lo storico. Puoi archiviarla."
+    },
+    "day": {
+      "add": "Aggiungi giorno",
+      "name": "Nome del giorno",
+      "namePlaceholder": "Es. petto e tricipiti",
+      "moveUp": "Sposta su {{day}}",
+      "moveDown": "Sposta giù {{day}}",
+      "delete": "Elimina {{day}}",
+      "deleteConfirm": "Eliminare {{day}} con tutti i suoi esercizi?",
+      "noExercises": "Nessun esercizio in questo giorno."
+    },
+    "exercise": {
+      "add": "Aggiungi esercizio",
+      "newTitle": "Nuovo esercizio",
+      "editTitle": "Modifica esercizio",
+      "name": "Esercizio",
+      "type": "Tipo",
+      "equipment": "Attrezzo",
+      "position": "Posizione attrezzi",
+      "positionPlaceholder": "Es. sedile 4, schienale 2",
+      "sets": "Serie",
+      "reps": "Ripetizioni",
+      "load": "Carico (kg)",
+      "loadHint": "Vuoto se è da testare.",
+      "loadUnit": "Il carico è",
+      "unit": {
+        "totale": "Totale",
+        "per_braccio": "Per braccio"
+      },
+      "rest": "Recupero",
+      "restSeconds": "Recupero in secondi",
+      "restHint": "Multiarticolari 2–3 minuti, isolamento 60–90 secondi.",
+      "rir": "RIR",
+      "status": "Stato",
+      "day": "Giorno",
+      "note": "Note",
+      "moveUp": "Sposta su {{exercise}}",
+      "moveDown": "Sposta giù {{exercise}}",
+      "delete": "Elimina esercizio",
+      "deleteConfirm": "Eliminare «{{exercise}}» dalla scheda? Lo storico degli allenamenti resta."
+    },
+    "confirm": {
+      "title": "Conferma",
+      "delete": "Elimina",
+      "cancel": "Annulla"
     }
   }
 }
