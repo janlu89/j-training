@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, resource } from '@angular/core';
-import { AppLanguage, DEFAULT_EXERCISE_REST_SECONDS, SETTINGS_ID } from '../../models';
+import { AppLanguage, DEFAULT_EXERCISE_REST_SECONDS } from '../../models';
 import { SettingsRepository } from '../../repositories/settings.repository';
 import { LanguageService } from '../language.service';
 
@@ -18,14 +18,7 @@ export class RestSettingsService {
   );
 
   async setExerciseRest(seconds: number): Promise<void> {
-    const saved = await this.settings.get();
-    // The settings record always carries a language: the one in use when none was saved yet.
-    const next = {
-      language: this.language.current() as AppLanguage,
-      ...saved,
-      exerciseRestSeconds: seconds,
-    };
-    await this.settings.save(next);
-    this.stored.set({ ...next, id: SETTINGS_ID });
+    const language = this.language.current() as AppLanguage;
+    this.stored.set(await this.settings.merge({ exerciseRestSeconds: seconds }, language));
   }
 }

@@ -1,16 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import {
-  BACKUP_SCHEMA_VERSION,
-  BackupData,
-  BackupFile,
-  BackupReadResult,
-  BackupSummary,
-} from '../../models';
+import { BACKUP_SCHEMA_VERSION, BackupFile, BackupReadResult, BackupSummary } from '../../models';
 import { BackupRepository } from '../../repositories/backup.repository';
 import { CLOCK } from '../clock';
 import { FileDownloadService } from '../file-download.service';
 import { isoLocalDate } from '../iso-date';
 import { parseBackup } from './backup-parser';
+import { BackupStatusService } from './backup-status.service';
 
 /** Years of workouts are a few MB: anything much larger is not a J-Training backup. */
 export const MAX_BACKUP_FILE_BYTES = 50 * 1024 * 1024;
@@ -20,6 +15,7 @@ export const MAX_BACKUP_FILE_BYTES = 50 * 1024 * 1024;
 export class BackupService {
   private readonly backups = inject(BackupRepository);
   private readonly download = inject(FileDownloadService);
+  private readonly status = inject(BackupStatusService);
   private readonly now = inject(CLOCK);
 
   async createBackup(): Promise<BackupFile> {
@@ -37,6 +33,7 @@ export class BackupService {
     const fileName = `j-training-backup-${isoLocalDate(Date.parse(backup.exportedAt))}.json`;
     const json = JSON.stringify(backup, null, 2);
     this.download.save(new Blob([json], { type: 'application/json' }), fileName);
+    await this.status.markBackedUp(Date.parse(backup.exportedAt));
     return fileName;
   }
 
@@ -47,9 +44,13 @@ export class BackupService {
     return parseBackup(await file.text());
   }
 
-  /** Replaces all the training data of the device with the backup, in one transaction. */
-  restore(backup: BackupData): Promise<void> {
-    return this.backups.replaceAll(backup);
+  /**
+   * Replaces all the training data of the device with the backup, in one transaction. The data is
+   * then exactly the file's, so it counts as backed up at the time the file was made.
+   */
+  async restore(backup: BackupFile): Promise<void> {
+    await this.backups.replaceAll(backup);
+    await this.status.markBackedUp(Date.parse(backup.exportedAt));
   }
 }
 

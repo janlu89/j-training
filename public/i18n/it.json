@@ -311,6 +311,8 @@
   "backup": {
     "title": "Backup",
     "description": "Salva tutte le schede e lo storico degli allenamenti in un file, per conservarli o spostarli su un altro dispositivo.",
+    "last": "Ultimo backup: {{when}}",
+    "never": "Nessun backup ancora da questo dispositivo.",
     "export": "Esporta backup",
     "restore": "Ripristina da file",
     "exported": "Backup salvato nei download: {{fileName}}",
@@ -336,6 +338,14 @@
       "multipleOpenSessions": "Il backup è danneggiato: contiene più di un allenamento in corso.",
       "at": "Posizione: {{path}}"
     }
+  },
+  "backupReminder": {
+    "title": "È ora di un backup",
+    "since": "Ultimo backup: {{when}}. Da allora hai salvato altri allenamenti: esporta un file per non perderli se cambi o ripristini il telefono.",
+    "never": "Non hai ancora fatto un backup dei tuoi allenamenti: esporta un file per non perderli se cambi o ripristini il telefono.",
+    "export": "Esporta backup",
+    "later": "Più tardi",
+    "failed": "Backup non riuscito. Riprova da Impostazioni."
   },
   "form": {
     "required": "Campo obbligatorio.",

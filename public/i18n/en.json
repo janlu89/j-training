@@ -311,6 +311,8 @@
   "backup": {
     "title": "Backup",
     "description": "Save all plans and the workout history to a file, to keep them or move them to another device.",
+    "last": "Last backup: {{when}}",
+    "never": "No backup from this device yet.",
     "export": "Export backup",
     "restore": "Restore from file",
     "exported": "Backup saved to downloads: {{fileName}}",
@@ -336,6 +338,14 @@
       "multipleOpenSessions": "The backup is damaged: it contains more than one workout in progress.",
       "at": "Location: {{path}}"
     }
+  },
+  "backupReminder": {
+    "title": "Time for a backup",
+    "since": "Last backup: {{when}}. You have saved more workouts since: export a file so you don't lose them if you change or reset your phone.",
+    "never": "You have not backed up your workouts yet: export a file so you don't lose them if you change or reset your phone.",
+    "export": "Export backup",
+    "later": "Later",
+    "failed": "Backup failed. Try again from Settings."
   },
   "form": {
     "required": "This field is required.",

@@ -8,6 +8,7 @@ import { WorkoutPlanService } from '../../core/services/workout-plan.service';
 import { WorkoutSessionService } from '../../core/services/workout-session.service';
 import { LocalDatePipe } from '../../shared/pipes/local-date.pipe';
 import { EmptyState } from '../../shared/ui/empty-state/empty-state';
+import { BackupReminder } from './backup-reminder/backup-reminder';
 import { DayBadge, WorkoutDayItem } from './day-item/workout-day-item';
 
 /** The days of the active plan, today's one highlighted; ▶ opens the workout of a day. */
@@ -22,6 +23,7 @@ import { DayBadge, WorkoutDayItem } from './day-item/workout-day-item';
     LocalDatePipe,
     EmptyState,
     WorkoutDayItem,
+    BackupReminder,
   ],
   templateUrl: './workout-page.html',
   styleUrl: './workout-page.scss',

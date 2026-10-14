@@ -8,6 +8,7 @@ import { newExerciseInput } from '../../testing/fixtures';
 import { useTestDatabase } from '../../testing/test-database';
 import { CLOCK } from '../clock';
 import { FileDownloadService } from '../file-download.service';
+import { BackupStatusService } from './backup-status.service';
 import { MAX_BACKUP_FILE_BYTES, BackupService, summarizeBackup } from './backup.service';
 
 /** Wednesday 14 October 2026, 20:30 in Italy. */
@@ -24,16 +25,19 @@ function jsonFile(value: unknown, name = 'backup.json'): File {
 describe('BackupService', () => {
   const database = useTestDatabase();
   const save = vi.fn();
+  const markBackedUp = vi.fn().mockResolvedValue(undefined);
   let service: BackupService;
   let editor: PlanEditorRepository;
   let workouts: WorkoutSessionRepository;
 
   beforeEach(() => {
     save.mockClear();
+    markBackedUp.mockClear();
     TestBed.configureTestingModule({
       providers: [
         { provide: CLOCK, useValue: () => NOW },
         { provide: FileDownloadService, useValue: { save } },
+        { provide: BackupStatusService, useValue: { markBackedUp } },
       ],
     });
     service = TestBed.inject(BackupService);
@@ -123,6 +127,7 @@ describe('BackupService', () => {
     const broken = { ...before, setLogs: [before.setLogs[0], before.setLogs[0]] };
 
     await expect(service.restore(broken)).rejects.toThrow();
+    expect(markBackedUp).not.toHaveBeenCalled();
 
     expect(withoutDate(await service.createBackup())).toStrictEqual(withoutDate(before));
   });
@@ -150,6 +155,16 @@ describe('BackupService', () => {
     const saved = JSON.parse(await blob.text()) as BackupFile;
     expect(saved).toMatchObject({ schemaVersion: 1, exportedAt: '2026-10-14T18:30:00.000Z' });
     expect(saved.phases.map((phase) => phase.name)).toEqual(['Giugno', 'Luglio']);
+    expect(markBackedUp).toHaveBeenCalledWith(NOW);
+  });
+
+  it('counts restored data as backed up when the file was made', async () => {
+    await seedTrainingData();
+    const backup = { ...(await service.createBackup()), exportedAt: '2026-10-01T10:00:00.000Z' };
+
+    await service.restore(backup);
+
+    expect(markBackedUp).toHaveBeenCalledWith(Date.parse('2026-10-01T10:00:00.000Z'));
   });
 
   it('refuses files larger than the limit without reading them', async () => {

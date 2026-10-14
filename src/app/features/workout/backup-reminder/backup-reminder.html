@@ -1,0 +1,30 @@
+@if (savedFile(); as fileName) {
+  <p-message severity="success">{{ 'backup.exported' | transloco: { fileName } }}</p-message>
+} @else if (due()) {
+  <section class="reminder" aria-labelledby="backup-reminder-title">
+    <h3 id="backup-reminder-title" class="reminder__title">
+      <i class="pi pi-shield" aria-hidden="true"></i>
+      {{ 'backupReminder.title' | transloco }}
+    </h3>
+    @let last = lastBackupAt();
+    <p class="reminder__text">
+      @if (last !== undefined) {
+        {{ 'backupReminder.since' | transloco: { when: (last | daysAgo: now : language()) } }}
+      } @else {
+        {{ 'backupReminder.never' | transloco }}
+      }
+    </p>
+    <div class="reminder__actions">
+      <button pButton type="button" [disabled]="busy()" (click)="export()">
+        <i class="pi pi-download" pButtonIcon aria-hidden="true"></i>
+        <span pButtonLabel>{{ 'backupReminder.export' | transloco }}</span>
+      </button>
+      <button pButton type="button" severity="secondary" [disabled]="busy()" (click)="snooze()">
+        <span pButtonLabel>{{ 'backupReminder.later' | transloco }}</span>
+      </button>
+    </div>
+    @if (failed()) {
+      <p-message severity="error">{{ 'backupReminder.failed' | transloco }}</p-message>
+    }
+  </section>
+}

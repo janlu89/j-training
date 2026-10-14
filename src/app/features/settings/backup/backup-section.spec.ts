@@ -4,7 +4,9 @@ import { Confirmation, ConfirmationService } from 'primeng/api';
 import type { MockInstance } from 'vitest';
 import { BackupFile, BackupReadResult } from '../../../core/models';
 import { AppRestartService } from '../../../core/services/app-restart.service';
+import { BackupStatusService } from '../../../core/services/backup/backup-status.service';
 import { BackupService } from '../../../core/services/backup/backup.service';
+import { CLOCK } from '../../../core/services/clock';
 import { LanguageService } from '../../../core/services/language.service';
 import { provideTranslocoForTests } from '../../../core/testing/transloco-testing';
 import { BackupSection, RESTORED_URL } from './backup-section';
@@ -24,6 +26,8 @@ describe('BackupSection', () => {
   const read = vi.fn<(file: File) => Promise<BackupReadResult>>();
   const restore = vi.fn();
   const restartAt = vi.fn();
+  const lastBackupAt = signal<number | undefined>(undefined);
+  const NOW = new Date(2026, 9, 15, 9, 0).getTime();
   let fixture: ComponentFixture<BackupSection>;
   let element: HTMLElement;
   let confirm: MockInstance<ConfirmationService['confirm']>;
@@ -32,12 +36,15 @@ describe('BackupSection', () => {
     for (const mock of [exportToFile, read, restore, restartAt]) {
       mock.mockReset();
     }
+    lastBackupAt.set(undefined);
     TestBed.configureTestingModule({
       providers: [
         provideTranslocoForTests(),
         { provide: BackupService, useValue: { exportToFile, read, restore } },
         { provide: AppRestartService, useValue: { restartAt } },
         { provide: LanguageService, useValue: { current: signal('it') } },
+        { provide: BackupStatusService, useValue: { lastBackupAt } },
+        { provide: CLOCK, useValue: () => NOW },
       ],
     });
     fixture = TestBed.createComponent(BackupSection);
@@ -59,6 +66,15 @@ describe('BackupSection', () => {
   }
 
   const confirmation = (): Confirmation => confirm.mock.calls[0][0];
+
+  it('says when this device was last backed up', async () => {
+    expect(element.textContent).toContain('Nessun backup ancora da questo dispositivo.');
+
+    lastBackupAt.set(new Date(2026, 9, 12, 20, 0).getTime());
+    await fixture.whenStable();
+
+    expect(element.textContent).toContain('Ultimo backup: 3 giorni fa');
+  });
 
   it('exports a backup and tells where it was saved', async () => {
     exportToFile.mockResolvedValue('j-training-backup-2026-10-14.json');
