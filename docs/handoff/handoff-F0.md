@@ -4,7 +4,7 @@ Data: 2026-10-14
 Branch / ultimo commit: nessuno (repository non ancora creato)
 
 ## Stato attuale
-- La cartella `A:\Personal dev projects\j-training` contiene solo `CLAUDE.md` e `docs/`.
+- La cartella `A:\Personal dev projects\j-training` contiene solo `docs/`.
 - Architettura e piano di sviluppo sono definiti (vedi `docs/`).
 - Decisioni già prese: nome app J-Training, repository `j-training`, gestione GitHub con `gh`,
   squash per feature → dev, merge commit per dev → master.
@@ -30,9 +30,8 @@ Arrivare a un'app Angular vuota, di qualità, pubblicata su GitHub Pages, con re
 ### 2. Scaffold Angular nella cartella esistente
 - Verificare prima le opzioni disponibili con `ng new --help` (CLI 21).
 - Generare il progetto **in questa cartella** (`--directory .`), nome `j-training`: SCSS, routing, niente SSR, zoneless, senza inizializzare git (lo si fa al passo 4).
-- **Non generare file di configurazione AI** (opzione `--ai-config` o prompt equivalente):
-  sovrascriverebbe questo `CLAUDE.md`.
-- Verificare che `CLAUDE.md` e `docs/` siano intatti dopo lo scaffold.
+- **Non generare file di configurazione AI** (opzione `--ai-config` o prompt equivalente).
+- Verificare che `docs/` sia intatta dopo lo scaffold.
 - Verificare `ng serve` e `ng test`.
 
 ### 3. Qualità del codice
