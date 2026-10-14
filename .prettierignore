@@ -4,7 +4,7 @@
 /node_modules
 package-lock.json
 
-# Documentazione scritta a mano: formattazione gestita dall'autore
+# Hand-written documentation: formatting is up to the author
 /docs
 /test-results
 /playwright-report
