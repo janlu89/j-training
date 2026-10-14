@@ -10,7 +10,7 @@ import { LoadUpdate, OpenSession, TrainingDay } from '../../../core/models';
 import { LanguageService } from '../../../core/services/language.service';
 import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
-import { ExerciseLog, ExerciseRest } from './exercise-log/exercise-log';
+import { ExerciseLog } from './exercise-log/exercise-log';
 import { FinishDayDialog } from './finish-day-dialog/finish-day-dialog';
 import { WorkoutDayStore } from './workout-day-store';
 
@@ -80,12 +80,6 @@ export class WorkoutDayPage {
       rejectButtonProps: { severity: 'secondary' },
       accept: () => void this.run(() => this.store.discard(open)),
     });
-  }
-
-  /** The running rest, for the exercise it belongs to. */
-  protected restFor(exerciseId: number): ExerciseRest | null {
-    const rest = this.store.activeRest();
-    return rest?.exerciseId === exerciseId ? rest : null;
   }
 
   /** "Giorno 2 · Petto": the translated label plus the user's name for the day. */

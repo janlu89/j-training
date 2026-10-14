@@ -12,10 +12,12 @@ Gianluca); `dev` contiene F1 (#5), F2 (#6), F3 (#7), F4 (#8); `master` = release
 - **Interfaccia più sobria**: icone piccole in grigio ardesia (▶, ✓, matita, stato vuoto), card "Giornata in corso"
   chiara; area di tocco ≥ 44 px invariata.
 - **Schede**: toggle "Attiva" (`ToggleSwitch`) al posto di "Rendi attiva" / "Archivia", in lista e nel dettaglio.
-- **Cronometro di recupero**: parte spuntando una serie (con il recupero dell'esercizio) o a mano dal chip "⏱ N s"
-  o dalla riga tra due serie; barra sopra la bottom nav, visibile su tutte le pagine, con −15 / +15 / stop.
-- **Recupero tra le serie**: tra una serie e la successiva una riga mostra il recupero previsto; durante il recupero
-  dopo quella serie mostra il conto alla rovescia.
+- **Cronometro di recupero**: parte spuntando una serie (con il recupero dell'esercizio) o a mano dal chip "⏱ N s";
+  barra sopra la bottom nav, visibile su tutte le pagine, con −15 / +15 / stop.
+- **Recupero tra esercizi** (richiesta di Gianluca): quando si spunta l'ultima serie di un esercizio parte il
+  recupero verso il **prossimo esercizio** ancora da fare ("Prossimo esercizio · Curl"), **2 minuti di default**,
+  modificabile in Impostazioni (1:00–3:00). Dopo l'ultimo esercizio della giornata non parte nulla. Una prima
+  versione con le righe di recupero tra le serie è stata tolta: non era ciò che Gianluca intendeva.
 - **Allarme**: negli **ultimi 5 secondi** parte un tono acuto e continuo (Web Audio, 1,76 kHz) con vibrazione
   ripetuta, che **continua dopo lo zero finché non si preme "Ferma l'allarme"**; aggiungere tempo lo interrompe.
 - **Storico** (`/history`): allenamenti salvati e saltati per data (mai le bozze), dettaglio con le serie di ogni
@@ -36,6 +38,9 @@ Gianluca); `dev` contiene F1 (#5), F2 (#6), F3 (#7), F4 (#8); `master` = release
 - **Audio sbloccato dal tocco che avvia il recupero** (`RestAlarm.prepare`): i browser mobili permettono l'audio solo
   dopo un gesto dell'utente. Nessun file audio: tono generato.
 - **Wake lock** ripreso al ritorno in primo piano e rilasciato solo quando l'allarme viene fermato.
+- **Recupero tra esercizi come preferenza del dispositivo** (`AppSettings.exerciseRestSeconds`, campo non
+  indicizzato: nessuna nuova versione Dexie), letto con un `resource` da `RestSettingsService`. Il prossimo esercizio
+  è il primo in ordine di scheda con serie ancora da fare, così funziona anche saltando l'ordine.
 - **Righe di serie come differenza dal piano** (`setDelta` con segno): le modifiche al piano durante l'allenamento
   restano coerenti.
 - **`HistoryRepository`** come lato lettura separato (SRP); le bozze sono escluse in un solo punto (`finishedLogs`).
@@ -49,17 +54,20 @@ Gianluca); `dev` contiene F1 (#5), F2 (#6), F3 (#7), F4 (#8); `master` = release
 - `src/app/core/services/rest-timer/**` (servizio, worker, ticker, allarme, wake lock), `src/app/core/layout/rest-timer-bar/**`
 - `src/app/core/repositories/{workout-session,history}.repository.ts`, `src/app/core/services/analytics/**`
 - `src/app/core/models/{rest-timer,history,workout}.model.ts`
-- `src/app/features/workout/day/**` (store, righe, `set-rest/`, log esercizio, riepilogo), `src/app/features/plans/active-switch/**`
+- `src/app/features/workout/day/**` (store, righe, log esercizio, riepilogo), `src/app/features/plans/active-switch/**`
+- `src/app/core/services/rest-timer/rest-settings.service.ts`, `src/app/features/settings/**`, `src/app/core/models/settings.model.ts`
 - `src/app/features/history/**`, `src/app/features/analytics/**`, `src/app/shared/pipes/local-date.pipe.ts`
 - `src/app/app.{ts,html,scss}`, `src/styles.scss`, `src/app/core/theme/j-training.preset.ts`
 - `angular.json`, `tsconfig*.json`, `package.json` (chart.js), `public/i18n/*.json`
 - `e2e/{workout,history,plan-import}.spec.ts`
 
 ## Stato test (unit / e2e / manuale)
-- Unit: 202/202 (salvataggio atomico con serie non spuntate; cronometro con orologio e ticker finti: conto alla
-  rovescia, allarme a −5 s e continuo, +15 che lo ferma, ritorno dal background; wake lock; allarme; storico; analisi).
-- E2E: 24/24 (salvataggio a fine allenamento e togli serie; recupero da spunta, tra le serie, a mano; allarme negli
-  ultimi 5 s fino al pulsante; toggle schede; storico e analisi con quattro settimane di dati inseriti dall'app).
+- Unit: 209/209 (salvataggio atomico con serie non spuntate; cronometro con orologio e ticker finti: conto alla
+  rovescia, allarme a −5 s e continuo, +15 che lo ferma, ritorno dal background; wake lock; allarme; recupero tra
+  esercizi e impostazione; storico; analisi).
+- E2E: 25/25 (salvataggio a fine allenamento e togli serie; recupero da spunta e a mano; recupero tra esercizi 2:00 e
+  1:30 dalle impostazioni; allarme negli ultimi 5 s fino al pulsante; toggle schede; storico e analisi con quattro
+  settimane di dati inseriti dall'app).
 - Manuale: browser integrato a 390 px ok; screenshot dei grafici dall'E2E (Pixel 7). Telefono reale: ESITO_TELEFONO.
 
 ## Problemi aperti / debito tecnico

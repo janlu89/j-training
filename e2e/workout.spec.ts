@@ -186,9 +186,6 @@ test.describe('workout', () => {
     const rest = page.getByRole('region', { name: 'Recupero', exact: true });
     await expect(rest).toContainText('Recupero · Squat');
     await expect(rest.getByRole('timer')).toHaveText('2:30');
-    // The same countdown runs between set 1 and set 2.
-    const squatRest = exercise(page, 'Squat').locator('.rest--running');
-    await expect(squatRest).toHaveText('2:30');
     await rest.getByRole('button', { name: 'Aggiungi 15 secondi' }).click();
     await expect(rest.getByRole('timer')).toHaveText('2:45');
 
@@ -215,16 +212,8 @@ test.describe('workout', () => {
     expect((await vibrations()).at(-1)).toEqual([]);
   });
 
-  test('starts a rest by hand, between sets or from the plan line, and stops it', async ({
-    page,
-  }) => {
+  test('starts a rest by hand and stops it', async ({ page }) => {
     await openDay(page, 'Giorno 1 · A');
-    await exercise(page, 'Squat')
-      .getByRole('button', { name: 'Avvia il recupero di 150 secondi dopo la serie 2' })
-      .click();
-    await expect(
-      page.getByRole('region', { name: 'Recupero', exact: true }).getByRole('timer'),
-    ).toHaveText('2:30');
 
     await exercise(page, 'Curl')
       .getByRole('button', { name: 'Avvia recupero di 75 secondi' })
@@ -236,6 +225,41 @@ test.describe('workout', () => {
     await expect(rest.getByRole('timer')).toHaveText('1:00');
     await rest.getByRole('button', { name: 'Interrompi il recupero' }).click();
     await expect(rest).toBeHidden();
+  });
+
+  test('rests before the next exercise, 2 minutes unless changed in the settings', async ({
+    page,
+  }) => {
+    await openDay(page, 'Giorno 1 · A');
+    const squat = exercise(page, 'Squat');
+    const rest = page.getByRole('region', { name: 'Recupero', exact: true });
+    for (const set of [1, 2, 3]) {
+      await squat.getByRole('button', { name: `Serie ${set} fatta` }).click();
+      await expect(squat.getByRole('button', { name: `Serie ${set} fatta` })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      );
+    }
+    await expect(rest).toContainText('Prossimo esercizio · Curl');
+    await expect(rest.getByRole('timer')).toHaveText('2:00');
+    await rest.getByRole('button', { name: 'Interrompi il recupero' }).click();
+
+    await page.getByRole('link', { name: 'Impostazioni' }).click();
+    await page.getByRole('button', { name: '1:30' }).click();
+    await expect(page.getByRole('button', { name: '1:30' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await page.goBack();
+
+    await squat.getByRole('button', { name: 'Serie 3 fatta' }).click();
+    await expect(squat.getByRole('button', { name: 'Serie 3 fatta' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
+    await squat.getByRole('button', { name: 'Serie 3 fatta' }).click();
+    await expect(rest).toContainText('Prossimo esercizio · Curl');
+    await expect(rest.getByRole('timer')).toHaveText('1:30');
   });
 
   test('allows one workout in progress at a time', async ({ page }) => {

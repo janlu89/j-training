@@ -5,7 +5,10 @@
   <div class="bar__body">
     <div class="bar__text">
       <span class="bar__label">
-        {{ 'timer.label' | transloco: { exercise: timer().target.exercise } }}
+        {{
+          (timer().target.kind === 'exercises' ? 'timer.nextExercise' : 'timer.label')
+            | transloco: { exercise: timer().target.exercise }
+        }}
       </span>
       @if (finished()) {
         <span class="bar__done">{{ 'timer.done' | transloco }}</span>

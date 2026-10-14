@@ -55,7 +55,7 @@ describe('RestTimerService', () => {
     timer = TestBed.inject(RestTimerService);
   });
 
-  const squat = { exerciseId: 1, exercise: 'Squat', seconds: 90 };
+  const squat = { kind: 'sets' as const, exerciseId: 1, exercise: 'Squat', seconds: 90 };
 
   function advance(ms: number): void {
     now += ms;
@@ -136,7 +136,7 @@ describe('RestTimerService', () => {
     timer.start(squat);
     advance(90_000);
 
-    timer.start({ exerciseId: 2, exercise: 'Panca', seconds: 120 });
+    timer.start({ kind: 'exercises', exerciseId: 2, exercise: 'Panca', seconds: 120 });
 
     expect(timer.timer()?.target.exercise).toBe('Panca');
     expect(timer.remainingMs()).toBe(120_000);

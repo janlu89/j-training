@@ -68,13 +68,12 @@
         [rows]="item.rows"
         [locked]="store.locked()"
         [returnTo]="returnTo()"
-        [rest]="restFor(item.entry.exercise.id)"
         (inputChange)="store.setInput(item.entry.exercise.id, $event.setNo, $event.input)"
         (doneToggle)="store.toggleSet(item.entry.exercise.id, $event)"
         (addSet)="store.addSet(item.entry.exercise.id)"
         (removeSet)="store.removeLastSet(item.entry.exercise.id)"
         (markAll)="store.markAllDone(item.entry.exercise.id)"
-        (startRest)="store.startRest(item.entry.exercise.id, $event)"
+        (startRest)="store.startRest(item.entry.exercise.id)"
       />
     } @empty {
       <p class="hint">{{ 'workout.day.noExercises' | transloco }}</p>

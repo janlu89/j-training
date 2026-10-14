@@ -17,6 +17,22 @@
     />
   </app-settings-section>
 
+  <app-settings-section
+    [title]="'settings.exerciseRest.title' | transloco"
+    [description]="'settings.exerciseRest.description' | transloco"
+    headingId="settings-exercise-rest-title"
+  >
+    <p-selectbutton
+      [options]="exerciseRestOptions"
+      optionLabel="label"
+      optionValue="seconds"
+      [allowEmpty]="false"
+      [ngModel]="exerciseRest()"
+      (ngModelChange)="changeExerciseRest($event)"
+      ariaLabelledBy="settings-exercise-rest-title"
+    />
+  </app-settings-section>
+
   <app-settings-section [title]="'settings.storage.title' | transloco">
     <p-tag
       class="settings__status"

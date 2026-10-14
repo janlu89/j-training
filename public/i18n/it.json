@@ -94,14 +94,13 @@
   "timer": {
     "title": "Recupero",
     "label": "Recupero · {{exercise}}",
+    "nextExercise": "Prossimo esercizio · {{exercise}}",
     "start": "Avvia recupero di {{sec}} secondi",
-    "startAfter": "Avvia il recupero di {{sec}} secondi dopo la serie {{set}}",
     "minus": "Togli {{sec}} secondi",
     "plus": "Aggiungi {{sec}} secondi",
     "stop": "Interrompi il recupero",
     "done": "Recupero finito: tocca a te!",
-    "silence": "Ferma l'allarme",
-    "over": "Recupero finito"
+    "silence": "Ferma l'allarme"
   },
   "plans": {
     "title": "Schede",
@@ -251,6 +250,10 @@
     "language": {
       "title": "Lingua",
       "description": "Lingua dell'interfaccia. La scelta resta salvata su questo dispositivo."
+    },
+    "exerciseRest": {
+      "title": "Recupero tra esercizi",
+      "description": "Parte quando completi l'ultima serie di un esercizio e ti indica il prossimo."
     },
     "storage": {
       "title": "Archiviazione dati",

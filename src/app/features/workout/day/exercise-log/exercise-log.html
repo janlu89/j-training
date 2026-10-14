@@ -22,7 +22,7 @@
         type="button"
         class="log__rest"
         [attr.aria-label]="'timer.start' | transloco: { sec: item.recSec }"
-        (click)="startRest.emit(undefined)"
+        (click)="startRest.emit()"
       >
         <i class="pi pi-stopwatch" aria-hidden="true"></i>
         {{ item.recSec }} s
@@ -120,22 +120,6 @@
               </button>
             </td>
           </tr>
-          @if (item.recSec && !$last) {
-            @let current = rest();
-            <tr class="sets__rest">
-              <td colspan="4">
-                <app-set-rest
-                  [seconds]="item.recSec"
-                  [afterSet]="row.setNo"
-                  [running]="current?.afterSet === row.setNo"
-                  [remaining]="current?.remaining ?? ''"
-                  [finished]="!!current?.finished"
-                  [locked]="locked()"
-                  (restStart)="startRest.emit(row.setNo)"
-                />
-              </td>
-            </tr>
-          }
         }
       </tbody>
     </table>

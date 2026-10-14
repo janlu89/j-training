@@ -4,7 +4,8 @@ import { ActivatedRoute } from '@angular/router';
 import { map, of } from 'rxjs';
 import { LoadUpdate, OpenSession, SetEntry, WorkoutExercise } from '../../../core/models';
 import { LanguageService } from '../../../core/services/language.service';
-import { RestTimerService, formatRest } from '../../../core/services/rest-timer/rest-timer.service';
+import { RestSettingsService } from '../../../core/services/rest-timer/rest-settings.service';
+import { RestTimerService } from '../../../core/services/rest-timer/rest-timer.service';
 import { proposeLoadUpdates } from '../../../core/services/workout/load-updates';
 import { WorkoutSessionService } from '../../../core/services/workout-session.service';
 import { SetInput, SetRow, buildRows } from './set-rows';
@@ -24,6 +25,7 @@ export class WorkoutDayStore {
   private readonly sessions = inject(WorkoutSessionService);
   private readonly drafts = inject(WorkoutDrafts);
   private readonly restTimer = inject(RestTimerService);
+  private readonly restSettings = inject(RestSettingsService);
   private readonly language = inject(LanguageService).current;
 
   readonly dayId = toSignal(
@@ -87,19 +89,6 @@ export class WorkoutDayStore {
     ),
   );
 
-  /** The running rest, shown between the sets of its exercise. */
-  readonly activeRest = computed(() => {
-    const timer = this.restTimer.timer();
-    return timer
-      ? {
-          exerciseId: timer.target.exerciseId,
-          afterSet: timer.target.afterSet,
-          remaining: formatRest(this.restTimer.remainingMs()),
-          finished: this.restTimer.finished(),
-        }
-      : null;
-  });
-
   private readonly rows = computed(() => this.exercises().flatMap(({ rows }) => rows));
 
   /** Keeps what the user types; a set already recorded is updated in the database at once. */
@@ -130,23 +119,20 @@ export class WorkoutDayStore {
       await this.sessions.removeSet(row.logId);
     } else if (row.values) {
       // Started before the write, still inside the user's tap: browsers then allow the alarm.
-      this.startRest(exerciseId, setNo);
+      this.startRestAfter(exerciseId, setNo);
       await this.record(exerciseId, row);
     }
   }
 
-  /**
-   * Starts the rest planned for the exercise, after the given set when it runs between two sets.
-   * Nothing happens when the exercise has no rest time.
-   */
-  startRest(exerciseId: number, afterSet?: number): void {
+  /** Starts the rest planned for the exercise; nothing happens when it has no rest time. */
+  startRest(exerciseId: number): void {
     const exercise = this.findExercise(exerciseId)?.entry.exercise;
     if (exercise?.recSec) {
       this.restTimer.start({
+        kind: 'sets',
         exerciseId,
         exercise: exercise.esercizio,
         seconds: exercise.recSec,
-        ...(afterSet === undefined ? {} : { afterSet }),
       });
     }
   }
@@ -209,6 +195,32 @@ export class WorkoutDayStore {
     const exercise = this.findExercise(exerciseId)?.entry.exercise;
     if (workout && exercise && row.values) {
       await this.sessions.recordSet(workout, { exercise, setNo: row.setNo, values: row.values });
+    }
+  }
+
+  /**
+   * The rest after a ticked set: between sets, or, when it completes the exercise, the rest
+   * before the next exercise not done yet. After the last exercise of the day there is no rest.
+   */
+  private startRestAfter(exerciseId: number, setNo: number): void {
+    const exercises = this.exercises();
+    const index = exercises.findIndex(({ entry }) => entry.exercise.id === exerciseId);
+    const completed = exercises[index]?.rows.every((row) => row.setNo === setNo || isDone(row));
+    if (!completed) {
+      this.startRest(exerciseId);
+      return;
+    }
+    // The next one in plan order that still has sets to do, wrapping around the day.
+    const next = [...exercises.slice(index + 1), ...exercises.slice(0, index)].find(({ rows }) =>
+      rows.some((row) => !isDone(row)),
+    )?.entry.exercise;
+    if (next) {
+      this.restTimer.start({
+        kind: 'exercises',
+        exerciseId: next.id,
+        exercise: next.esercizio,
+        seconds: this.restSettings.exerciseRestSeconds(),
+      });
     }
   }
 

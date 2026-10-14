@@ -94,14 +94,13 @@
   "timer": {
     "title": "Rest",
     "label": "Rest · {{exercise}}",
+    "nextExercise": "Next exercise · {{exercise}}",
     "start": "Start a {{sec}} second rest",
-    "startAfter": "Start the {{sec}} second rest after set {{set}}",
     "minus": "Remove {{sec}} seconds",
     "plus": "Add {{sec}} seconds",
     "stop": "Stop the rest",
     "done": "Rest is over: your turn!",
-    "silence": "Stop the alarm",
-    "over": "Rest over"
+    "silence": "Stop the alarm"
   },
   "plans": {
     "title": "Plans",
@@ -251,6 +250,10 @@
     "language": {
       "title": "Language",
       "description": "Interface language. Your choice is saved on this device."
+    },
+    "exerciseRest": {
+      "title": "Rest between exercises",
+      "description": "Starts when you complete the last set of an exercise and shows the next one."
     },
     "storage": {
       "title": "Data storage",
