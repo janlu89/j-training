@@ -1,59 +1,58 @@
-# Handoff F9 — Stato dopo la v1.0.0 (F9 non necessaria)
+# Handoff F9 — State after v1.0.0 (F9 not needed)
 
-Data: 2026-10-15
-Branch / ultimo commit: `dev` contiene F1–F8 (#5–#11); `master` = release **v1.0.0** (#12, tag `v1.0.0`), pubblicata
-su <https://janlu89.github.io/j-training/>. F9 (APK TWA) annullata da Gianluca: vedi l'ultima sezione.
+Date: 2026-10-15
+Branch / last commit: `dev` contains F1–F8 (#5–#11); `master` = release **v1.0.0** (#12, tag `v1.0.0`), published
+at <https://janlu89.github.io/j-training/>. F9 (TWA APK) cancelled by Gianluca: see the last section.
 
-## Fatto (F8 — PWA e rilascio)
-- **Ultimo backup** in Impostazioni → Backup: "Ultimo backup: 3 giorni fa" (oggi, ieri, giorni, settimane, mesi,
-  nella lingua dell'app) oppure "Nessun backup ancora da questo dispositivo".
-- **Promemoria di backup** in fondo alla pagina Allenamento, solo se ci sono allenamenti salvati o saltati che
-  nessun backup contiene, ad almeno una settimana dall'ultimo backup (o dal primo di quegli allenamenti, se non è
-  mai stato fatto un backup). "Esporta backup" a un tocco; "Più tardi" lo rimanda di una settimana. Ripristinare
-  un backup conta come backup fatto alla data del file.
-- **PWA**: service worker di Angular con tutti i file dell'app in cache all'installazione (anche ExcelJS,
-  traduzioni e font delle icone), manifest (`standalone`, blu `#14213d`, icone normali e maskable), funziona
-  offline anche aprendo un indirizzo interno (es. `/plans`).
-- **Icone** disegnate una volta in SVG (barra arancione e "J", come nell'header) e generate in PNG da
-  `scripts/generate-icons.mjs`; via la vecchia `favicon.ico` con il logo di Angular.
-- **Impostazioni → App**: "Installa l'app" quando il browser lo permette, istruzioni per iPhone, stato
-  "Stai usando l'app installata", **versione 1.0.0**. Dopo l'installazione l'app chiede di nuovo l'archiviazione
-  permanente.
-- **Nuova versione disponibile**: barra sotto l'header con "Aggiorna" quando il service worker ha scaricato una
-  versione nuova; il controllo avviene anche quando l'app torna in primo piano.
-- **Licenza MIT**, `package.json` 1.0.0, README per il portfolio (funzionalità, installazione, scelte con il
-  perché, comandi).
-- **Correzione dell'editor** (bug di F3): rinominando un giorno e cambiando subito il giorno della settimana il
-  nome non torna più quello vecchio; l'E2E che falliva ogni tanto passa 40 volte su 40.
-- Piano di sviluppo con la nuova **F9** (APK TWA); piano architetturale con distribuzione e promemoria.
+## Done (F8 — PWA and release)
+- **Last backup** in Settings → Backup: "Last backup: 3 days ago" (today, yesterday, days, weeks, months,
+  in the app language) or "No backup from this device yet".
+- **Backup reminder** at the bottom of the Workout page, only when saved or skipped workouts are in no backup, at
+  least a week after the last backup (or after the first of those workouts, if no backup was ever made).
+  "Export backup" in one tap; "Later" postpones it by a week. Restoring a backup counts as a backup made on the
+  file's date.
+- **PWA**: Angular service worker with every app file cached on install (ExcelJS, translations and the icon font
+  included), manifest (`standalone`, blue `#14213d`, regular and maskable icons), works offline even when an inner
+  address is opened (e.g. `/plans`).
+- **Icons** drawn once in SVG (orange bar and "J", as in the header) and rendered to PNG by
+  `scripts/generate-icons.mjs`; the old `favicon.ico` with the Angular logo is gone.
+- **Settings → App**: "Install the app" when the browser allows it, instructions for iPhone, the state
+  "You are using the installed app", **version 1.0.0**. After the install the app asks for persistent storage again.
+- **New version available**: a bar under the header with "Update" when the service worker has downloaded a new
+  version; the check also runs when the app comes back to the foreground.
+- **MIT license**, `package.json` 1.0.0, portfolio README (features, install, choices and why, commands).
+- **Editor fix** (F3 bug): renaming a day and changing its weekday right after no longer brings the old name back;
+  the E2E that failed now and then passes 40 times out of 40.
+- Development plan with the new **F9** (TWA APK); architecture with distribution and reminder.
 
-## Decisioni prese (con il perché)
-- **Niente `ng add @angular/pwa`**: la 21.2.26 era uscita da 8 giorni (regola: almeno 2 settimane) e lo schematic
-  genera solo pochi file, scritti a mano. Dipendenza a runtime: `@angular/service-worker` 21.2.25.
-- **Tutto in prefetch, ExcelJS compreso** (218 kB compressi): in palestra spesso non c'è rete e l'export deve
-  funzionare offline anche la prima volta; costo una tantum all'installazione. Cambia l'indicazione
-  "lazy" dell'handoff F8.
-- **Registrazione quando l'app è stabile** (`registerWhenStable:30000`): il download della cache non rallenta la
-  prima apertura.
-- **L'utente sceglie quando aggiornare**: mai un ricaricamento automatico mentre digita un allenamento;
-  `activateUpdate` + reload. Unica eccezione la cache non più servibile (`unrecoverable`), dove serve la rete.
-- **Pulsante di installazione nelle Impostazioni** al posto della mini-barra del browser
-  (`beforeinstallprompt` trattenuto): meno invadente, e la sezione spiega perché conviene.
-- **Promemoria con tre condizioni** (qualcosa da salvare, una settimana dall'ultimo backup, una settimana da
-  "Più tardi"): non disturba chi non ha dati nuovi. Le date stanno nelle impostazioni del dispositivo (campi non
-  indicizzati, nessuna nuova versione Dexie) e sono lette con le sessioni in una sola live query, così il
-  promemoria segue ogni salvataggio, export e ripristino.
-- **`SettingsRepository.merge`**: un solo punto per "cambia una preferenza, tieni le altre, salva la lingua in
-  uso se non c'era niente"; anche il recupero tra esercizi lo usa.
-- **Icone senza font e senza dipendenze**: la "J" è un tracciato SVG, il rendering lo fa il Chromium di
-  Playwright già installato; nelle maskable il segno occupa il 72%, dentro la zona sicura.
-- **E2E della PWA sulla build vera**: build per Pages servita sotto `/j-training/` da un server Node di 60 righe
-  (`scripts/serve-dist.mjs`) con lo stesso fallback del `404.html`; il test aspetta che la cache contenga tutti i
-  file elencati in `ngsw.json`, poi va offline. Il deploy usa lo stesso `npm run build:pages`.
-- **`updateDay` scrive solo i campi passati**: la pagina non riscrive più un valore letto prima di un'altra
-  modifica (aggiornamento perso).
+## Decisions (and why)
+- **No `ng add @angular/pwa`**: 21.2.26 had been out for 8 days (rule: at least 2 weeks) and the schematic only
+  generates a few files, written by hand. Runtime dependency: `@angular/service-worker` 21.2.25.
+- **Everything prefetched, ExcelJS included** (218 kB compressed): there is often no signal in a gym and the export
+  must work offline from the first time; a one-off cost at install. It changes the "lazy" suggestion of the F8
+  handoff.
+- **Registration once the app is stable** (`registerWhenStable:30000`): downloading the cache does not slow down the
+  first start.
+- **The user chooses when to update**: never an automatic reload while a workout is being typed;
+  `activateUpdate` + reload. The only exception is a cache that can no longer be served (`unrecoverable`), where the
+  network is needed.
+- **Install button in the settings** instead of the browser's mini-infobar (`beforeinstallprompt` held back):
+  less intrusive, and the section explains why it is worth it.
+- **Reminder with three conditions** (something to save, a week since the last backup, a week since "Later"): it
+  does not bother whoever has no new data. The dates live in the device settings (non-indexed fields, no new Dexie
+  version) and are read together with the sessions in a single live query, so the reminder follows every save,
+  export and restore.
+- **`SettingsRepository.merge`**: one place for "change one preference, keep the others, store the current language
+  if nothing was saved yet"; the rest between exercises uses it too.
+- **Icons without fonts or dependencies**: the "J" is an SVG path, rendered by the Chromium that Playwright already
+  installs; in the maskable icons the mark fills 72%, inside the safe zone.
+- **PWA E2E on the real build**: the Pages build served under `/j-training/` by a 60-line Node server
+  (`scripts/serve-dist.mjs`) with the same fallback as `404.html`; the test waits until the cache holds every file
+  listed in `ngsw.json`, then goes offline. The deploy uses the same `npm run build:pages`.
+- **`updateDay` writes only the given fields**: the page no longer writes back a value read before another change
+  (lost update).
 
-## File creati/modificati (percorsi)
+## Files created/changed (paths)
 - `ngsw-config.json`, `public/manifest.webmanifest`, `public/icons/**`, `src/index.html`, `angular.json`
 - `src/app/app.{config,ts,html,spec.ts}`, `src/app/core/layout/update-banner/update-banner.ts`
 - `src/app/core/services/pwa/{app-update,install-prompt}.service.ts` (+ spec), `src/app/core/app-version.ts`
@@ -64,41 +63,40 @@ su <https://janlu89.github.io/j-training/>. F9 (APK TWA) annullata da Gianluca: 
 - `src/app/features/plans/edit/plan-editor-page.ts`, `src/app/core/services/rest-timer/rest-settings.service.ts`
 - `scripts/{generate-icons,serve-dist}.mjs`, `playwright.config.ts`, `e2e/{pwa,backup-reminder}.spec.ts`
 - `.github/workflows/deploy.yml`, `package.json` (1.0.0, MIT, `build:pages`, `@angular/service-worker`), `LICENSE`, `README.md`
-- `public/i18n/{it,en}.json`, `docs/piano-sviluppo.md`, `docs/piano-architettura.md`
+- `public/i18n/{it,en}.json`, `docs/development-plan.md`, `docs/architecture.md`
 
-## Stato test (unit / e2e / manuale)
-- Unit: 313/313 (regola del promemoria, stato del backup su fake-indexeddb, "giorni fa" in italiano e inglese,
-  aggiornamenti con `SwUpdate` finto, installazione con eventi finti per Android e iPhone, versione uguale a
-  `package.json`, campi del giorno aggiornati separatamente).
-- E2E: 32/32. Progetto `pixel` (dev server): +1 promemoria lungo 30 giorni con `page.clock` (compare dopo 8
-  giorni, "Più tardi", torna dopo una settimana, export, poi silenzio senza dati nuovi). Progetto `pwa` (build di
-  produzione): manifest e icone; offline dopo il primo caricamento, con pagina lazy, traduzioni e link interno.
-- Build di produzione: bundle iniziale 611 kB (budget 650).
-- Manuale: telefono su GitHub Pages (Gianluca, 2026-10-15): ok. Installata da Chrome, si apre dall'icona,
-  funziona offline, archiviazione "Protetta", dati spostati dal vecchio indirizzo di rete locale con il backup.
-  Release `v1.0.0` pubblicata su GitHub.
+## Test status (unit / e2e / manual)
+- Unit: 313/313 (reminder rule, backup status on fake-indexeddb, "days ago" in Italian and English, updates with a
+  fake `SwUpdate`, install with fake events for Android and iPhone, version equal to `package.json`, day fields
+  updated separately).
+- E2E: 32/32. `pixel` project (development server): +1 reminder over 30 days with `page.clock` (appears after 8
+  days, "Later", back after a week, export, then silence without new data). `pwa` project (production build):
+  manifest and icons; offline after the first load, with a lazy page, translations and an inner link.
+- Production build: initial bundle 611 kB (budget 650).
+- Manual: phone on GitHub Pages (Gianluca, 2026-10-15): ok. Installed from Chrome, opens from its icon, works
+  offline, storage "Protected", data moved from the old local network address with the backup.
+  Release `v1.0.0` published on GitHub.
 
-## Problemi aperti / debito tecnico
-- **Server di sviluppo nella stessa cartella condividono la cache di Vite** (`.angular/cache`): dopo l'installazione
-  di una dipendenza un server già avviato, anche quello degli E2E, può servire due copie di Angular. Riavviare i
-  server dopo ogni `npm install`. In CI la cache è disattivata (`CI=true`).
-- `npm audit`: 2 moderate da `uuid` dentro ExcelJS (vedi handoff F8).
-- Wake lock e archiviazione permanente da verificare su HTTPS (GitHub Pages).
-- Notifiche con l'app in background non previste.
-- Ereditati: valori digitati e non spuntati solo in memoria; bottom nav su "Schede" nel form esercizio aperto
-  dall'allenamento; altre `<select>` dentro `<label>`; CSV con doppio clic in Excel italiano.
+## Open issues / technical debt
+- **Development servers in the same folder share the Vite cache** (`.angular/cache`): after installing a dependency
+  a server already running, the E2E one included, can serve two copies of Angular. Restart the servers after every
+  `npm install`. In CI the cache is disabled (`CI=true`).
+- `npm audit`: 2 moderate from `uuid` inside ExcelJS (see the F8 handoff).
+- Wake lock and persistent storage to be checked on HTTPS (GitHub Pages).
+- Notifications with the app in the background not planned.
+- Inherited: typed but unticked values only in memory; bottom nav on "Plans" in the exercise form opened from the
+  workout; other `<select>` inside `<label>`; CSV with a double click in Italian Excel.
 
-## Prossima fase: obiettivo e primo passo
-**Nessuna fase pianificata.** F9 (APK Android come Trusted Web Activity) è stata annullata da Gianluca il
-2026-10-15. L'app installata da Chrome è già un pacchetto Android (WebAPK): si apre dall'icona a schermo intero,
-funziona offline, ha l'archiviazione "Protetta" e si aggiorna da sola. Un APK TWA avrebbe usato gli stessi dati di
-Chrome per lo stesso sito, aggiungendo solo un file `.apk` da distribuire, al prezzo di un repository in più e di
-una chiave di firma da custodire.
+## Next phase: goal and first step
+**No phase planned.** F9 (Android APK as a Trusted Web Activity) was cancelled by Gianluca on 2026-10-15.
+The app installed from Chrome already is an Android package (WebAPK): it opens full screen from its icon, works
+offline, has "Protected" storage and updates by itself. A TWA APK would have used Chrome's same data for the same
+site, only adding an `.apk` file to distribute, at the cost of one more repository and a signing key to look after.
 
-Lavori possibili in futuro: il debito tecnico qui sopra. Se un giorno servisse l'APK (per esempio per il Play
-Store), i passi sono:
-1. creare il repository `janlu89.github.io`, perché `/.well-known/assetlinks.json` deve stare alla radice del dominio;
-2. scegliere l'id del pacchetto (es. `io.github.janlu89.jtraining`), che non si può più cambiare;
-3. far creare a Gianluca la chiave di firma, custodita fuori dal repository (nel file va solo l'impronta SHA-256);
-4. generare l'APK con Bubblewrap: `npx @bubblewrap/cli@1.25.0`, l'ultima versione con almeno 2 settimane il
-   2026-10-15. Bubblewrap scarica da sé JDK 17 e Android SDK; sul PC c'è solo Java 8.
+Possible future work: the technical debt above. Should the APK ever be needed (for example for the Play Store),
+the steps are:
+1. create the `janlu89.github.io` repository, because `/.well-known/assetlinks.json` must sit at the domain root;
+2. choose the package id (e.g. `io.github.janlu89.jtraining`), which can never change afterwards;
+3. have Gianluca create the signing key, kept outside the repository (only its SHA-256 fingerprint goes in the file);
+4. build the APK with Bubblewrap: `npx @bubblewrap/cli@1.25.0`, the latest version at least 2 weeks old on
+   2026-10-15. Bubblewrap downloads JDK 17 and the Android SDK by itself; the PC only has Java 8.
