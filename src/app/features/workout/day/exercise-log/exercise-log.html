@@ -108,7 +108,7 @@
                 [attr.aria-label]="'workout.day.setDone' | transloco: { set: row.setNo }"
                 (click)="doneToggle.emit(row.setNo)"
               >
-                <i class="pi pi-check" aria-hidden="true"></i>
+                <span class="sets__mark" aria-hidden="true"><i class="pi pi-check"></i></span>
               </button>
             </td>
           </tr>

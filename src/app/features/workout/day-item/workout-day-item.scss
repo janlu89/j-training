@@ -49,25 +49,36 @@
   display: grid;
   place-items: center;
   flex: 0 0 auto;
-  width: 3.25rem;
-  height: 3.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--p-surface-200);
   border-radius: 50%;
-  background: var(--p-primary-color);
-  color: var(--p-primary-contrast-color);
+  color: var(--jt-icon-muted);
   text-decoration: none;
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    background-color 0.15s;
 
   i {
     // The play glyph looks off-centre: nudge it towards the optical centre.
-    margin-left: 0.2rem;
-    font-size: 1.25rem;
+    margin-left: 0.125rem;
+    font-size: var(--jt-icon-size-sm);
   }
 
   &:hover {
-    background: var(--p-primary-hover-color);
+    border-color: var(--p-primary-300);
+    background: var(--p-primary-50);
+    color: var(--jt-link);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--jt-navy);
+    outline: 2px solid var(--p-primary-color);
     outline-offset: 2px;
   }
+}
+
+.item--highlighted .item__play {
+  border-color: var(--p-primary-200);
+  color: var(--jt-link);
 }

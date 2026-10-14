@@ -81,8 +81,12 @@
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: var(--p-text-muted-color);
+  color: var(--jt-icon-muted);
   cursor: pointer;
+
+  i {
+    font-size: var(--jt-icon-size-sm);
+  }
 
   &:hover:not(:disabled) {
     background: var(--p-content-hover-background);
