@@ -20,6 +20,7 @@ import {
 import { formatRest } from '../../core/services/rest-timer/rest-timer.service';
 import { StoragePersistenceService } from '../../core/services/storage-persistence.service';
 import { SettingsSection } from '../../shared/ui/settings-section/settings-section';
+import { AppSection } from './app-section/app-section';
 import { BackupSection } from './backup/backup-section';
 
 type StorageStatus = 'unknown' | 'persisted' | 'notPersisted';
@@ -32,7 +33,15 @@ const STORAGE_SEVERITY: Record<StorageStatus, 'secondary' | 'success' | 'warn'> 
 
 @Component({
   selector: 'app-settings-page',
-  imports: [FormsModule, SelectButton, Tag, TranslocoPipe, SettingsSection, BackupSection],
+  imports: [
+    FormsModule,
+    SelectButton,
+    Tag,
+    TranslocoPipe,
+    SettingsSection,
+    AppSection,
+    BackupSection,
+  ],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

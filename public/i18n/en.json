@@ -306,6 +306,18 @@
         "persisted": "Your data stays on this device and the browser won't delete it to free up space.",
         "notPersisted": "If space runs low the browser may delete your data. Installing the app helps; back up regularly."
       }
+    },
+    "app": {
+      "title": "App",
+      "description": "Once installed, J-Training opens full screen, works offline too and the browser does not delete its data to free up space.",
+      "install": "Install the app",
+      "state": {
+        "standalone": "You are using the installed app.",
+        "installed": "App installed: open it from its icon on the home screen.",
+        "ios": "On iPhone: in Safari tap Share, then “Add to Home Screen”.",
+        "manual": "To install it, open the browser menu and choose “Install app” or “Add to Home screen”."
+      },
+      "version": "Version {{version}}"
     }
   },
   "backup": {
@@ -419,5 +431,9 @@
       "delete": "Delete",
       "cancel": "Cancel"
     }
+  },
+  "update": {
+    "ready": "A new version is available.",
+    "reload": "Update"
   }
 }
