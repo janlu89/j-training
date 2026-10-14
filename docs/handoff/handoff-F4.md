@@ -55,6 +55,15 @@ Branch / ultimo commit: `feature/f3-plan-editor` (PR → `dev`); `dev` contiene 
   (ultimo kg registrato per quel nome, altrimenti `ultimoKg` della scheda); salvataggio delle discrepanze dal piano;
   **modifica rapida della posizione attrezzi**; **Salva giornata** (sessione `completed`) e **Salta giornata**
   (`skipped`): entrambe fanno avanzare la rotazione.
+- **Due modi di registrare, entrambi supportati**: serie per serie durante l'allenamento, oppure tutto alla fine
+  (es. "oggi faccio il giorno 2, a fine allenamento registro e salvo"). Nessun campo obbligatorio finché non si salva.
+- **Bozza sempre salvata**: ogni serie è scritta subito nel DB (sessione senza `endedAt`); chiudendo l'app o con il
+  telefono bloccato non si perde nulla. Riaprendo, Allenamento mostra "Giornata in corso — Riprendi".
+- **Modifica dell'esercizio durante l'allenamento** (richiesta di Gianluca, 2026-10-14): dalla pagina del giorno si apre
+  lo stesso form dell'editor (serie, ripetizioni, recupero, posizione, note, stato…) e al salvataggio si **torna alla
+  pagina del giorno** con le serie già inserite intatte (parametro di ritorno nella rotta del form).
+- **A fine giornata**: proposta "aggiorna il carico in scheda con quello usato oggi" per gli esercizi in cui il kg
+  registrato differisce da `ultimoKg` (l'utente sceglie quali).
 - Modello: `Session.outcome?: 'completed' | 'skipped'` (campo non indicizzato: nessuna nuova versione Dexie necessaria).
 
 Primo passo: branch `feature/f4-workout` da `dev` aggiornato; `SessionService` (start, salva set, completa, salta) con
