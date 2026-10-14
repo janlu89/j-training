@@ -41,3 +41,13 @@ body {
 a {
   color: var(--jt-link);
 }
+
+/* Hidden visually, still available to assistive technologies and to label/click APIs. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

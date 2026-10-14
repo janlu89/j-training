@@ -1,4 +1,14 @@
-<app-header [title]="appName" />
+<app-header [title]="appName">
+  <a
+    class="header-action"
+    routerLink="/settings"
+    routerLinkActive="header-action--active"
+    ariaCurrentWhenActive="page"
+    [attr.aria-label]="'nav.settings' | transloco"
+  >
+    <i class="pi pi-cog" aria-hidden="true"></i>
+  </a>
+</app-header>
 <main class="content">
   <router-outlet />
 </main>

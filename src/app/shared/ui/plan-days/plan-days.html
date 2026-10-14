@@ -1,0 +1,35 @@
+<div class="days">
+  @for (planDay of days(); track planDay.day.id) {
+    @let day = planDay.day;
+    <details class="day" open>
+      <summary class="day__summary">
+        <span class="day__title">
+          <span class="day__label">{{ 'plan.day' | transloco: { number: day.ordine } }}</span>
+          <span class="day__source">{{ day.csvGiorno }}</span>
+        </span>
+        <span class="day__count">
+          {{ 'plan.exerciseCount' | transloco: { count: planDay.exercises.length } }}
+        </span>
+        <i class="pi pi-chevron-down day__chevron" aria-hidden="true"></i>
+      </summary>
+
+      <label class="day__weekday">
+        <span>{{ 'plan.weekday' | transloco }}</span>
+        <select #weekdaySelect (change)="onWeekdaySelected(day.id, weekdaySelect.value)">
+          <option value="" [selected]="!day.weekday">{{ 'plan.noWeekday' | transloco }}</option>
+          @for (weekday of weekdays; track weekday) {
+            <option [value]="weekday" [selected]="weekday === day.weekday">
+              {{ 'weekday.' + weekday | transloco }}
+            </option>
+          }
+        </select>
+      </label>
+
+      <ul class="day__exercises">
+        @for (exercise of planDay.exercises; track exercise.id) {
+          <li><app-exercise-item [exercise]="exercise" [language]="language()" /></li>
+        }
+      </ul>
+    </details>
+  }
+</div>

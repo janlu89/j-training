@@ -1,0 +1,19 @@
+<section class="issues" role="alert">
+  <h3 class="issues__title">
+    <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+    {{ 'import.issues.title' | transloco }}
+  </h3>
+  <ul class="issues__list">
+    @for (issue of visible(); track $index) {
+      <li>
+        @if (issue.row) {
+          <strong>{{ 'import.issues.row' | transloco: { row: issue.row } }}</strong>
+        }
+        {{ 'import.issue.' + issue.code | transloco: { column: issue.column, value: issue.value } }}
+      </li>
+    }
+  </ul>
+  @if (hidden()) {
+    <p class="issues__more">{{ 'import.issues.more' | transloco: { count: hidden() } }}</p>
+  }
+</section>

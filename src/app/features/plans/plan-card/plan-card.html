@@ -1,0 +1,28 @@
+@let phase = summary().phase;
+<article class="card" [class.card--active]="phase.status === 'active'">
+  <div class="card__head">
+    <h3 class="card__name">{{ phase.name }}</h3>
+    @if (phase.status === 'active') {
+      <p-tag severity="success" [value]="'plans.status.active' | transloco" />
+    }
+  </div>
+  <p class="card__meta">
+    {{ 'plans.fase' | transloco: { fase: phase.fase } }} ·
+    {{ 'plans.importedOn' | transloco: { date: (phase.importedAt | localDate: language()) } }}
+  </p>
+  <p class="card__meta">
+    {{
+      'plans.counts' | transloco: { days: summary().dayCount, exercises: summary().exerciseCount }
+    }}
+  </p>
+  <div class="card__actions">
+    <a pButton severity="secondary" [routerLink]="['/plans', phase.id]">
+      <span pButtonLabel>{{ 'plans.open' | transloco }}</span>
+    </a>
+    @if (phase.status !== 'active') {
+      <button pButton type="button" (click)="activate.emit(phase.id)">
+        <span pButtonLabel>{{ 'plans.activate' | transloco }}</span>
+      </button>
+    }
+  </div>
+</article>

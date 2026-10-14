@@ -1,0 +1,9 @@
+fase,giorno,ordine,esercizio,tipo,attrezzo,serie,rip,posizione,ultimo_kg,unita_carico,rec_sec,rir,stato,note
+7,sabato,1,Squat,multiarticolare,bilanciere,4,6-8,,80,totale,150,2,attivo,"discesa controllata, 3 secondi"
+7,sabato,2,Panca piana,multiarticolare,bilanciere,4,8,piana,62.5,totale,120,2,attivo,
+7,sabato,3,Curl alternato,isolamento,manubri,3,10,in piedi,12,per_braccio,60,1,attivo,
+7,mercoledi,1,Stacco rumeno,multiarticolare,bilanciere,3,8,,70,totale,120,2,attivo,
+7,mercoledi,2,Lat machine,multiarticolare,macchina,3,10-12,presa larga,,totale,90,2,da_testare,peso da trovare
+7,mercoledi,3,Plank,core,corpo libero,3,45s,,,totale,60,,attivo,
+7,venerdi,1,Military press,multiarticolare,bilanciere,4,6,in piedi,40,totale,120,2,attivo,
+7,venerdi,2,Affondi,multiarticolare,manubri,3,10,,14,per_braccio,90,2,attivo,

@@ -5,9 +5,10 @@ export interface NavItem {
   icon: string;
 }
 
+/** Settings live in the header, so the bar keeps four readable items at 360 px. */
 export const MAIN_NAVIGATION: readonly NavItem[] = [
-  { path: '/schedule', labelKey: 'nav.schedule', icon: 'pi pi-list' },
+  { path: '/workout', labelKey: 'nav.workout', icon: 'pi pi-bolt' },
+  { path: '/plans', labelKey: 'nav.plans', icon: 'pi pi-folder-open' },
   { path: '/history', labelKey: 'nav.history', icon: 'pi pi-history' },
   { path: '/analytics', labelKey: 'nav.analytics', icon: 'pi pi-chart-line' },
-  { path: '/settings', labelKey: 'nav.settings', icon: 'pi pi-cog' },
 ];

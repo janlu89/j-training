@@ -1,0 +1,25 @@
+@if (plan(); as plan) {
+  <div class="page">
+    <header class="page__header">
+      <p class="page__eyebrow">{{ 'workout.activePlan' | transloco }}</p>
+      <h2 class="page__title">{{ plan.phase.name }}</h2>
+      <p class="page__subtitle">{{ 'plans.fase' | transloco: { fase: plan.phase.fase } }}</p>
+    </header>
+    <app-plan-days
+      [days]="plan.days"
+      [language]="language()"
+      (weekdayChange)="onWeekdayChange($event)"
+    />
+  </div>
+} @else if (plan() === null) {
+  <app-empty-state
+    icon="pi pi-bolt"
+    [title]="'workout.empty.title' | transloco"
+    [message]="'workout.empty.message' | transloco"
+  >
+    <a pButton routerLink="/plans/import">
+      <i class="pi pi-upload" pButtonIcon aria-hidden="true"></i>
+      <span pButtonLabel>{{ 'plans.import' | transloco }}</span>
+    </a>
+  </app-empty-state>
+}

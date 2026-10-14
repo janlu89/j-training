@@ -1,25 +1,30 @@
-import { Exercise, NewEntity, SetLog } from '../models';
+import { Exercise, NewEntity, NewPlanExercise, SetLog } from '../models';
+
+type PlannedExercise = Omit<NewEntity<Exercise>, 'phaseId' | 'dayId'>;
+
+const PLANNED_EXERCISE: PlannedExercise = {
+  ordine: 1,
+  esercizio: 'Panca piana',
+  tipo: 'multiarticolare',
+  attrezzo: 'bilanciere',
+  serie: 3,
+  rip: '8-10',
+  posizione: '',
+  ultimoKg: 60,
+  unitaCarico: 'totale',
+  recSec: 120,
+  rir: '2',
+  stato: 'attivo',
+  note: '',
+  isManual: false,
+};
 
 export function newExercise(overrides: Partial<NewEntity<Exercise>> = {}): NewEntity<Exercise> {
-  return {
-    phaseId: 1,
-    dayId: 1,
-    ordine: 1,
-    esercizio: 'Panca piana',
-    tipo: 'multiarticolare',
-    attrezzo: 'bilanciere',
-    serie: 3,
-    rip: '8-10',
-    posizione: '',
-    ultimoKg: 60,
-    unitaCarico: 'totale',
-    recSec: 120,
-    rir: '2',
-    stato: 'attivo',
-    note: '',
-    isManual: false,
-    ...overrides,
-  };
+  return { phaseId: 1, dayId: 1, ...PLANNED_EXERCISE, ...overrides };
+}
+
+export function newPlanExercise(overrides: Partial<NewPlanExercise> = {}): NewPlanExercise {
+  return { dayKey: 'sabato', ...PLANNED_EXERCISE, ...overrides };
 }
 
 export function newSetLog(overrides: Partial<NewEntity<SetLog>> = {}): NewEntity<SetLog> {
