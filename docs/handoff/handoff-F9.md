@@ -74,8 +74,9 @@ F1–F7 (#5–#10); prima di questa release `master` conteneva solo F0
   giorni, "Più tardi", torna dopo una settimana, export, poi silenzio senza dati nuovi). Progetto `pwa` (build di
   produzione): manifest e icone; offline dopo il primo caricamento, con pagina lazy, traduzioni e link interno.
 - Build di produzione: bundle iniziale 611 kB (budget 650).
-- Manuale: telefono su GitHub Pages (installazione, offline, archiviazione "Protetta", dati spostati con il
-  backup): ESITO_TELEFONO.
+- Manuale: telefono su GitHub Pages (Gianluca, 2026-10-15): ok. Installata da Chrome, si apre dall'icona,
+  funziona offline, archiviazione "Protetta", dati spostati dal vecchio indirizzo di rete locale con il backup.
+  Release `v1.0.0` pubblicata su GitHub.
 
 ## Problemi aperti / debito tecnico
 - **Server di sviluppo nella stessa cartella condividono la cache di Vite** (`.angular/cache`): dopo l'installazione
@@ -92,8 +93,7 @@ F1–F7 (#5–#10); prima di questa release `master` conteneva solo F0
 schermo intero (Trusted Web Activity), firmato con una chiave di Gianluca e pubblicato su GitHub Releases.
 L'APK usa l'archiviazione di Chrome per lo stesso sito: i dati sono quelli dell'app installata.
 
-Primo passo: sostituire ESITO_TELEFONO qui sopra con l'esito della prova su GitHub Pages; poi tre decisioni di
-Gianluca: (1) creare il repository `janlu89.github.io`, perché `/.well-known/assetlinks.json` deve stare alla
+Primo passo: tre decisioni di Gianluca: (1) creare il repository `janlu89.github.io`, perché `/.well-known/assetlinks.json` deve stare alla
 radice del dominio e un sito di progetto non può servirlo; (2) l'id del pacchetto (es. `io.github.janlu89.jtraining`);
 (3) la chiave di firma, creata e custodita da lui fuori dal repository, di cui va solo l'impronta SHA-256 in
 `assetlinks.json`. Bubblewrap scarica da sé JDK e Android SDK; verificare che la versione abbia almeno 2 settimane.
