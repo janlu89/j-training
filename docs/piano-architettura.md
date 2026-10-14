@@ -22,7 +22,7 @@ Ultimo aggiornamento: 2026-10-15
 | Timer | Web Worker + calcolo su timestamp; suono (prioritario) e vibrazione | I timer sul main thread vengono rallentati in background |
 | Hosting | GitHub Pages + GitHub Actions | Gratuito; richiede repository pubblico |
 | Routing su Pages | Path routing + copia di `index.html` in `404.html` in fase di deploy | URL puliti; Pages non ha fallback SPA nativo |
-| Distribuzione | PWA installabile (su Android Chrome la installa come WebAPK); APK TWA via GitHub Releases in F9 | Il Play Store per un account personale richiede 25 $ e 12 tester per 14 giorni; un'app iOS nativa richiede Mac e Apple Developer Program |
+| Distribuzione | PWA installabile: su Android Chrome la installa come WebAPK, su iPhone "Aggiungi alla schermata Home". APK TWA valutato e non fatto | La WebAPK è già un'app con dati protetti e aggiornamenti automatici; un APK TWA userebbe gli stessi dati e servirebbe solo per il Play Store (25 $ e 12 tester per 14 giorni); un'app iOS nativa richiede Mac e Apple Developer Program |
 
 ## Decisioni funzionali
 1. **Log per singola serie**: kg e rip salvati separatamente per ogni serie (supporta i piramidali).
