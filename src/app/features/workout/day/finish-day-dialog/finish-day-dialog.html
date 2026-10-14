@@ -1,0 +1,76 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [header]="'workout.finish.title' | transloco"
+  [style]="{ width: 'min(28rem, calc(100vw - 2rem))' }"
+>
+  <div class="finish">
+    <p class="finish__count">{{ 'workout.finish.toSave' | transloco: { count: toSave() } }}</p>
+    @if (unticked()) {
+      <label class="check">
+        <input
+          #include
+          type="checkbox"
+          [checked]="includeUnticked()"
+          (change)="includeUnticked.set(include.checked)"
+        />
+        <span>
+          <span class="check__label">
+            {{ 'workout.finish.includeUnticked' | transloco: { count: unticked() } }}
+          </span>
+          <span class="check__hint">{{ 'workout.finish.includeUntickedHint' | transloco }}</span>
+        </span>
+      </label>
+    }
+
+    @if (proposals().length) {
+      <fieldset class="loads">
+        <legend class="loads__title">{{ 'workout.finish.loadsTitle' | transloco }}</legend>
+        <p class="loads__hint">{{ 'workout.finish.loadsHint' | transloco }}</p>
+        @for (proposal of proposals(); track proposal.exercise.id) {
+          <label class="check">
+            <input
+              #box
+              type="checkbox"
+              [checked]="selected().has(proposal.exercise.id)"
+              (change)="setSelected(proposal.exercise.id, box.checked)"
+            />
+            <span>
+              <span class="check__label">{{ proposal.exercise.esercizio }}</span>
+              <span class="check__hint">
+                @if (proposal.current === null) {
+                  {{ 'exercise.loadToTest' | transloco }}
+                } @else {
+                  {{
+                    'exercise.load'
+                      | transloco: { kg: (proposal.current | localNumber: language()) }
+                  }}
+                }
+                →
+                {{
+                  'exercise.load' | transloco: { kg: (proposal.proposed | localNumber: language()) }
+                }}
+                @if (proposal.exercise.unitaCarico === 'per_braccio') {
+                  {{ 'exercise.perArm' | transloco }}
+                }
+              </span>
+            </span>
+          </label>
+        }
+      </fieldset>
+    }
+  </div>
+
+  <ng-template #footer>
+    <button pButton type="button" severity="secondary" (click)="visible.set(false)">
+      <span pButtonLabel>{{ 'editor.confirm.cancel' | transloco }}</span>
+    </button>
+    <button pButton type="button" [disabled]="busy() || !toSave()" (click)="confirm()">
+      <i class="pi pi-check" pButtonIcon aria-hidden="true"></i>
+      <span pButtonLabel>{{ 'workout.finish.confirm' | transloco }}</span>
+    </button>
+  </ng-template>
+</p-dialog>

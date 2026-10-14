@@ -1,0 +1,88 @@
+// Shared form layout of the editor pages: imported by each form stylesheet.
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+  }
+
+  select,
+  textarea {
+    min-height: 2.75rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--p-form-field-border-color);
+    border-radius: var(--p-form-field-border-radius, 6px);
+    background: var(--p-form-field-background);
+    color: var(--p-text-color);
+    font: inherit;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+.field__label {
+  font-weight: 600;
+}
+
+.field__hint {
+  font-size: 0.8125rem;
+  color: var(--p-text-muted-color);
+}
+
+.field__error {
+  font-size: 0.875rem;
+  color: var(--p-red-700);
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+
+  input {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.125rem;
+    accent-color: var(--p-primary-color);
+  }
+}
+
+.check__label {
+  font-weight: 600;
+}
+
+.check__hint {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  align-self: flex-start;
+  min-height: 2.75rem;
+  font-weight: 600;
+  text-decoration: none;
+}

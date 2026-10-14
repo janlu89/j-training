@@ -1,3 +1,24 @@
+@use 'primeicons/primeicons.css';
+
+:root {
+  --jt-navy: #14213d;
+  --jt-navy-light: #1e3a5f;
+  --jt-chrome-gradient: linear-gradient(135deg, var(--jt-navy) 0%, var(--jt-navy-light) 100%);
+  --jt-accent: #f97316;
+  --jt-accent-on-dark: #fb923c;
+  --jt-link: #c2410c;
+  --jt-on-chrome: #ffffff;
+  --jt-on-chrome-muted: #cbd5e1;
+  --jt-surface: #f8fafc;
+  /* Quiet icons: small, slate 500 (4.8:1 on white, above the 3:1 needed by control icons). */
+  --jt-icon-size: 1rem;
+  --jt-icon-size-sm: 0.8125rem;
+  --jt-icon-muted: #64748b;
+  --jt-header-height: 3.5rem;
+  --jt-nav-height: 4rem;
+  --jt-timer-height: 3.75rem;
+}
+
 *,
 *::before,
 *::after {
@@ -18,4 +39,25 @@ body {
     Roboto,
     sans-serif;
   line-height: 1.5;
+  color: var(--p-text-color);
+  background: var(--jt-surface);
+}
+
+/* Text links only: anchors styled as buttons (pButton) keep the button colours. */
+a:not(.p-button) {
+  color: var(--jt-link);
+}
+
+a.p-button {
+  text-decoration: none;
+}
+
+/* Hidden visually, still available to assistive technologies and to label/click APIs. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

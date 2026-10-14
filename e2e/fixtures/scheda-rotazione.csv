@@ -1,0 +1,5 @@
+fase,giorno,ordine,esercizio,tipo,attrezzo,serie,rip,posizione,ultimo_kg,unita_carico,rec_sec,rir,stato,note
+9,A,1,Squat,multiarticolare,bilanciere,3,8,,80,totale,150,2,attivo,
+9,A,2,Curl,isolamento,manubri,3,10,,12,per_braccio,75,1,attivo,
+9,B,1,Trazioni,multiarticolare,corpo libero,3,8,,,totale,120,2,attivo,
+9,B,2,Lat machine,multiarticolare,macchina,3,10-12,presa larga,,totale,90,2,da_testare,

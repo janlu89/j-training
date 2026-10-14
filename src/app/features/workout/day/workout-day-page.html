@@ -1,0 +1,169 @@
+<p-confirmdialog />
+
+@if (store.workout(); as workout) {
+  <div class="page">
+    <a class="back" routerLink="/workout">
+      <i class="pi pi-arrow-left" aria-hidden="true"></i>
+      {{ 'workout.day.back' | transloco }}
+    </a>
+    <header class="page__header">
+      <p class="page__eyebrow">{{ workout.phase.name }}</p>
+      <!-- Fixed-height row: the status tag appears with the first set without moving the sets. -->
+      <div class="title-row">
+        <h2 class="page__title">{{ 'plan.day' | transloco: { number: workout.day.ordine } }}</h2>
+        @if (workout.session; as session) {
+          <p-tag
+            severity="warn"
+            [value]="
+              'workout.day.startedOn'
+                | transloco: { date: (session.startedAt | localDate: language()) }
+            "
+          />
+        }
+      </div>
+      @if (workout.day.csvGiorno || workout.day.weekday) {
+        <p class="page__subtitle">
+          {{ workout.day.csvGiorno }}
+          @if (workout.day.csvGiorno && workout.day.weekday) {
+            ·
+          }
+          @if (workout.day.weekday) {
+            {{ 'weekday.' + workout.day.weekday | transloco }}
+          }
+        </p>
+      }
+    </header>
+
+    @if (workout.otherOpenSession; as other) {
+      <p-message severity="warn">
+        <div class="conflict">
+          <p class="conflict__text">
+            {{ 'workout.day.otherInProgress' | transloco: { day: dayName(other.day) } }}
+          </p>
+          <div class="page__actions">
+            <a pButton severity="secondary" [routerLink]="['/workout/day', other.day.id]">
+              <i class="pi pi-play" pButtonIcon aria-hidden="true"></i>
+              <span pButtonLabel>{{ 'workout.day.resumeOther' | transloco }}</span>
+            </a>
+            <button
+              pButton
+              type="button"
+              severity="danger"
+              [outlined]="true"
+              [disabled]="busy()"
+              (click)="confirmDiscard(other)"
+            >
+              <span pButtonLabel>{{ 'workout.day.discard' | transloco }}</span>
+            </button>
+          </div>
+        </div>
+      </p-message>
+    } @else {
+      <p class="hint">{{ 'workout.day.hint' | transloco }}</p>
+    }
+
+    @for (item of store.exercises(); track item.entry.exercise.id; let first = $first) {
+      @if (!first) {
+        <!-- Between two exercises: the rest before the next one, started by hand. -->
+        <div class="between">
+          <button
+            type="button"
+            class="between__button"
+            [attr.aria-label]="
+              'workout.day.exerciseRestStart'
+                | transloco: { time: exerciseRestTime(), exercise: item.entry.exercise.esercizio }
+            "
+            (click)="store.startExerciseRest(item.entry.exercise.id)"
+          >
+            <i class="pi pi-stopwatch" aria-hidden="true"></i>
+            {{ 'workout.day.exerciseRest' | transloco: { time: exerciseRestTime() } }}
+          </button>
+        </div>
+      }
+      <app-exercise-log
+        [entry]="item.entry"
+        [rows]="item.rows"
+        [locked]="store.locked()"
+        [returnTo]="returnTo()"
+        (inputChange)="store.setInput(item.entry.exercise.id, $event.setNo, $event.input)"
+        (doneToggle)="store.toggleSet(item.entry.exercise.id, $event)"
+        (addSet)="store.addSet(item.entry.exercise.id)"
+        (removeSet)="store.removeLastSet(item.entry.exercise.id)"
+        (markAll)="store.markAllDone(item.entry.exercise.id)"
+        (startRest)="store.startRest(item.entry.exercise.id)"
+      />
+    } @empty {
+      <p class="hint">{{ 'workout.day.noExercises' | transloco }}</p>
+      <div class="page__actions">
+        <a pButton severity="secondary" [routerLink]="['/plans', workout.phase.id, 'edit']">
+          <i class="pi pi-pencil" pButtonIcon aria-hidden="true"></i>
+          <span pButtonLabel>{{ 'workout.editPlan' | transloco }}</span>
+        </a>
+      </div>
+    }
+
+    <section class="finish" [attr.aria-label]="'workout.finish.title' | transloco">
+      @if (store.hasInvalidRecorded()) {
+        <p class="finish__hint finish__hint--error">{{ 'workout.day.fixInvalid' | transloco }}</p>
+      } @else if (!store.canSave()) {
+        <p class="finish__hint">{{ 'workout.day.saveHint' | transloco }}</p>
+      }
+      <div class="page__actions">
+        <button
+          pButton
+          type="button"
+          [disabled]="!store.canSave() || busy()"
+          (click)="finishing.set(true)"
+        >
+          <i class="pi pi-check" pButtonIcon aria-hidden="true"></i>
+          <span pButtonLabel>{{ 'workout.day.save' | transloco }}</span>
+        </button>
+        @if (workout.session; as session) {
+          <button
+            pButton
+            type="button"
+            severity="danger"
+            [outlined]="true"
+            [disabled]="busy()"
+            (click)="confirmDiscard({ session, day: workout.day })"
+          >
+            <i class="pi pi-trash" pButtonIcon aria-hidden="true"></i>
+            <span pButtonLabel>{{ 'workout.day.discard' | transloco }}</span>
+          </button>
+        } @else {
+          <button
+            pButton
+            type="button"
+            severity="secondary"
+            [disabled]="busy()"
+            (click)="confirmSkip(workout.day)"
+          >
+            <i class="pi pi-forward" pButtonIcon aria-hidden="true"></i>
+            <span pButtonLabel>{{ 'workout.day.skip' | transloco }}</span>
+          </button>
+        }
+      </div>
+    </section>
+  </div>
+
+  <app-finish-day-dialog
+    [(visible)]="finishing"
+    [proposals]="store.loadProposals()"
+    [recorded]="store.recordedCount()"
+    [unticked]="store.untickedEntries().length"
+    [(includeUnticked)]="store.includeUnticked"
+    [language]="language()"
+    [busy]="busy()"
+    (save)="finish($event)"
+  />
+} @else if (!store.isLoading()) {
+  <app-empty-state
+    icon="pi pi-calendar-times"
+    [title]="'workout.day.notFound.title' | transloco"
+    [message]="'workout.day.notFound.message' | transloco"
+  >
+    <a pButton severity="secondary" routerLink="/workout">
+      <span pButtonLabel>{{ 'workout.day.back' | transloco }}</span>
+    </a>
+  </app-empty-state>
+}

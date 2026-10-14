@@ -1,0 +1,34 @@
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.empty__icon {
+  margin-bottom: 0.25rem;
+  // Decorative (aria-hidden): a light, small mark rather than a badge.
+  color: var(--p-surface-400);
+
+  i {
+    font-size: 1.5rem;
+  }
+}
+
+.empty__title {
+  margin: 0;
+  font-size: 1.125rem;
+  color: var(--p-text-color);
+}
+
+.empty__message {
+  max-width: 20rem;
+  margin: 0;
+  color: var(--p-text-muted-color);
+}
+
+.empty__action:not(:empty) {
+  margin-top: 1rem;
+}

@@ -1,0 +1,84 @@
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 12px;
+  background: var(--p-content-background);
+}
+
+.item--highlighted {
+  border-color: var(--p-primary-color);
+  box-shadow: inset 4px 0 0 var(--p-primary-color);
+}
+
+.item__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.item__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.item__label {
+  margin: 0;
+  font-size: 1.0625rem;
+}
+
+.item__name {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.item__meta {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+}
+
+.item__play {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--p-surface-200);
+  border-radius: 50%;
+  color: var(--jt-icon-muted);
+  text-decoration: none;
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    background-color 0.15s;
+
+  i {
+    // The play glyph looks off-centre: nudge it towards the optical centre.
+    margin-left: 0.125rem;
+    font-size: var(--jt-icon-size-sm);
+  }
+
+  &:hover {
+    border-color: var(--p-primary-300);
+    background: var(--p-primary-50);
+    color: var(--jt-link);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--p-primary-color);
+    outline-offset: 2px;
+  }
+}
+
+.item--highlighted .item__play {
+  border-color: var(--p-primary-200);
+  color: var(--jt-link);
+}

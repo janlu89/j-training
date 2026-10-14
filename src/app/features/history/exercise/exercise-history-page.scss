@@ -1,0 +1,41 @@
+@use '../../../../styles/page';
+@use '../../../../styles/form';
+
+.sessions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sessions__empty {
+  color: var(--p-text-muted-color);
+}
+
+.session {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 12px;
+  background: var(--p-content-background);
+}
+
+.session__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.session__fase {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--p-text-muted-color);
+}

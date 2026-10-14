@@ -31,8 +31,28 @@ module.exports = defineConfig([
           style: 'kebab-case',
         },
       ],
+      // `const { id, ...rest } = record` is the idiomatic way to drop fields: allowed.
+      '@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }],
       '@angular-eslint/prefer-on-push-component-change-detection': 'error',
       '@angular-eslint/prefer-signals': 'error',
+    },
+  },
+  {
+    // Data access goes through repositories: only the database layer may import Dexie.
+    files: ['src/**/*.ts'],
+    ignores: ['src/app/core/db/**', 'src/app/core/repositories/**', 'src/**/*.spec.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'dexie',
+              message: 'Use a repository from core/repositories instead of importing Dexie.',
+            },
+          ],
+        },
+      ],
     },
   },
   {

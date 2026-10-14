@@ -1,0 +1,13 @@
+<nav class="nav" [attr.aria-label]="'nav.label' | transloco">
+  @for (item of items(); track item.path) {
+    <a
+      class="nav__item"
+      [routerLink]="item.path"
+      routerLinkActive="nav__item--active"
+      ariaCurrentWhenActive="page"
+    >
+      <i [class]="item.icon" aria-hidden="true"></i>
+      <span class="nav__label">{{ item.labelKey | transloco }}</span>
+    </a>
+  }
+</nav>

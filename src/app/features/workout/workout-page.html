@@ -1,0 +1,88 @@
+@if (today(); as today) {
+  <div class="page">
+    <header class="page__header">
+      <p class="page__eyebrow">
+        {{ 'workout.activePlan' | transloco: { name: today.plan.phase.name } }}
+      </p>
+      @if (today.suggestion; as suggestion) {
+        <h2 class="page__title">{{ 'workout.reason.' + suggestion.reason | transloco }}</h2>
+        @if (suggestion.reason === 'restDay' && suggestion.day.day.weekday; as weekday) {
+          <p class="page__subtitle">
+            {{ 'workout.nextOn' | transloco: { weekday: ('weekday.' + weekday | transloco) } }}
+          </p>
+        }
+      }
+    </header>
+
+    @if (openSession(); as open) {
+      @let openLabel = 'plan.day' | transloco: { number: open.day.ordine };
+      <section class="resume" [attr.aria-label]="'workout.inProgress.title' | transloco">
+        <div class="resume__text">
+          <h3 class="resume__title">{{ 'workout.inProgress.title' | transloco }}</h3>
+          <p class="resume__day">
+            {{ openLabel }}
+            @if (open.day.csvGiorno) {
+              · {{ open.day.csvGiorno }}
+            }
+          </p>
+          <p class="resume__meta">
+            {{
+              'workout.inProgress.startedOn'
+                | transloco: { date: (open.session.startedAt | localDate: language()) }
+            }}
+          </p>
+        </div>
+        <a pButton [routerLink]="['/workout/day', open.day.id]">
+          <i class="pi pi-play" pButtonIcon aria-hidden="true"></i>
+          <span pButtonLabel>{{ 'workout.inProgress.resume' | transloco }}</span>
+        </a>
+      </section>
+    }
+
+    @if (today.plan.days.length) {
+      <ul class="days" [attr.aria-label]="'workout.daysLabel' | transloco">
+        @for (planDay of today.plan.days; track planDay.day.id) {
+          <li>
+            <app-workout-day-item
+              [planDay]="planDay"
+              [language]="language()"
+              [badge]="planDay.day.id === suggestedDayId() ? badge() : undefined"
+              [inProgress]="planDay.day.id === openSession()?.day?.id"
+              [lastSession]="today.lastSessions.get(planDay.day.id)"
+            />
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="page__subtitle">{{ 'workout.noDays' | transloco }}</p>
+      <div class="page__actions">
+        <a pButton severity="secondary" [routerLink]="['/plans', today.plan.phase.id, 'edit']">
+          <i class="pi pi-pencil" pButtonIcon aria-hidden="true"></i>
+          <span pButtonLabel>{{ 'workout.editPlan' | transloco }}</span>
+        </a>
+      </div>
+    }
+
+    <app-backup-reminder />
+  </div>
+} @else if (today() === null) {
+  <app-empty-state
+    icon="pi pi-bolt"
+    [title]="'workout.empty.title' | transloco"
+    [message]="'workout.empty.message' | transloco"
+  >
+    <div class="page__actions">
+      <a pButton routerLink="/plans/import">
+        <i class="pi pi-upload" pButtonIcon aria-hidden="true"></i>
+        <span pButtonLabel>{{ 'plans.import' | transloco }}</span>
+      </a>
+      <a pButton routerLink="/plans/new" severity="secondary">
+        <i class="pi pi-plus" pButtonIcon aria-hidden="true"></i>
+        <span pButtonLabel>{{ 'plans.create' | transloco }}</span>
+      </a>
+      <a pButton routerLink="/plans" severity="secondary">
+        <span pButtonLabel>{{ 'workout.empty.yourPlans' | transloco }}</span>
+      </a>
+    </div>
+  </app-empty-state>
+}

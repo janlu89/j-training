@@ -1,0 +1,20 @@
+<section class="export" aria-labelledby="plan-export-title">
+  <h3 id="plan-export-title" class="export__title">{{ 'planExport.title' | transloco }}</h3>
+  <p class="export__hint">{{ 'planExport.description' | transloco }}</p>
+  <div class="export__actions">
+    <button pButton type="button" [disabled]="busy()" (click)="export('xlsx')">
+      <i class="pi pi-file-excel" pButtonIcon aria-hidden="true"></i>
+      <span pButtonLabel>{{ 'planExport.xlsx' | transloco }}</span>
+    </button>
+    <button pButton type="button" severity="secondary" [disabled]="busy()" (click)="export('csv')">
+      <i class="pi pi-file" pButtonIcon aria-hidden="true"></i>
+      <span pButtonLabel>{{ 'planExport.csv' | transloco }}</span>
+    </button>
+  </div>
+  @if (savedFile(); as fileName) {
+    <p-message severity="info">{{ 'planExport.saved' | transloco: { fileName } }}</p-message>
+  }
+  @if (failed()) {
+    <p-message severity="error">{{ 'planExport.failed' | transloco }}</p-message>
+  }
+</section>

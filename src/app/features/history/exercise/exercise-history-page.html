@@ -1,0 +1,39 @@
+<div class="page">
+  <a class="back" routerLink="/history" [queryParams]="{ view: 'exercises' }">
+    <i class="pi pi-arrow-left" aria-hidden="true"></i>
+    {{ 'history.back' | transloco }}
+  </a>
+  <header class="page__header">
+    <h2 class="page__title">{{ name() }}</h2>
+    @if (sessions.value(); as sessions) {
+      <p class="page__subtitle">
+        {{ 'history.exercise.sessions' | transloco: { count: sessions.length } }}
+      </p>
+    }
+  </header>
+
+  @if (sessions.value()?.length) {
+    <div class="page__actions">
+      <a pButton severity="secondary" routerLink="/analytics" [queryParams]="{ exercise: name() }">
+        <i class="pi pi-chart-line" pButtonIcon aria-hidden="true"></i>
+        <span pButtonLabel>{{ 'history.exercise.charts' | transloco }}</span>
+      </a>
+    </div>
+  }
+
+  <ul class="sessions">
+    @for (session of sessions.value() ?? []; track session.sessionId) {
+      <li class="session">
+        <a class="session__head" [routerLink]="['/history/session', session.sessionId]">
+          <span class="session__date">{{ session.date | localDate: language() : 'weekday' }}</span>
+          <span class="session__fase">{{ 'plans.fase' | transloco: { fase: session.fase } }}</span>
+        </a>
+        <app-set-chips [sets]="session.sets" [unit]="session.unitaCarico" [language]="language()" />
+      </li>
+    } @empty {
+      @if (!sessions.isLoading()) {
+        <li class="sessions__empty">{{ 'history.exercise.empty' | transloco }}</li>
+      }
+    }
+  </ul>
+</div>

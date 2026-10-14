@@ -1,6 +1,29 @@
-<header class="app-header">
-  <h1 class="app-header__title">{{ appName }}</h1>
-</header>
-<main>
+<app-header [title]="appName">
+  <a
+    class="header-action"
+    routerLink="/settings"
+    routerLinkActive="header-action--active"
+    ariaCurrentWhenActive="page"
+    [attr.aria-label]="'nav.settings' | transloco"
+  >
+    <i class="pi pi-cog" aria-hidden="true"></i>
+  </a>
+</app-header>
+@if (update.updateReady()) {
+  <app-update-banner (reload)="update.reload()" />
+}
+<main class="content" [class.content--with-timer]="rest.timer()">
   <router-outlet />
 </main>
+@if (rest.timer(); as timer) {
+  <app-rest-timer-bar
+    [timer]="timer"
+    [remaining]="restRemaining()"
+    [progress]="rest.progress()"
+    [finished]="rest.finished()"
+    [ringing]="rest.ringing()"
+    (adjust)="rest.adjust($event)"
+    (stop)="rest.stop()"
+  />
+}
+<app-bottom-nav [items]="navigation" />

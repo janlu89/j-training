@@ -1,0 +1,32 @@
+.summary__totals {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+.summary__days {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--p-content-border-color);
+  }
+}
+
+.summary__day {
+  font-weight: 600;
+}
+
+.summary__source {
+  flex: 1;
+  color: var(--p-text-muted-color);
+}
+
+.summary__count {
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+}

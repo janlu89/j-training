@@ -1,0 +1,439 @@
+{
+  "nav": {
+    "label": "Main navigation",
+    "workout": "Workout",
+    "plans": "Plans",
+    "history": "History",
+    "analytics": "Analytics",
+    "settings": "Settings"
+  },
+  "workout": {
+    "activePlan": "Active plan: {{name}}",
+    "empty": {
+      "title": "No active plan",
+      "message": "Import your plan as a CSV file to start training.",
+      "yourPlans": "Your plans"
+    },
+    "reason": {
+      "today": "Today's workout",
+      "restDay": "Rest day today",
+      "rotation": "Next workout"
+    },
+    "nextOn": "Next workout: {{weekday}}",
+    "daysLabel": "Plan days",
+    "noDays": "The active plan has no days yet.",
+    "editPlan": "Edit the plan",
+    "badge": {
+      "today": "Today",
+      "next": "Next",
+      "inProgress": "In progress"
+    },
+    "start": "Start {{day}}",
+    "resume": "Resume {{day}}",
+    "last": {
+      "completed": "Last: {{date}} · completed",
+      "skipped": "Last: {{date}} · skipped"
+    },
+    "inProgress": {
+      "title": "Workout in progress",
+      "startedOn": "Started on {{date}}",
+      "resume": "Resume"
+    },
+    "day": {
+      "back": "Workout",
+      "backToWorkout": "Back to the workout",
+      "notFound": {
+        "title": "Day not found",
+        "message": "This day is no longer part of the plan."
+      },
+      "startedOn": "In progress since {{date}}",
+      "hint": "Tick each set with ✓ as you train, or fill everything in at the end and save: ticked sets are already saved.",
+      "otherInProgress": "A workout is in progress: {{day}}. Save it or discard the draft before recording this day.",
+      "resumeOther": "Go to the workout in progress",
+      "editExercise": "Edit {{exercise}}",
+      "position": "Equipment and position",
+      "noExercises": "This day has no exercises.",
+      "set": "Set",
+      "kg": "kg",
+      "kgPerArm": "kg/arm",
+      "reps": "Reps",
+      "done": "Done",
+      "setKg": "Set {{set}}, kg",
+      "setReps": "Set {{set}}, reps",
+      "setDone": "Set {{set}} done",
+      "addSet": "Add set",
+      "removeSet": "Remove set",
+      "noSets": "No sets: add one if you do this exercise.",
+      "exerciseRest": "Rest {{time}}",
+      "exerciseRestStart": "Start the {{time}} rest before {{exercise}}",
+      "markAll": "Mark all done",
+      "save": "Save day",
+      "skip": "Skip day",
+      "discard": "Discard draft",
+      "saveHint": "Enter the kg and reps of at least one set to save the day.",
+      "fixInvalid": "Fix the kg or reps of the highlighted sets before saving."
+    },
+    "finish": {
+      "title": "Save day",
+      "loadsTitle": "Update the load in the plan",
+      "loadsHint": "Today you used loads that differ from the plan: choose which ones to update.",
+      "confirm": "Save",
+      "toSave": "Sets to save: {{count}}",
+      "includeUnticked": "Also save the unticked sets ({{count}})",
+      "includeUntickedHint": "With the values shown: handy when you fill everything in at the end."
+    },
+    "skip": {
+      "title": "Skip day",
+      "confirm": "Skip {{day}}? It will be recorded as skipped and the rotation moves on to the next day.",
+      "accept": "Skip"
+    },
+    "discard": {
+      "title": "Discard draft",
+      "confirm": "Delete the workout in progress ({{day}}) with all its recorded sets?",
+      "accept": "Discard"
+    }
+  },
+  "timer": {
+    "title": "Rest",
+    "label": "Rest · {{exercise}}",
+    "nextExercise": "Next exercise · {{exercise}}",
+    "start": "Start a {{sec}} second rest",
+    "minus": "Remove {{sec}} seconds",
+    "plus": "Add {{sec}} seconds",
+    "stop": "Stop the rest",
+    "done": "Rest is over: your turn!",
+    "silence": "Stop the alarm"
+  },
+  "plans": {
+    "title": "Plans",
+    "subtitle": "Every imported plan stays here. Only one at a time is active.",
+    "import": "Import CSV plan",
+    "fase": "Phase {{fase}}",
+    "importedOn": "imported on {{date}}",
+    "counts": "Days: {{days}} · Exercises: {{exercises}}",
+    "status": {
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "activeToggle": "Active plan: {{name}}",
+    "open": "Open",
+    "backToList": "All plans",
+    "empty": {
+      "title": "No plans imported",
+      "message": "Import a CSV file: every plan you load stays in the archive."
+    },
+    "notFound": {
+      "title": "Plan not found",
+      "message": "This plan doesn't exist on this device."
+    },
+    "create": "Create plan",
+    "edit": "Edit"
+  },
+  "plan": {
+    "day": "Day {{number}}",
+    "exerciseCount": "Exercises: {{count}}",
+    "weekday": "Day of the week",
+    "noWeekday": "Not assigned",
+    "dayShort": "D{{number}}"
+  },
+  "planExport": {
+    "title": "Export the plan",
+    "description": "The plan and every saved set. Excel to read or print it, CSV for an AI or other tools.",
+    "xlsx": "Excel",
+    "csv": "CSV",
+    "saved": "File saved to downloads: {{fileName}}",
+    "failed": "Export failed. Try again.",
+    "fileName": "{{name}} - phase {{fase}}",
+    "sheet": {
+      "plan": "Plan",
+      "sets": "Sets"
+    },
+    "column": {
+      "day": "Day",
+      "exercise": "Exercise",
+      "type": "Type",
+      "equipment": "Equipment",
+      "sets": "Sets",
+      "reps": "Reps",
+      "position": "Position",
+      "load": "Load (kg)",
+      "unit": "Unit",
+      "rest": "Rest (s)",
+      "rir": "RIR",
+      "status": "Status",
+      "note": "Notes",
+      "date": "Date",
+      "set": "Set",
+      "kg": "kg"
+    },
+    "unit": {
+      "totale": "total",
+      "per_braccio": "per arm"
+    },
+    "dateFormat": "yyyy-mm-dd",
+    "page": "Page &P of &N"
+  },
+  "weekday": {
+    "1": "Monday",
+    "2": "Tuesday",
+    "3": "Wednesday",
+    "4": "Thursday",
+    "5": "Friday",
+    "6": "Saturday",
+    "7": "Sunday"
+  },
+  "exercise": {
+    "sets": "{{serie}} × {{rip}}",
+    "load": "{{kg}} kg",
+    "perArm": "per arm",
+    "loadToTest": "Load to be tested",
+    "rest": "Rest {{sec}} s",
+    "rir": "RIR {{rir}}",
+    "status": {
+      "attivo": "Active",
+      "da_testare": "To test",
+      "sospeso": "Paused",
+      "rimosso": "Removed"
+    }
+  },
+  "import": {
+    "title": "Import plan",
+    "subtitle": "Load the plan's CSV file: you'll see a preview before saving it.",
+    "chooseFile": "Choose CSV file",
+    "chooseAnother": "Choose another file",
+    "name": "Plan name",
+    "activate": "Use it as the active plan",
+    "activateHint": "The current active plan stays in the archive and you can reactivate it at any time.",
+    "confirm": "Import",
+    "samePhase": "A plan with phase {{fase}} already exists: this one will be added as a new plan, without replacing it.",
+    "format": {
+      "title": "File format",
+      "text": "One row per exercise. The first row must contain these columns:",
+      "example": "Download an example plan"
+    },
+    "issues": {
+      "title": "The file can't be imported",
+      "row": "Row {{row}}:",
+      "more": "…and {{count}} more problems."
+    },
+    "issue": {
+      "emptyFile": "The file contains no exercises.",
+      "fileTooLarge": "The file is larger than 1 MB: it doesn't look like a plan.",
+      "missingColumns": "Missing columns: {{value}}.",
+      "malformedRow": "the number of columns doesn't match the header.",
+      "mixedPhases": "The file contains more than one phase ({{value}}): import one phase per file.",
+      "required": "{{column}} is required.",
+      "notInteger": "{{column}}: “{{value}}” is not a valid whole number.",
+      "notNumber": "{{column}}: “{{value}}” is not a valid number.",
+      "invalidValue": "{{column}}: “{{value}}” is not an allowed value."
+    }
+  },
+  "history": {
+    "title": "History",
+    "empty": {
+      "title": "No workouts yet",
+      "message": "Your history will appear after the first saved session."
+    },
+    "views": {
+      "label": "History views",
+      "sessions": "Workouts",
+      "exercises": "Exercises"
+    },
+    "back": "History",
+    "skipped": "Skipped",
+    "skippedDay": "Day skipped: no sets recorded.",
+    "deletedDay": "Day deleted from the plan",
+    "counts": "Sets: {{sets}} · Exercises: {{exercises}}",
+    "set": "Set {{set}}: {{kg}} kg for {{rip}} reps",
+    "unit": {
+      "totale": "kg",
+      "per_braccio": "kg per arm"
+    },
+    "notFound": {
+      "title": "Workout not found",
+      "message": "This workout is not in the history."
+    },
+    "exercise": {
+      "sessions": "Sessions: {{count}}",
+      "lastDate": "Last time: {{date}}",
+      "charts": "See the charts",
+      "empty": "No saved sets for this exercise.",
+      "none": "No exercise saved yet."
+    }
+  },
+  "analytics": {
+    "title": "Analytics",
+    "empty": {
+      "title": "Nothing to analyse yet",
+      "message": "Progress charts will appear after a few workouts."
+    },
+    "exercise": "Exercise",
+    "reps": "Reps",
+    "latest": "Latest at {{reps}} reps",
+    "best": "Best at {{reps}} reps",
+    "progression": {
+      "title": "Load at {{reps}} reps",
+      "fewPoints": "At least two sessions with {{reps}} reps are needed to see a trend."
+    },
+    "weekly": {
+      "title": "Reps per week",
+      "subtitle": "Last {{weeks}} weeks",
+      "week": "Week of",
+      "reps": "Reps"
+    },
+    "table": "Show the data as a table",
+    "date": "Date"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": {
+      "title": "Language",
+      "description": "Interface language. Your choice is saved on this device."
+    },
+    "exerciseRest": {
+      "title": "Rest between exercises",
+      "description": "Length of the rest you start with the button between one exercise and the next."
+    },
+    "storage": {
+      "title": "Data storage",
+      "status": {
+        "unknown": "Checking",
+        "persisted": "Protected",
+        "notPersisted": "Not guaranteed"
+      },
+      "hint": {
+        "unknown": "Checking whether the browser keeps your data permanently.",
+        "persisted": "Your data stays on this device and the browser won't delete it to free up space.",
+        "notPersisted": "If space runs low the browser may delete your data. Installing the app helps; back up regularly."
+      }
+    },
+    "app": {
+      "title": "App",
+      "description": "Once installed, J-Training opens full screen, works offline too and the browser does not delete its data to free up space.",
+      "install": "Install the app",
+      "state": {
+        "standalone": "You are using the installed app.",
+        "installed": "App installed: open it from its icon on the home screen.",
+        "ios": "On iPhone: in Safari tap Share, then “Add to Home Screen”.",
+        "manual": "To install it, open the browser menu and choose “Install app” or “Add to Home screen”."
+      },
+      "version": "Version {{version}}"
+    }
+  },
+  "backup": {
+    "title": "Backup",
+    "description": "Save all plans and the workout history to a file, to keep them or move them to another device.",
+    "last": "Last backup: {{when}}",
+    "never": "No backup from this device yet.",
+    "export": "Export backup",
+    "restore": "Restore from file",
+    "exported": "Backup saved to downloads: {{fileName}}",
+    "restored": "Backup restored: plans and history now come from the file.",
+    "failed": "Restore failed.",
+    "unchanged": "The data on this device has not been changed.",
+    "hint": "Settings (language, rest) are not part of the backup. Restoring replaces all plans and history on this device.",
+    "confirm": {
+      "title": "Restore the backup?",
+      "message": "Backup of {{date}} · Plans: {{plans}} · Workouts: {{sessions}} · Sets: {{sets}}. It will replace all plans and history on this device; to keep them, cancel and export a backup first.",
+      "accept": "Replace data",
+      "cancel": "Cancel"
+    },
+    "issue": {
+      "fileTooLarge": "The file is too large to be a J-Training backup.",
+      "notJson": "The file is not a J-Training backup: it is not JSON.",
+      "notBackup": "The file is not a J-Training backup.",
+      "newerVersion": "The backup was made by a newer version of the app: update the app and try again.",
+      "invalidRecord": "The backup is damaged: it contains an invalid value.",
+      "duplicateId": "The backup is damaged: two items have the same identifier.",
+      "brokenReference": "The backup is damaged: an item refers to missing data.",
+      "multipleActivePlans": "The backup is damaged: it contains more than one active plan.",
+      "multipleOpenSessions": "The backup is damaged: it contains more than one workout in progress.",
+      "at": "Location: {{path}}"
+    }
+  },
+  "backupReminder": {
+    "title": "Time for a backup",
+    "since": "Last backup: {{when}}. You have saved more workouts since: export a file so you don't lose them if you change or reset your phone.",
+    "never": "You have not backed up your workouts yet: export a file so you don't lose them if you change or reset your phone.",
+    "export": "Export backup",
+    "later": "Later",
+    "failed": "Backup failed. Try again from Settings."
+  },
+  "form": {
+    "required": "This field is required.",
+    "min": "The minimum value is {{min}}.",
+    "range": "Enter a value between {{min}} and {{max}}."
+  },
+  "editor": {
+    "title": "Edit plan",
+    "backToPlan": "Back to the plan",
+    "backToEditor": "Back to editing",
+    "save": "Save",
+    "done": "Done",
+    "noDays": "The plan has no days yet: add the first one.",
+    "newPlan": {
+      "title": "New plan",
+      "subtitle": "Create a plan by hand, without a CSV file. Then add days and exercises.",
+      "create": "Create and add days"
+    },
+    "plan": {
+      "name": "Plan name",
+      "fase": "Phase",
+      "faseHint": "Running number of the plan (1, 2, 3…).",
+      "deleteTitle": "Delete plan",
+      "deleteHint": "Delete the plan with all its days and exercises.",
+      "delete": "Delete plan",
+      "deleteConfirm": "Delete the plan “{{name}}” with all its days and exercises?",
+      "hasSessions": "This plan has recorded workouts: it can't be deleted without losing your history. You can archive it."
+    },
+    "day": {
+      "add": "Add day",
+      "name": "Day name",
+      "namePlaceholder": "E.g. chest and triceps",
+      "moveUp": "Move {{day}} up",
+      "moveDown": "Move {{day}} down",
+      "delete": "Delete {{day}}",
+      "deleteConfirm": "Delete {{day}} with all its exercises?",
+      "noExercises": "No exercises on this day."
+    },
+    "exercise": {
+      "add": "Add exercise",
+      "newTitle": "New exercise",
+      "editTitle": "Edit exercise",
+      "name": "Exercise",
+      "type": "Type",
+      "equipment": "Equipment",
+      "position": "Equipment position",
+      "positionPlaceholder": "E.g. seat 4, backrest 2",
+      "sets": "Sets",
+      "reps": "Reps",
+      "load": "Load (kg)",
+      "loadHint": "Leave empty if it still has to be tested.",
+      "loadUnit": "The load is",
+      "unit": {
+        "totale": "Total",
+        "per_braccio": "Per arm"
+      },
+      "rest": "Rest",
+      "restSeconds": "Rest in seconds",
+      "restHint": "Compound lifts 2–3 minutes, isolation 60–90 seconds.",
+      "rir": "RIR",
+      "status": "Status",
+      "day": "Day",
+      "note": "Notes",
+      "moveUp": "Move {{exercise}} up",
+      "moveDown": "Move {{exercise}} down",
+      "delete": "Delete exercise",
+      "deleteConfirm": "Remove “{{exercise}}” from the plan? Your workout history stays."
+    },
+    "confirm": {
+      "title": "Confirm",
+      "delete": "Delete",
+      "cancel": "Cancel"
+    }
+  },
+  "update": {
+    "ready": "A new version is available.",
+    "reload": "Update"
+  }
+}

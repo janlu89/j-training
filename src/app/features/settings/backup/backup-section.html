@@ -1,0 +1,75 @@
+<p-confirmdialog />
+
+<app-settings-section
+  [title]="'backup.title' | transloco"
+  [description]="'backup.description' | transloco"
+>
+  @if (restored()) {
+    <p-message severity="success">{{ 'backup.restored' | transloco }}</p-message>
+  }
+
+  @let last = lastBackupAt();
+  <p class="backup__last">
+    @if (last !== undefined) {
+      {{ 'backup.last' | transloco: { when: (last | daysAgo: now : language()) } }}
+    } @else {
+      {{ 'backup.never' | transloco }}
+    }
+  </p>
+
+  <div class="backup__actions">
+    <button pButton type="button" [disabled]="busy()" (click)="export()">
+      <i class="pi pi-download" pButtonIcon aria-hidden="true"></i>
+      <span pButtonLabel>{{ 'backup.export' | transloco }}</span>
+    </button>
+    <button
+      pButton
+      type="button"
+      severity="secondary"
+      [disabled]="busy()"
+      (click)="fileInput.click()"
+    >
+      <i class="pi pi-upload" pButtonIcon aria-hidden="true"></i>
+      <span pButtonLabel>{{ 'backup.restore' | transloco }}</span>
+    </button>
+  </div>
+
+  <input
+    #fileInput
+    class="visually-hidden"
+    type="file"
+    accept=".json,application/json"
+    tabindex="-1"
+    aria-hidden="true"
+    data-testid="backup-file"
+    (change)="onFileSelected(fileInput)"
+  />
+
+  @if (exportedFile(); as fileName) {
+    <p-message severity="info">
+      {{ 'backup.exported' | transloco: { fileName } }}
+    </p-message>
+  }
+
+  @if (issue(); as issue) {
+    <p-message severity="error">
+      <span class="backup__issue">
+        <span>{{ 'backup.issue.' + issue.code | transloco }}</span>
+        @if (issue.path) {
+          <code class="backup__path">{{
+            'backup.issue.at' | transloco: { path: issue.path }
+          }}</code>
+        }
+        <span>{{ 'backup.unchanged' | transloco }}</span>
+      </span>
+    </p-message>
+  }
+
+  @if (restoreFailed()) {
+    <p-message severity="error">
+      {{ 'backup.failed' | transloco }} {{ 'backup.unchanged' | transloco }}
+    </p-message>
+  }
+
+  <p class="backup__hint">{{ 'backup.hint' | transloco }}</p>
+</app-settings-section>

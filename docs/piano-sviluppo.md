@@ -1,6 +1,6 @@
 # J-Training — Piano di sviluppo per fasi
 
-Ultimo aggiornamento: 2026-10-14
+Ultimo aggiornamento: 2026-10-15 (fasi F2–F5 riviste su richiesta di Gianluca; F5 include le correzioni dalla prova di F4; F5 e F6 consegnate in una sola PR, con recupero tra esercizi e allarme continuo; F8 con promemoria di backup, nuova F9 per l'APK TWA)
 
 ## Identità del progetto
 - Nome app: J-Training
@@ -32,13 +32,14 @@ Ultimo aggiornamento: 2026-10-14
 |---|---|---|
 | F0 | Ambiente, scaffold, qualità, repository e protezioni, CI, deploy | `ng serve` funziona; CI verde su PR; Pages pubblica la pagina iniziale |
 | F1 | Core: modelli, Dexie, repository, persist storage, i18n ITA/ENG, shell mobile (bottom nav, tema), impostazioni | Cambio lingua a runtime; DB visibile in DevTools > IndexedDB |
-| F2 | Import CSV: parsing, validazione, anteprima, transazione archivia/attiva, Giorno 1..N, associazione giorno della settimana | Import di una scheda reale; reimport = una sola fase attiva |
-| F3 | Scheda: fase attiva → giorni → esercizi; aggiungi/modifica/elimina; 4 stati; soft delete | CRUD completo; "rimosso" nascosto ma storico intatto |
-| F4 | Allenamento: sessione, log per serie kg/rip, precompilazione, salvataggio delle discrepanze | Sessione completa salvata e riapribile |
-| F5 | Cronometro di recupero: Web Worker, timestamp, suono, vibrazione, wake lock, tempo modificabile | Timer preciso anche dopo un breve passaggio in background |
+| F2 | Import CSV: parsing, validazione, anteprima, transazione archivia/attiva, Giorno 1..N, associazione giorno della settimana. Archivio schede con nome (attiva/archivia). Allenamento mostra solo il giorno suggerito per oggi, con scelta di un altro giorno | Import di una scheda reale; reimport = una sola fase attiva; vecchie schede riattivabili |
+| F3 | Editor schede: creazione da zero senza CSV; rinomina/elimina scheda; aggiungi/modifica/riordina/elimina giorni ed esercizi (tutti i campi, inclusi posizione attrezzi e recupero, con default per tipo: multiarticolare 150 s, isolamento 75 s); 4 stati; soft delete | Scheda creata a mano e usabile; CRUD completo; "rimosso" nascosto ma storico intatto |
+| F4 | Allenamento: lista dei giorni come etichette con pulsante ▶ che apre la **pagina dedicata del giorno** (proposto quello di oggi); nella pagina del giorno: sessione, log per serie kg/rip (durante o a fine allenamento), precompilazione, bozza salvata a ogni serie e ripresa della giornata in corso, salvataggio delle discrepanze, **modifica dell'esercizio durante l'allenamento** (form dell'editor con ritorno alla giornata), **salva giornata** e **salta giornata** (la rotazione avanza), proposta di aggiornare il carico in scheda | Sessione completa salvata e riapribile; giornata saltata registrata; nessun dato perso chiudendo l'app a metà |
+| F5 | Correzioni dalla prova di F4: **salva giornata anche senza spunte**, **togliere serie**, icone più piccole e sobrie, **toggle** attiva/archiviata in Schede. Cronometro di recupero per singolo esercizio: Web Worker, timestamp, suono, vibrazione, wake lock, tempo modificabile | Giornata compilata a fine allenamento salvata; timer preciso anche dopo un breve passaggio in background |
 | F6 | Storico per esercizio e analisi: progressione kg a parità di rip, rip settimanali | Grafici con dati di prova realistici |
 | F7 | Export CSV/XLSX di fase, backup/restore JSON | File aperti in Excel; restore su un altro browser identico all'originale |
-| F8 | PWA e rilascio: service worker, manifest, icone, prompt di installazione, test su Android, v1.0.0 | App installata sul telefono e funzionante offline |
+| F8 | PWA e rilascio: service worker, manifest, icone, prompt di installazione, avviso di nuova versione, "Ultimo backup" in Impostazioni con promemoria dopo una settimana, licenza MIT, test su Android, v1.0.0 | App installata sul telefono e funzionante offline; archiviazione "Protetta" |
+| F9 | APK Android come Trusted Web Activity (Bubblewrap) della PWA pubblicata: Digital Asset Links, chiave di firma di Gianluca, APK su GitHub Releases | APK installato sul telefono che apre l'app a schermo intero, senza barra dell'indirizzo |
 
 ## Strategia di test
 - **Unit (Vitest)**: servizi e repository, mapping CSV, regole di precompilazione, calcoli dell'analisi. Dexie testato con fake-indexeddb.

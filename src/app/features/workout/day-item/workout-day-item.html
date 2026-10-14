@@ -1,0 +1,41 @@
+@let day = planDay().day;
+@let label = 'plan.day' | transloco: { number: day.ordine };
+<article class="item" [class.item--highlighted]="badge() || inProgress()">
+  <div class="item__text">
+    <div class="item__head">
+      <h3 class="item__label">{{ label }}</h3>
+      @if (inProgress()) {
+        <p-tag severity="warn" [value]="'workout.badge.inProgress' | transloco" />
+      } @else if (badge(); as badge) {
+        <p-tag [value]="'workout.badge.' + badge | transloco" />
+      }
+    </div>
+    @if (day.csvGiorno) {
+      <p class="item__name">{{ day.csvGiorno }}</p>
+    }
+    <p class="item__meta">
+      @if (day.weekday) {
+        {{ 'weekday.' + day.weekday | transloco }} ·
+      }
+      {{ 'plan.exerciseCount' | transloco: { count: planDay().exercises.length } }}
+    </p>
+    @if (lastSession(); as session) {
+      <p class="item__meta">
+        {{
+          'workout.last.' + (session.outcome ?? 'completed')
+            | transloco: { date: (session.startedAt | localDate: language()) }
+        }}
+      </p>
+    }
+  </div>
+  <a
+    class="item__play"
+    [routerLink]="['/workout/day', day.id]"
+    [attr.aria-label]="
+      (inProgress() ? 'workout.resume' : 'workout.start')
+        | transloco: { day: day.csvGiorno ? label + ' · ' + day.csvGiorno : label }
+    "
+  >
+    <i class="pi pi-play" aria-hidden="true"></i>
+  </a>
+</article>

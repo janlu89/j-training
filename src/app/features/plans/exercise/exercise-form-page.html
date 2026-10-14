@@ -1,0 +1,182 @@
+<p-confirmdialog />
+
+<div class="page">
+  <a class="back" [routerLink]="backUrl()">
+    <i class="pi pi-arrow-left" aria-hidden="true"></i>
+    {{ (fromWorkout() ? 'workout.day.backToWorkout' : 'editor.backToEditor') | transloco }}
+  </a>
+  <header class="page__header">
+    <h2 class="page__title">
+      {{ (isEdit() ? 'editor.exercise.editTitle' : 'editor.exercise.newTitle') | transloco }}
+    </h2>
+  </header>
+
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+    <label class="field">
+      <span class="field__label">{{ 'editor.exercise.name' | transloco }}</span>
+      <input pInputText type="text" formControlName="esercizio" maxlength="80" />
+      @if (form.controls.esercizio.touched && form.controls.esercizio.invalid) {
+        <span class="field__error">{{ 'form.required' | transloco }}</span>
+      }
+    </label>
+
+    <div class="form__row">
+      <label class="field">
+        <span class="field__label">{{ 'editor.exercise.type' | transloco }}</span>
+        <input pInputText type="text" formControlName="tipo" list="exercise-types" />
+        <datalist id="exercise-types">
+          @for (type of types; track type) {
+            <option [value]="type"></option>
+          }
+        </datalist>
+      </label>
+      <label class="field">
+        <span class="field__label">{{ 'editor.exercise.equipment' | transloco }}</span>
+        <input pInputText type="text" formControlName="attrezzo" list="equipment" />
+        <datalist id="equipment">
+          @for (item of equipment; track item) {
+            <option [value]="item"></option>
+          }
+        </datalist>
+      </label>
+    </div>
+
+    <label class="field">
+      <span class="field__label">{{ 'editor.exercise.position' | transloco }}</span>
+      <input
+        pInputText
+        type="text"
+        formControlName="posizione"
+        [placeholder]="'editor.exercise.positionPlaceholder' | transloco"
+      />
+    </label>
+
+    <div class="form__row">
+      <label class="field">
+        <span class="field__label">{{ 'editor.exercise.sets' | transloco }}</span>
+        <input
+          pInputText
+          type="number"
+          inputmode="numeric"
+          min="1"
+          max="20"
+          formControlName="serie"
+        />
+        @if (form.controls.serie.touched && form.controls.serie.invalid) {
+          <span class="field__error">{{ 'form.range' | transloco: { min: 1, max: 20 } }}</span>
+        }
+      </label>
+      <label class="field">
+        <span class="field__label">{{ 'editor.exercise.reps' | transloco }}</span>
+        <input pInputText type="text" formControlName="rip" placeholder="8-10" />
+        @if (form.controls.rip.touched && form.controls.rip.invalid) {
+          <span class="field__error">{{ 'form.required' | transloco }}</span>
+        }
+      </label>
+    </div>
+
+    <div class="form__row">
+      <label class="field">
+        <span class="field__label">{{ 'editor.exercise.load' | transloco }}</span>
+        <input
+          pInputText
+          type="number"
+          inputmode="decimal"
+          min="0"
+          step="0.5"
+          formControlName="ultimoKg"
+        />
+        <span class="field__hint">{{ 'editor.exercise.loadHint' | transloco }}</span>
+      </label>
+      <label class="field">
+        <span class="field__label">{{ 'editor.exercise.loadUnit' | transloco }}</span>
+        <select formControlName="unitaCarico">
+          @for (unit of loadUnits; track unit) {
+            <option [value]="unit">{{ 'editor.exercise.unit.' + unit | transloco }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    <fieldset class="field rest">
+      <legend class="field__label">{{ 'editor.exercise.rest' | transloco }}</legend>
+      <div class="rest__row">
+        <input
+          pInputText
+          type="number"
+          inputmode="numeric"
+          min="0"
+          max="900"
+          formControlName="recSec"
+          [attr.aria-label]="'editor.exercise.restSeconds' | transloco"
+        />
+        <span class="rest__unit" aria-hidden="true">s</span>
+      </div>
+      <div class="rest__presets">
+        @for (seconds of restPresets; track seconds) {
+          <button
+            type="button"
+            class="rest__preset"
+            [class.rest__preset--selected]="form.controls.recSec.value === seconds"
+            [attr.aria-pressed]="form.controls.recSec.value === seconds"
+            (click)="setRest(seconds)"
+          >
+            {{ seconds }} s
+          </button>
+        }
+      </div>
+      <span class="field__hint">{{ 'editor.exercise.restHint' | transloco }}</span>
+    </fieldset>
+
+    <div class="form__row">
+      <label class="field">
+        <span class="field__label">{{ 'editor.exercise.rir' | transloco }}</span>
+        <input pInputText type="text" formControlName="rir" maxlength="10" />
+      </label>
+      <label class="field">
+        <span class="field__label">{{ 'editor.exercise.status' | transloco }}</span>
+        <select formControlName="stato">
+          @for (status of statuses; track status) {
+            <option [value]="status">{{ 'exercise.status.' + status | transloco }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    <label class="field">
+      <span class="field__label">{{ 'editor.exercise.day' | transloco }}</span>
+      <select formControlName="dayId">
+        @for (day of days(); track day.id) {
+          <option [ngValue]="day.id">
+            {{ 'plan.day' | transloco: { number: day.ordine } }}
+            @if (day.csvGiorno) {
+              · {{ day.csvGiorno }}
+            }
+          </option>
+        }
+      </select>
+    </label>
+
+    <label class="field">
+      <span class="field__label">{{ 'editor.exercise.note' | transloco }}</span>
+      <textarea rows="3" formControlName="note" maxlength="300"></textarea>
+    </label>
+
+    <div class="page__actions">
+      <button pButton type="submit" [disabled]="busy()">
+        <i class="pi pi-check" pButtonIcon aria-hidden="true"></i>
+        <span pButtonLabel>{{ 'editor.save' | transloco }}</span>
+      </button>
+      <a pButton severity="secondary" [routerLink]="backUrl()">
+        <span pButtonLabel>{{ 'editor.confirm.cancel' | transloco }}</span>
+      </a>
+    </div>
+
+    @if (isEdit()) {
+      <button pButton type="button" severity="danger" [outlined]="true" (click)="confirmRemove()">
+        <i class="pi pi-trash" pButtonIcon aria-hidden="true"></i>
+        <span pButtonLabel>{{ 'editor.exercise.delete' | transloco }}</span>
+      </button>
+    }
+  </form>
+</div>

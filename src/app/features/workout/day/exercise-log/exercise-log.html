@@ -1,0 +1,151 @@
+@let item = exercise();
+<section class="log" [attr.aria-labelledby]="headingId()">
+  <div class="log__head">
+    <h3 class="log__name" [id]="headingId()">{{ item.esercizio }}</h3>
+    @if (statusSeverity(); as severity) {
+      <p-tag [severity]="severity" [value]="'exercise.status.' + item.stato | transloco" />
+    }
+    <a
+      class="log__edit"
+      [routerLink]="['/plans', item.phaseId, 'exercises', item.id]"
+      [queryParams]="{ returnTo: returnTo() }"
+      [attr.aria-label]="'workout.day.editExercise' | transloco: { exercise: item.esercizio }"
+    >
+      <i class="pi pi-pencil" aria-hidden="true"></i>
+    </a>
+  </div>
+
+  <p class="log__plan">
+    <span>{{ 'exercise.sets' | transloco: { serie: item.serie, rip: item.rip } }}</span>
+    @if (item.recSec) {
+      <button
+        type="button"
+        class="log__rest"
+        [attr.aria-label]="'timer.start' | transloco: { sec: item.recSec }"
+        (click)="startRest.emit()"
+      >
+        <i class="pi pi-stopwatch" aria-hidden="true"></i>
+        {{ item.recSec }} s
+      </button>
+    }
+    @if (item.rir) {
+      <span>{{ 'exercise.rir' | transloco: { rir: item.rir } }}</span>
+    }
+  </p>
+  @if (equipment()) {
+    <p class="log__equipment">
+      <i class="pi pi-sliders-h" aria-hidden="true"></i>
+      <span class="visually-hidden">{{ 'workout.day.position' | transloco }}:</span>
+      {{ equipment() }}
+    </p>
+  }
+  @if (item.note) {
+    <p class="log__note">{{ item.note }}</p>
+  }
+
+  @if (rows().length) {
+    <table class="sets">
+      <thead>
+        <tr>
+          <th scope="col" class="sets__no">{{ 'workout.day.set' | transloco }}</th>
+          <th scope="col">
+            {{
+              (item.unitaCarico === 'per_braccio' ? 'workout.day.kgPerArm' : 'workout.day.kg')
+                | transloco
+            }}
+          </th>
+          <th scope="col">{{ 'workout.day.reps' | transloco }}</th>
+          <th scope="col" class="sets__check">
+            <span class="visually-hidden">{{ 'workout.day.done' | transloco }}</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.setNo) {
+          @let done = row.logId !== undefined;
+          <tr [class.sets__row--done]="done">
+            <th scope="row" class="sets__no">{{ row.setNo }}</th>
+            <td>
+              <input
+                #kg
+                class="sets__input"
+                type="text"
+                inputmode="decimal"
+                autocomplete="off"
+                enterkeyhint="next"
+                placeholder="kg"
+                [value]="row.input.kg"
+                [disabled]="locked()"
+                [attr.aria-invalid]="done && !row.values"
+                [attr.aria-label]="'workout.day.setKg' | transloco: { set: row.setNo }"
+                (input)="
+                  inputChange.emit({
+                    setNo: row.setNo,
+                    input: { kg: kg.value, rip: row.input.rip },
+                  })
+                "
+              />
+            </td>
+            <td>
+              <input
+                #rip
+                class="sets__input"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                enterkeyhint="done"
+                [placeholder]="'workout.day.reps' | transloco"
+                [value]="row.input.rip"
+                [disabled]="locked()"
+                [attr.aria-invalid]="done && !row.values"
+                [attr.aria-label]="'workout.day.setReps' | transloco: { set: row.setNo }"
+                (input)="
+                  inputChange.emit({
+                    setNo: row.setNo,
+                    input: { kg: row.input.kg, rip: rip.value },
+                  })
+                "
+              />
+            </td>
+            <td class="sets__check">
+              <button
+                type="button"
+                class="sets__done"
+                [attr.aria-pressed]="done"
+                [disabled]="locked() || (!done && !row.values)"
+                [attr.aria-label]="'workout.day.setDone' | transloco: { set: row.setNo }"
+                (click)="doneToggle.emit(row.setNo)"
+              >
+                <span class="sets__mark" aria-hidden="true"><i class="pi pi-check"></i></span>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else {
+    <p class="log__empty">{{ 'workout.day.noSets' | transloco }}</p>
+  }
+
+  <div class="log__actions">
+    <button type="button" class="log__action" [disabled]="locked()" (click)="addSet.emit()">
+      <i class="pi pi-plus" aria-hidden="true"></i>
+      {{ 'workout.day.addSet' | transloco }}
+    </button>
+    <button
+      type="button"
+      class="log__action"
+      [disabled]="locked() || !rows().length"
+      (click)="removeSet.emit()"
+    >
+      <i class="pi pi-minus" aria-hidden="true"></i>
+      {{ 'workout.day.removeSet' | transloco }}
+    </button>
+    @if (canMarkAll() && !locked()) {
+      <button type="button" class="log__action" (click)="markAll.emit()">
+        <i class="pi pi-check-square" aria-hidden="true"></i>
+        {{ 'workout.day.markAll' | transloco }}
+      </button>
+    }
+  </div>
+</section>

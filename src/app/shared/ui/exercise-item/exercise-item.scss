@@ -1,0 +1,36 @@
+.exercise {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 0;
+}
+
+.exercise__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.exercise__name {
+  font-weight: 600;
+}
+
+.exercise__plan {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.exercise__meta,
+.exercise__note {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+}
+
+.exercise__note {
+  font-style: italic;
+}

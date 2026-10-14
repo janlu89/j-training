@@ -1,0 +1,25 @@
+<form class="form details" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="form__row">
+    <label class="field">
+      <span class="field__label">{{ 'editor.plan.name' | transloco }}</span>
+      <input pInputText type="text" formControlName="name" maxlength="60" />
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <span class="field__error">{{ 'form.required' | transloco }}</span>
+      }
+    </label>
+    <label class="field">
+      <span class="field__label">{{ 'editor.plan.fase' | transloco }}</span>
+      <input pInputText type="number" inputmode="numeric" min="1" formControlName="fase" />
+      @if (form.controls.fase.touched && form.controls.fase.invalid) {
+        <span class="field__error">{{ 'form.min' | transloco: { min: 1 } }}</span>
+      }
+    </label>
+  </div>
+  @if (form.dirty) {
+    <div class="page__actions">
+      <button pButton type="submit">
+        <span pButtonLabel>{{ 'editor.save' | transloco }}</span>
+      </button>
+    </div>
+  }
+</form>

@@ -1,0 +1,71 @@
+// Card shared by the analytics charts: title, chart, and the same data as a table.
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 12px;
+  background: var(--p-content-background);
+}
+
+.card__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+}
+
+.card__title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.card__subtitle,
+.card__hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--p-text-muted-color);
+}
+
+.card__chart {
+  position: relative;
+  width: 100%;
+}
+
+.card__table {
+  font-size: 0.875rem;
+
+  summary {
+    min-height: 2.75rem;
+    display: flex;
+    align-items: center;
+    color: var(--jt-link);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+
+  th,
+  td {
+    padding: 0.375rem 0.5rem;
+    border-bottom: 1px solid var(--p-content-border-color);
+    text-align: left;
+  }
+
+  th {
+    color: var(--p-text-muted-color);
+    font-weight: 600;
+  }
+
+  td:last-child,
+  th:last-child {
+    text-align: right;
+  }
+}

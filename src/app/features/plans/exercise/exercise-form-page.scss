@@ -1,0 +1,52 @@
+@use '../../../../styles/page';
+@use '../../../../styles/form';
+
+.rest {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.rest__row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  input {
+    max-width: 7rem;
+  }
+}
+
+.rest__unit {
+  color: var(--p-text-muted-color);
+}
+
+.rest__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rest__preset {
+  min-width: 3.5rem;
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 999px;
+  background: var(--p-content-background);
+  color: var(--p-text-color);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--p-primary-color);
+    outline-offset: 2px;
+  }
+}
+
+.rest__preset--selected {
+  border-color: var(--p-primary-color);
+  background: var(--p-primary-color);
+  color: var(--p-primary-contrast-color);
+}

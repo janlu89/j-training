@@ -1,0 +1,53 @@
+@if (detail.value(); as detail) {
+  @let session = detail.session;
+  <div class="page">
+    <a class="back" routerLink="/history">
+      <i class="pi pi-arrow-left" aria-hidden="true"></i>
+      {{ 'history.back' | transloco }}
+    </a>
+    <header class="page__header">
+      <p class="page__eyebrow">{{ detail.planName }}</p>
+      <h2 class="page__title">
+        @if (detail.day; as day) {
+          {{ 'plan.day' | transloco: { number: day.ordine } }}
+          @if (day.csvGiorno) {
+            · {{ day.csvGiorno }}
+          }
+        } @else {
+          {{ 'history.deletedDay' | transloco }}
+        }
+      </h2>
+      <p class="page__subtitle">{{ session.startedAt | localDate: language() : 'weekday' }}</p>
+    </header>
+
+    @if (session.outcome === 'skipped') {
+      <p class="skipped">
+        <p-tag severity="secondary" [value]="'history.skipped' | transloco" />
+        {{ 'history.skippedDay' | transloco }}
+      </p>
+    } @else {
+      <ul class="exercises">
+        @for (exercise of detail.exercises; track exercise.exerciseId) {
+          <li class="exercise">
+            <a class="exercise__name" [routerLink]="['/history/exercise', exercise.esercizio]">
+              {{ exercise.esercizio }}
+            </a>
+            <app-set-chips
+              [sets]="exercise.sets"
+              [unit]="exercise.unitaCarico"
+              [language]="language()"
+            />
+          </li>
+        }
+      </ul>
+    }
+  </div>
+} @else if (!detail.isLoading()) {
+  <app-empty-state
+    icon="pi pi-history"
+    [title]="'history.notFound.title' | transloco"
+    [message]="'history.notFound.message' | transloco"
+  >
+    <a class="back" routerLink="/history">{{ 'history.back' | transloco }}</a>
+  </app-empty-state>
+}

@@ -1,0 +1,27 @@
+.backup__last {
+  margin: 0;
+  font-weight: 600;
+}
+
+.backup__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.backup__issue {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.backup__path {
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+.backup__hint {
+  margin: 0;
+  color: var(--p-text-muted-color);
+  font-size: 0.875rem;
+}

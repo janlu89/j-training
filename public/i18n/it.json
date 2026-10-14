@@ -1,0 +1,439 @@
+{
+  "nav": {
+    "label": "Navigazione principale",
+    "workout": "Allenamento",
+    "plans": "Schede",
+    "history": "Storico",
+    "analytics": "Analisi",
+    "settings": "Impostazioni"
+  },
+  "workout": {
+    "activePlan": "Scheda attiva: {{name}}",
+    "empty": {
+      "title": "Nessuna scheda attiva",
+      "message": "Importa la tua scheda in CSV per iniziare ad allenarti.",
+      "yourPlans": "Le tue schede"
+    },
+    "reason": {
+      "today": "Allenamento di oggi",
+      "restDay": "Oggi riposo",
+      "rotation": "Prossimo allenamento"
+    },
+    "nextOn": "Prossimo allenamento: {{weekday}}",
+    "daysLabel": "Giorni della scheda",
+    "noDays": "La scheda attiva non ha ancora giorni.",
+    "editPlan": "Modifica la scheda",
+    "badge": {
+      "today": "Oggi",
+      "next": "Prossimo",
+      "inProgress": "In corso"
+    },
+    "start": "Inizia {{day}}",
+    "resume": "Riprendi {{day}}",
+    "last": {
+      "completed": "Ultimo: {{date}} · completato",
+      "skipped": "Ultimo: {{date}} · saltato"
+    },
+    "inProgress": {
+      "title": "Giornata in corso",
+      "startedOn": "Iniziata il {{date}}",
+      "resume": "Riprendi"
+    },
+    "day": {
+      "back": "Allenamento",
+      "backToWorkout": "Torna all'allenamento",
+      "notFound": {
+        "title": "Giorno non trovato",
+        "message": "Questo giorno non esiste più nella scheda."
+      },
+      "startedOn": "In corso dal {{date}}",
+      "hint": "Spunta ogni serie con ✓ mentre ti alleni, oppure compila tutto alla fine e salva: le serie spuntate sono già salvate.",
+      "otherInProgress": "C'è una giornata in corso: {{day}}. Salvala o scarta la bozza prima di registrare questo giorno.",
+      "resumeOther": "Vai alla giornata in corso",
+      "editExercise": "Modifica {{exercise}}",
+      "position": "Attrezzo e posizione",
+      "noExercises": "Questo giorno non ha esercizi.",
+      "set": "Serie",
+      "kg": "kg",
+      "kgPerArm": "kg/braccio",
+      "reps": "Rip",
+      "done": "Fatta",
+      "setKg": "Serie {{set}}, kg",
+      "setReps": "Serie {{set}}, ripetizioni",
+      "setDone": "Serie {{set}} fatta",
+      "addSet": "Aggiungi serie",
+      "removeSet": "Togli serie",
+      "noSets": "Nessuna serie: aggiungine una se fai questo esercizio.",
+      "exerciseRest": "Recupero {{time}}",
+      "exerciseRestStart": "Avvia il recupero di {{time}} prima di {{exercise}}",
+      "markAll": "Segna tutte fatte",
+      "save": "Salva giornata",
+      "skip": "Salta giornata",
+      "discard": "Scarta bozza",
+      "saveHint": "Inserisci kg e ripetizioni di almeno una serie per salvare la giornata.",
+      "fixInvalid": "Correggi kg o ripetizioni delle serie evidenziate prima di salvare."
+    },
+    "finish": {
+      "title": "Salva giornata",
+      "loadsTitle": "Aggiorna il carico in scheda",
+      "loadsHint": "Oggi hai usato carichi diversi dalla scheda: scegli quali aggiornare.",
+      "confirm": "Salva",
+      "toSave": "Serie da salvare: {{count}}",
+      "includeUnticked": "Salva anche le serie non spuntate ({{count}})",
+      "includeUntickedHint": "Con i valori mostrati: utile se compili tutto a fine allenamento."
+    },
+    "skip": {
+      "title": "Salta giornata",
+      "confirm": "Saltare {{day}}? Verrà registrato come saltato e la rotazione passerà al giorno successivo.",
+      "accept": "Salta"
+    },
+    "discard": {
+      "title": "Scarta bozza",
+      "confirm": "Eliminare la giornata in corso ({{day}}) con tutte le serie registrate?",
+      "accept": "Scarta"
+    }
+  },
+  "timer": {
+    "title": "Recupero",
+    "label": "Recupero · {{exercise}}",
+    "nextExercise": "Prossimo esercizio · {{exercise}}",
+    "start": "Avvia recupero di {{sec}} secondi",
+    "minus": "Togli {{sec}} secondi",
+    "plus": "Aggiungi {{sec}} secondi",
+    "stop": "Interrompi il recupero",
+    "done": "Recupero finito: tocca a te!",
+    "silence": "Ferma l'allarme"
+  },
+  "plans": {
+    "title": "Schede",
+    "subtitle": "Tutte le schede importate restano qui. Una sola alla volta è attiva.",
+    "import": "Importa scheda CSV",
+    "fase": "Fase {{fase}}",
+    "importedOn": "importata il {{date}}",
+    "counts": "Giorni: {{days}} · Esercizi: {{exercises}}",
+    "status": {
+      "active": "Attiva",
+      "archived": "Archiviata"
+    },
+    "activeToggle": "Scheda attiva: {{name}}",
+    "open": "Apri",
+    "backToList": "Tutte le schede",
+    "empty": {
+      "title": "Nessuna scheda importata",
+      "message": "Importa un file CSV: ogni scheda che carichi resta nell'archivio."
+    },
+    "notFound": {
+      "title": "Scheda non trovata",
+      "message": "Questa scheda non esiste su questo dispositivo."
+    },
+    "create": "Crea scheda",
+    "edit": "Modifica"
+  },
+  "plan": {
+    "day": "Giorno {{number}}",
+    "exerciseCount": "Esercizi: {{count}}",
+    "weekday": "Giorno della settimana",
+    "noWeekday": "Non assegnato",
+    "dayShort": "G{{number}}"
+  },
+  "planExport": {
+    "title": "Esporta la scheda",
+    "description": "La scheda e tutte le serie salvate. Excel per leggerla o stamparla, CSV per un'AI o altri programmi.",
+    "xlsx": "Excel",
+    "csv": "CSV",
+    "saved": "File salvato nei download: {{fileName}}",
+    "failed": "Esportazione non riuscita. Riprova.",
+    "fileName": "{{name}} - fase {{fase}}",
+    "sheet": {
+      "plan": "Scheda",
+      "sets": "Serie"
+    },
+    "column": {
+      "day": "Giorno",
+      "exercise": "Esercizio",
+      "type": "Tipo",
+      "equipment": "Attrezzo",
+      "sets": "Serie",
+      "reps": "Ripetizioni",
+      "position": "Posizione",
+      "load": "Carico (kg)",
+      "unit": "Unità",
+      "rest": "Recupero (s)",
+      "rir": "RIR",
+      "status": "Stato",
+      "note": "Note",
+      "date": "Data",
+      "set": "Serie",
+      "kg": "kg"
+    },
+    "unit": {
+      "totale": "totale",
+      "per_braccio": "per braccio"
+    },
+    "dateFormat": "dd/mm/yyyy",
+    "page": "Pagina &P di &N"
+  },
+  "weekday": {
+    "1": "Lunedì",
+    "2": "Martedì",
+    "3": "Mercoledì",
+    "4": "Giovedì",
+    "5": "Venerdì",
+    "6": "Sabato",
+    "7": "Domenica"
+  },
+  "exercise": {
+    "sets": "{{serie}} × {{rip}}",
+    "load": "{{kg}} kg",
+    "perArm": "per braccio",
+    "loadToTest": "Carico da testare",
+    "rest": "Recupero {{sec}} s",
+    "rir": "RIR {{rir}}",
+    "status": {
+      "attivo": "Attivo",
+      "da_testare": "Da testare",
+      "sospeso": "Sospeso",
+      "rimosso": "Rimosso"
+    }
+  },
+  "import": {
+    "title": "Importa scheda",
+    "subtitle": "Carica il file CSV della scheda: vedrai un'anteprima prima di salvarla.",
+    "chooseFile": "Scegli file CSV",
+    "chooseAnother": "Scegli un altro file",
+    "name": "Nome della scheda",
+    "activate": "Usala come scheda attiva",
+    "activateHint": "La scheda attiva attuale resta nell'archivio e puoi riattivarla quando vuoi.",
+    "confirm": "Importa",
+    "samePhase": "Esiste già una scheda con fase {{fase}}: questa verrà aggiunta come nuova scheda, senza sostituirla.",
+    "format": {
+      "title": "Formato del file",
+      "text": "Una riga per esercizio. La prima riga deve contenere queste colonne:",
+      "example": "Scarica una scheda di esempio"
+    },
+    "issues": {
+      "title": "Il file non può essere importato",
+      "row": "Riga {{row}}:",
+      "more": "…e altri {{count}} problemi."
+    },
+    "issue": {
+      "emptyFile": "Il file non contiene esercizi.",
+      "fileTooLarge": "Il file supera 1 MB: non sembra una scheda.",
+      "missingColumns": "Mancano le colonne: {{value}}.",
+      "malformedRow": "il numero di colonne non corrisponde all'intestazione.",
+      "mixedPhases": "Il file contiene più fasi ({{value}}): importa una fase per file.",
+      "required": "{{column}} è obbligatorio.",
+      "notInteger": "{{column}}: «{{value}}» non è un numero intero valido.",
+      "notNumber": "{{column}}: «{{value}}» non è un numero valido.",
+      "invalidValue": "{{column}}: «{{value}}» non è un valore ammesso."
+    }
+  },
+  "history": {
+    "title": "Storico",
+    "empty": {
+      "title": "Ancora nessun allenamento",
+      "message": "Lo storico comparirà dopo la prima sessione salvata."
+    },
+    "views": {
+      "label": "Viste dello storico",
+      "sessions": "Allenamenti",
+      "exercises": "Esercizi"
+    },
+    "back": "Storico",
+    "skipped": "Saltata",
+    "skippedDay": "Giornata saltata: nessuna serie registrata.",
+    "deletedDay": "Giorno eliminato dalla scheda",
+    "counts": "Serie: {{sets}} · Esercizi: {{exercises}}",
+    "set": "Serie {{set}}: {{kg}} kg per {{rip}} ripetizioni",
+    "unit": {
+      "totale": "kg",
+      "per_braccio": "kg per braccio"
+    },
+    "notFound": {
+      "title": "Allenamento non trovato",
+      "message": "Questo allenamento non è nello storico."
+    },
+    "exercise": {
+      "sessions": "Sessioni: {{count}}",
+      "lastDate": "Ultima volta: {{date}}",
+      "charts": "Vedi i grafici",
+      "empty": "Nessuna serie salvata per questo esercizio.",
+      "none": "Ancora nessun esercizio salvato."
+    }
+  },
+  "analytics": {
+    "title": "Analisi",
+    "empty": {
+      "title": "Nessun dato da analizzare",
+      "message": "I grafici di progressione compariranno dopo qualche allenamento."
+    },
+    "exercise": "Esercizio",
+    "reps": "Ripetizioni",
+    "latest": "Ultimo a {{reps}} rip",
+    "best": "Migliore a {{reps}} rip",
+    "progression": {
+      "title": "Carico a {{reps}} ripetizioni",
+      "fewPoints": "Servono almeno due sessioni con {{reps}} ripetizioni per vedere l'andamento."
+    },
+    "weekly": {
+      "title": "Ripetizioni a settimana",
+      "subtitle": "Ultime {{weeks}} settimane",
+      "week": "Settimana dal",
+      "reps": "Ripetizioni"
+    },
+    "table": "Mostra i dati in tabella",
+    "date": "Data"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "language": {
+      "title": "Lingua",
+      "description": "Lingua dell'interfaccia. La scelta resta salvata su questo dispositivo."
+    },
+    "exerciseRest": {
+      "title": "Recupero tra esercizi",
+      "description": "Durata del recupero che avvii con il pulsante tra un esercizio e l'altro."
+    },
+    "storage": {
+      "title": "Archiviazione dati",
+      "status": {
+        "unknown": "Verifica in corso",
+        "persisted": "Protetta",
+        "notPersisted": "Non garantita"
+      },
+      "hint": {
+        "unknown": "Controllo in corso sulla conservazione permanente dei dati.",
+        "persisted": "I dati restano su questo dispositivo e il browser non li cancella per liberare spazio.",
+        "notPersisted": "Se lo spazio scarseggia il browser potrebbe cancellare i dati. Installare l'app aiuta; fai backup regolari."
+      }
+    },
+    "app": {
+      "title": "App",
+      "description": "Installata, J-Training si apre a schermo intero, funziona anche offline e il browser non cancella i suoi dati per liberare spazio.",
+      "install": "Installa l'app",
+      "state": {
+        "standalone": "Stai usando l'app installata.",
+        "installed": "App installata: aprila dall'icona sulla schermata Home.",
+        "ios": "Su iPhone: in Safari tocca Condividi, poi «Aggiungi alla schermata Home».",
+        "manual": "Per installarla apri il menu del browser e scegli «Installa app» o «Aggiungi a schermata Home»."
+      },
+      "version": "Versione {{version}}"
+    }
+  },
+  "backup": {
+    "title": "Backup",
+    "description": "Salva tutte le schede e lo storico degli allenamenti in un file, per conservarli o spostarli su un altro dispositivo.",
+    "last": "Ultimo backup: {{when}}",
+    "never": "Nessun backup ancora da questo dispositivo.",
+    "export": "Esporta backup",
+    "restore": "Ripristina da file",
+    "exported": "Backup salvato nei download: {{fileName}}",
+    "restored": "Backup ripristinato: schede e storico ora sono quelli del file.",
+    "failed": "Ripristino non riuscito.",
+    "unchanged": "I dati di questo dispositivo non sono stati modificati.",
+    "hint": "Le impostazioni (lingua, recupero) non fanno parte del backup. Il ripristino sostituisce tutte le schede e lo storico di questo dispositivo.",
+    "confirm": {
+      "title": "Ripristinare il backup?",
+      "message": "Backup del {{date}} · Schede: {{plans}} · Allenamenti: {{sessions}} · Serie: {{sets}}. Sostituirà tutte le schede e lo storico di questo dispositivo; se vuoi conservarli, annulla ed esporta prima un backup.",
+      "accept": "Sostituisci i dati",
+      "cancel": "Annulla"
+    },
+    "issue": {
+      "fileTooLarge": "Il file è troppo grande per essere un backup di J-Training.",
+      "notJson": "Il file non è un backup di J-Training: non è in formato JSON.",
+      "notBackup": "Il file non è un backup di J-Training.",
+      "newerVersion": "Il backup è stato creato da una versione più recente dell'app: aggiorna l'app e riprova.",
+      "invalidRecord": "Il backup è danneggiato: contiene un valore non valido.",
+      "duplicateId": "Il backup è danneggiato: due elementi hanno lo stesso identificativo.",
+      "brokenReference": "Il backup è danneggiato: un elemento si riferisce a dati mancanti.",
+      "multipleActivePlans": "Il backup è danneggiato: contiene più di una scheda attiva.",
+      "multipleOpenSessions": "Il backup è danneggiato: contiene più di un allenamento in corso.",
+      "at": "Posizione: {{path}}"
+    }
+  },
+  "backupReminder": {
+    "title": "È ora di un backup",
+    "since": "Ultimo backup: {{when}}. Da allora hai salvato altri allenamenti: esporta un file per non perderli se cambi o ripristini il telefono.",
+    "never": "Non hai ancora fatto un backup dei tuoi allenamenti: esporta un file per non perderli se cambi o ripristini il telefono.",
+    "export": "Esporta backup",
+    "later": "Più tardi",
+    "failed": "Backup non riuscito. Riprova da Impostazioni."
+  },
+  "form": {
+    "required": "Campo obbligatorio.",
+    "min": "Il valore minimo è {{min}}.",
+    "range": "Inserisci un valore tra {{min}} e {{max}}."
+  },
+  "editor": {
+    "title": "Modifica scheda",
+    "backToPlan": "Torna alla scheda",
+    "backToEditor": "Torna alla modifica",
+    "save": "Salva",
+    "done": "Fine",
+    "noDays": "La scheda non ha ancora giorni: aggiungi il primo.",
+    "newPlan": {
+      "title": "Nuova scheda",
+      "subtitle": "Crea una scheda a mano, senza file CSV. Poi aggiungi giorni ed esercizi.",
+      "create": "Crea e aggiungi i giorni"
+    },
+    "plan": {
+      "name": "Nome della scheda",
+      "fase": "Fase",
+      "faseHint": "Numero progressivo della scheda (1, 2, 3…).",
+      "deleteTitle": "Elimina scheda",
+      "deleteHint": "Elimina la scheda con tutti i giorni e gli esercizi.",
+      "delete": "Elimina scheda",
+      "deleteConfirm": "Eliminare la scheda «{{name}}» con tutti i giorni e gli esercizi?",
+      "hasSessions": "Questa scheda ha allenamenti registrati: non può essere eliminata per non perdere lo storico. Puoi archiviarla."
+    },
+    "day": {
+      "add": "Aggiungi giorno",
+      "name": "Nome del giorno",
+      "namePlaceholder": "Es. petto e tricipiti",
+      "moveUp": "Sposta su {{day}}",
+      "moveDown": "Sposta giù {{day}}",
+      "delete": "Elimina {{day}}",
+      "deleteConfirm": "Eliminare {{day}} con tutti i suoi esercizi?",
+      "noExercises": "Nessun esercizio in questo giorno."
+    },
+    "exercise": {
+      "add": "Aggiungi esercizio",
+      "newTitle": "Nuovo esercizio",
+      "editTitle": "Modifica esercizio",
+      "name": "Esercizio",
+      "type": "Tipo",
+      "equipment": "Attrezzo",
+      "position": "Posizione attrezzi",
+      "positionPlaceholder": "Es. sedile 4, schienale 2",
+      "sets": "Serie",
+      "reps": "Ripetizioni",
+      "load": "Carico (kg)",
+      "loadHint": "Vuoto se è da testare.",
+      "loadUnit": "Il carico è",
+      "unit": {
+        "totale": "Totale",
+        "per_braccio": "Per braccio"
+      },
+      "rest": "Recupero",
+      "restSeconds": "Recupero in secondi",
+      "restHint": "Multiarticolari 2–3 minuti, isolamento 60–90 secondi.",
+      "rir": "RIR",
+      "status": "Stato",
+      "day": "Giorno",
+      "note": "Note",
+      "moveUp": "Sposta su {{exercise}}",
+      "moveDown": "Sposta giù {{exercise}}",
+      "delete": "Elimina esercizio",
+      "deleteConfirm": "Eliminare «{{exercise}}» dalla scheda? Lo storico degli allenamenti resta."
+    },
+    "confirm": {
+      "title": "Conferma",
+      "delete": "Elimina",
+      "cancel": "Annulla"
+    }
+  },
+  "update": {
+    "ready": "È disponibile una nuova versione.",
+    "reload": "Aggiorna"
+  }
+}

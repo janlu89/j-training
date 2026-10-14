@@ -1,0 +1,43 @@
+@if (summaries(); as summaries) {
+  @if (summaries.length) {
+    <div class="page">
+      <header class="page__header">
+        <h2 class="page__title">{{ 'plans.title' | transloco }}</h2>
+        <p class="page__subtitle">{{ 'plans.subtitle' | transloco }}</p>
+      </header>
+      <ng-container [ngTemplateOutlet]="createActions" />
+      <ul class="list">
+        @for (summary of summaries; track summary.phase.id) {
+          <li>
+            <app-plan-card
+              [summary]="summary"
+              [language]="language()"
+              (activeChange)="setActive(summary.phase.id, $event)"
+            />
+          </li>
+        }
+      </ul>
+    </div>
+  } @else {
+    <app-empty-state
+      icon="pi pi-folder-open"
+      [title]="'plans.empty.title' | transloco"
+      [message]="'plans.empty.message' | transloco"
+    >
+      <ng-container [ngTemplateOutlet]="createActions" />
+    </app-empty-state>
+  }
+}
+
+<ng-template #createActions>
+  <div class="page__actions">
+    <a pButton routerLink="/plans/import">
+      <i class="pi pi-upload" pButtonIcon aria-hidden="true"></i>
+      <span pButtonLabel>{{ 'plans.import' | transloco }}</span>
+    </a>
+    <a pButton severity="secondary" routerLink="/plans/new">
+      <i class="pi pi-plus" pButtonIcon aria-hidden="true"></i>
+      <span pButtonLabel>{{ 'plans.create' | transloco }}</span>
+    </a>
+  </div>
+</ng-template>
