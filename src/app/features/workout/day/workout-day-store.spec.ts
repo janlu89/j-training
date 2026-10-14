@@ -67,7 +67,12 @@ describe('WorkoutDayStore', () => {
 
   it('starts the planned rest when a set is ticked, not when it is unticked', async () => {
     await store.toggleSet(exerciseId, 1);
-    expect(startRest).toHaveBeenCalledWith({ exerciseId, exercise: 'Squat', seconds: 150 });
+    expect(startRest).toHaveBeenCalledWith({
+      exerciseId,
+      exercise: 'Squat',
+      seconds: 150,
+      afterSet: 1,
+    });
 
     await settled(() => rows()[0].logId !== undefined);
     await store.toggleSet(exerciseId, 1);

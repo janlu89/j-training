@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { map, of } from 'rxjs';
 import { LoadUpdate, OpenSession, SetEntry, WorkoutExercise } from '../../../core/models';
 import { LanguageService } from '../../../core/services/language.service';
-import { RestTimerService } from '../../../core/services/rest-timer/rest-timer.service';
+import { RestTimerService, formatRest } from '../../../core/services/rest-timer/rest-timer.service';
 import { proposeLoadUpdates } from '../../../core/services/workout/load-updates';
 import { WorkoutSessionService } from '../../../core/services/workout-session.service';
 import { SetInput, SetRow, buildRows } from './set-rows';
@@ -87,6 +87,19 @@ export class WorkoutDayStore {
     ),
   );
 
+  /** The running rest, shown between the sets of its exercise. */
+  readonly activeRest = computed(() => {
+    const timer = this.restTimer.timer();
+    return timer
+      ? {
+          exerciseId: timer.target.exerciseId,
+          afterSet: timer.target.afterSet,
+          remaining: formatRest(this.restTimer.remainingMs()),
+          finished: this.restTimer.finished(),
+        }
+      : null;
+  });
+
   private readonly rows = computed(() => this.exercises().flatMap(({ rows }) => rows));
 
   /** Keeps what the user types; a set already recorded is updated in the database at once. */
@@ -117,16 +130,24 @@ export class WorkoutDayStore {
       await this.sessions.removeSet(row.logId);
     } else if (row.values) {
       // Started before the write, still inside the user's tap: browsers then allow the alarm.
-      this.startRest(exerciseId);
+      this.startRest(exerciseId, setNo);
       await this.record(exerciseId, row);
     }
   }
 
-  /** Starts the rest planned for the exercise; nothing happens when it has no rest time. */
-  startRest(exerciseId: number): void {
+  /**
+   * Starts the rest planned for the exercise, after the given set when it runs between two sets.
+   * Nothing happens when the exercise has no rest time.
+   */
+  startRest(exerciseId: number, afterSet?: number): void {
     const exercise = this.findExercise(exerciseId)?.entry.exercise;
     if (exercise?.recSec) {
-      this.restTimer.start({ exerciseId, exercise: exercise.esercizio, seconds: exercise.recSec });
+      this.restTimer.start({
+        exerciseId,
+        exercise: exercise.esercizio,
+        seconds: exercise.recSec,
+        ...(afterSet === undefined ? {} : { afterSet }),
+      });
     }
   }
 

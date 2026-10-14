@@ -186,6 +186,9 @@ test.describe('workout', () => {
     const rest = page.getByRole('region', { name: 'Recupero', exact: true });
     await expect(rest).toContainText('Recupero · Squat');
     await expect(rest.getByRole('timer')).toHaveText('2:30');
+    // The same countdown runs between set 1 and set 2.
+    const squatRest = exercise(page, 'Squat').locator('.rest--running');
+    await expect(squatRest).toHaveText('2:30');
     await rest.getByRole('button', { name: 'Aggiungi 15 secondi' }).click();
     await expect(rest.getByRole('timer')).toHaveText('2:45');
 
@@ -212,8 +215,17 @@ test.describe('workout', () => {
     expect((await vibrations()).at(-1)).toEqual([]);
   });
 
-  test('starts a rest by hand and stops it', async ({ page }) => {
+  test('starts a rest by hand, between sets or from the plan line, and stops it', async ({
+    page,
+  }) => {
     await openDay(page, 'Giorno 1 · A');
+    await exercise(page, 'Squat')
+      .getByRole('button', { name: 'Avvia il recupero di 150 secondi dopo la serie 2' })
+      .click();
+    await expect(
+      page.getByRole('region', { name: 'Recupero', exact: true }).getByRole('timer'),
+    ).toHaveText('2:30');
+
     await exercise(page, 'Curl')
       .getByRole('button', { name: 'Avvia recupero di 75 secondi' })
       .click();

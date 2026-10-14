@@ -95,11 +95,13 @@
     "title": "Rest",
     "label": "Rest · {{exercise}}",
     "start": "Start a {{sec}} second rest",
+    "startAfter": "Start the {{sec}} second rest after set {{set}}",
     "minus": "Remove {{sec}} seconds",
     "plus": "Add {{sec}} seconds",
     "stop": "Stop the rest",
     "done": "Rest is over: your turn!",
-    "silence": "Stop the alarm"
+    "silence": "Stop the alarm",
+    "over": "Rest over"
   },
   "plans": {
     "title": "Plans",

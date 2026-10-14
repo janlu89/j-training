@@ -5,6 +5,8 @@ export interface RestTarget {
   exerciseId: number;
   exercise: string;
   seconds: number;
+  /** The set just done, when the rest runs between two sets of the exercise. */
+  afterSet?: number;
 }
 
 /** A running (or just finished) rest. Times are timestamps: the countdown survives throttling. */

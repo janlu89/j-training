@@ -95,11 +95,13 @@
     "title": "Recupero",
     "label": "Recupero · {{exercise}}",
     "start": "Avvia recupero di {{sec}} secondi",
+    "startAfter": "Avvia il recupero di {{sec}} secondi dopo la serie {{set}}",
     "minus": "Togli {{sec}} secondi",
     "plus": "Aggiungi {{sec}} secondi",
     "stop": "Interrompi il recupero",
     "done": "Recupero finito: tocca a te!",
-    "silence": "Ferma l'allarme"
+    "silence": "Ferma l'allarme",
+    "over": "Recupero finito"
   },
   "plans": {
     "title": "Schede",
