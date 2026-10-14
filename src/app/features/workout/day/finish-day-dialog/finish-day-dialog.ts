@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
   linkedSignal,
   model,
@@ -9,23 +10,17 @@ import {
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
-import { Message } from 'primeng/message';
 import { LoadUpdate } from '../../../../core/models';
 import { LoadProposal } from '../../../../core/services/workout/load-updates';
 import { LocalNumberPipe } from '../../../../shared/pipes/local-number.pipe';
 
-/** End of the day: what will be saved, and which loads used today should go into the plan. */
+/**
+ * End of the day: how many sets will be saved (unticked ones included on request), and which loads
+ * used today should go into the plan.
+ */
 @Component({
   selector: 'app-finish-day-dialog',
-  imports: [
-    TranslocoPipe,
-    ButtonDirective,
-    ButtonIcon,
-    ButtonLabel,
-    Dialog,
-    Message,
-    LocalNumberPipe,
-  ],
+  imports: [TranslocoPipe, ButtonDirective, ButtonIcon, ButtonLabel, Dialog, LocalNumberPipe],
   templateUrl: './finish-day-dialog.html',
   styleUrl: './finish-day-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,11 +28,18 @@ import { LocalNumberPipe } from '../../../../shared/pipes/local-number.pipe';
 export class FinishDayDialog {
   readonly visible = model(false);
   readonly proposals = input.required<readonly LoadProposal[]>();
+  /** Sets already ticked, so already in the draft. */
   readonly recorded = input.required<number>();
-  readonly pending = input.required<number>();
+  /** Sets filled in but not ticked, which the user may save with the day. */
+  readonly unticked = input.required<number>();
+  readonly includeUnticked = model.required<boolean>();
   readonly language = input.required<string>();
   readonly busy = input(false);
   readonly save = output<LoadUpdate[]>();
+
+  protected readonly toSave = computed(
+    () => this.recorded() + (this.includeUnticked() ? this.unticked() : 0),
+  );
 
   /** Every proposal starts selected: the plan should follow what was really lifted. */
   protected readonly selected = linkedSignal(

@@ -95,12 +95,13 @@ describe('WorkoutSessionRepository', () => {
     expect(await sessions.getAll()).toEqual([]);
   });
 
-  it('completes the session and copies the chosen loads into the plan atomically', async () => {
+  it('saves the draft and copies the chosen loads into the plan atomically', async () => {
     await workouts.recordSet(days[0], set(squat, 1, 90));
     const session = (await workouts.getDay(days[0].id))!.session!;
 
-    await workouts.completeSession(session.id, 9000, [{ exerciseId: squat, ultimoKg: 90 }]);
+    const saved = await workouts.saveDay(days[0], [], 9000, [{ exerciseId: squat, ultimoKg: 90 }]);
 
+    expect(saved).toBe(session.id);
     expect(await sessions.getById(session.id)).toMatchObject({
       endedAt: 9000,
       outcome: 'completed',
@@ -111,15 +112,56 @@ describe('WorkoutSessionRepository', () => {
     expect((await workouts.getDay(days[0].id))?.session).toBeUndefined();
   });
 
-  it('refuses to complete a session twice', async () => {
+  it('saves a day filled in at the end without any ticked set', async () => {
+    const id = await workouts.saveDay(
+      days[0],
+      [set(squat, 1, 80, 8000), set(squat, 2, 82.5, 8000), set(bench, 1, 60, 8000)],
+      9000,
+      [],
+    );
+
+    expect(await sessions.getById(id)).toMatchObject({
+      dayId: days[0].id,
+      startedAt: 8000,
+      endedAt: 9000,
+      outcome: 'completed',
+    });
+    expect(
+      (await setLogs.getBySession(id)).map((log) => [log.esercizio, log.setNo, log.kg]),
+    ).toEqual([
+      ['Squat', 1, 80],
+      ['Squat', 2, 82.5],
+      ['Panca piana', 1, 60],
+    ]);
+  });
+
+  it('adds the sets not ticked to the draft, without duplicating the ticked ones', async () => {
     await workouts.recordSet(days[0], set(squat, 1, 90));
-    const session = (await workouts.getDay(days[0].id))!.session!;
-    await workouts.completeSession(session.id, 9000, []);
+    const draft = (await workouts.getDay(days[0].id))!.session!;
+
+    await workouts.saveDay(days[0], [set(squat, 1, 95), set(squat, 2, 90)], 9000, []);
+
+    expect((await setLogs.getBySession(draft.id)).map((log) => [log.setNo, log.kg])).toEqual([
+      [1, 95],
+      [2, 90],
+    ]);
+  });
+
+  it('refuses to save a day with nothing to save, changing nothing', async () => {
+    await workouts.recordSet(days[0], set(squat, 1, 90));
+    await workouts.saveDay(days[0], [], 9000, []);
 
     await expect(
-      workouts.completeSession(session.id, 9500, [{ exerciseId: squat, ultimoKg: 200 }]),
+      workouts.saveDay(days[0], [], 9500, [{ exerciseId: squat, ultimoKg: 200 }]),
     ).rejects.toThrow();
     expect((await TestBed.inject(ExerciseRepository).getById(squat))?.ultimoKg).toBe(60);
+  });
+
+  it('does not save a day while another day has a workout in progress', async () => {
+    await workouts.recordSet(days[0], set(squat, 1, 90));
+    await expect(workouts.saveDay(days[1], [set(squat, 1, 80)], 9000, [])).rejects.toBeInstanceOf(
+      OpenSessionConflictError,
+    );
   });
 
   it('records a skipped day as a finished session without sets', async () => {
@@ -151,10 +193,10 @@ describe('WorkoutSessionRepository', () => {
 
   it('returns the sets of the last other session with the same exercise name', async () => {
     await workouts.recordSet(days[1], set(squat, 1, 70, 100));
-    await workouts.completeSession((await workouts.getDay(days[1].id))!.session!.id, 200, []);
+    await workouts.saveDay(days[1], [], 200, []);
     await workouts.recordSet(days[0], set(squat, 2, 77.5, 300));
     await workouts.recordSet(days[0], set(squat, 1, 75, 300));
-    await workouts.completeSession((await workouts.getDay(days[0].id))!.session!.id, 400, []);
+    await workouts.saveDay(days[0], [], 400, []);
 
     await workouts.recordSet(days[0], set(squat, 1, 80, 500));
     const day = await workouts.getDay(days[0].id);

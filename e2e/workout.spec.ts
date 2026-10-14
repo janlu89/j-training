@@ -68,8 +68,10 @@ test.describe('workout', () => {
 
     await page.getByRole('button', { name: 'Salva giornata' }).click();
     const dialog = page.getByRole('dialog', { name: 'Salva giornata' });
-    await expect(dialog).toContainText('Serie registrate: 1');
-    await expect(dialog).toContainText('Serie non segnate come fatte: 5');
+    await expect(dialog).toContainText('Serie da salvare: 1');
+    await expect(
+      dialog.getByRole('checkbox', { name: /Salva anche le serie non spuntate \(5\)/ }),
+    ).not.toBeChecked();
     await expect(dialog.getByRole('checkbox', { name: /Squat/ })).toBeChecked();
     await expect(dialog).toContainText('80 kg → 82,5 kg');
     await dialog.getByRole('button', { name: 'Salva', exact: true }).click();
@@ -82,6 +84,28 @@ test.describe('workout', () => {
     await page.getByRole('link', { name: 'Schede' }).click();
     await page.getByRole('link', { name: 'Apri' }).click();
     await expect(page.getByText('82,5 kg')).toBeVisible();
+  });
+
+  test('saves a day filled in at the end without ticking any set', async ({ page }) => {
+    await openDay(page, 'Giorno 1 · A');
+    const squat = exercise(page, 'Squat');
+    await squat.getByLabel('Serie 1, kg').fill('85');
+    await squat.getByRole('button', { name: 'Togli serie' }).click();
+    await expect(squat.getByLabel('Serie 3, kg')).toBeHidden();
+
+    await page.getByRole('button', { name: 'Salva giornata' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Salva giornata' });
+    await expect(
+      dialog.getByRole('checkbox', { name: /Salva anche le serie non spuntate \(5\)/ }),
+    ).toBeChecked();
+    await expect(dialog).toContainText('Serie da salvare: 5');
+    await expect(dialog).toContainText('80 kg → 85 kg');
+    await dialog.getByRole('button', { name: 'Salva', exact: true }).click();
+
+    await expect(page).toHaveURL(/\/workout$/);
+    await expect(dayItem(page, 'Giorno 1')).toContainText('Ultimo: 15/10/26 · completato');
+    await openDay(page, 'Giorno 1 · A');
+    await expect(exercise(page, 'Squat').getByLabel('Serie 1, kg')).toHaveValue('85');
   });
 
   test('skips a day and moves the rotation on', async ({ page }) => {

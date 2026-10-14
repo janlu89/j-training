@@ -176,6 +176,12 @@ tbody .sets__no {
   }
 }
 
+.log__empty {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+}
+
 .log__actions {
   display: flex;
   flex-wrap: wrap;

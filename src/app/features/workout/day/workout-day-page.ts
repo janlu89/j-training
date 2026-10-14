@@ -49,7 +49,7 @@ export class WorkoutDayPage {
 
   protected async finish(loads: LoadUpdate[]): Promise<void> {
     await this.run(async () => {
-      await this.store.complete(loads);
+      await this.store.save(loads);
       this.finishing.set(false);
       await this.router.navigateByUrl('/workout');
     });

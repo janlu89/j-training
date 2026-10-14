@@ -71,6 +71,7 @@
         (inputChange)="store.setInput(item.entry.exercise.id, $event.setNo, $event.input)"
         (doneToggle)="store.toggleSet(item.entry.exercise.id, $event)"
         (addSet)="store.addSet(item.entry.exercise.id)"
+        (removeSet)="store.removeLastSet(item.entry.exercise.id)"
         (markAll)="store.markAllDone(item.entry.exercise.id)"
       />
     } @empty {
@@ -86,14 +87,14 @@
     <section class="finish" [attr.aria-label]="'workout.finish.title' | transloco">
       @if (store.hasInvalidRecorded()) {
         <p class="finish__hint finish__hint--error">{{ 'workout.day.fixInvalid' | transloco }}</p>
-      } @else if (!workout.session) {
+      } @else if (!store.canSave()) {
         <p class="finish__hint">{{ 'workout.day.saveHint' | transloco }}</p>
       }
       <div class="page__actions">
         <button
           pButton
           type="button"
-          [disabled]="!workout.session || store.hasInvalidRecorded() || busy()"
+          [disabled]="!store.canSave() || busy()"
           (click)="finishing.set(true)"
         >
           <i class="pi pi-check" pButtonIcon aria-hidden="true"></i>
@@ -131,7 +132,8 @@
     [(visible)]="finishing"
     [proposals]="store.loadProposals()"
     [recorded]="store.recordedCount()"
-    [pending]="store.pendingCount()"
+    [unticked]="store.untickedEntries().length"
+    [(includeUnticked)]="store.includeUnticked"
     [language]="language()"
     [busy]="busy()"
     (save)="finish($event)"

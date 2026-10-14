@@ -1,8 +1,8 @@
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, computed, inject, linkedSignal } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { map, of } from 'rxjs';
-import { LoadUpdate, OpenSession, WorkoutExercise } from '../../../core/models';
+import { LoadUpdate, OpenSession, SetEntry, WorkoutExercise } from '../../../core/models';
 import { LanguageService } from '../../../core/services/language.service';
 import { proposeLoadUpdates } from '../../../core/services/workout/load-updates';
 import { WorkoutSessionService } from '../../../core/services/workout-session.service';
@@ -53,12 +53,37 @@ export class WorkoutDayStore {
   /** Another day has a workout in progress: this one cannot be recorded until it is resolved. */
   readonly locked = computed(() => !!this.workout()?.otherOpenSession);
   readonly recordedCount = computed(() => this.rows().filter(isDone).length);
-  readonly pendingCount = computed(() => this.rows().filter((row) => !isDone(row)).length);
+  /** Sets filled in but not ticked: they can be saved with the day ("fill in at the end"). */
+  readonly untickedEntries = computed<SetEntry[]>(() =>
+    this.exercises().flatMap(({ entry, rows }) =>
+      rows.flatMap((row) =>
+        !isDone(row) && row.values
+          ? [{ exercise: entry.exercise, setNo: row.setNo, values: row.values }]
+          : [],
+      ),
+    ),
+  );
+  /** Whether saving also keeps the unticked sets: the default when nothing was ticked. */
+  readonly includeUnticked = linkedSignal(() => this.recordedCount() === 0);
   /** A recorded set edited into an invalid value would be saved with its previous value. */
   readonly hasInvalidRecorded = computed(() =>
     this.rows().some((row) => isDone(row) && !row.values),
   );
-  readonly loadProposals = computed(() => proposeLoadUpdates(this.workout()?.exercises ?? []));
+  readonly canSave = computed(
+    () =>
+      !this.hasInvalidRecorded() && (this.recordedCount() > 0 || this.untickedEntries().length > 0),
+  );
+  /** Loads that will be saved, compared with the plan. */
+  readonly loadProposals = computed(() =>
+    proposeLoadUpdates(
+      this.exercises().map(({ entry, rows }) => ({
+        exercise: entry.exercise,
+        loads: rows.flatMap((row) =>
+          row.values && (isDone(row) || this.includeUnticked()) ? [row.values.kg] : [],
+        ),
+      })),
+    ),
+  );
 
   private readonly rows = computed(() => this.exercises().flatMap(({ rows }) => rows));
 
@@ -90,25 +115,41 @@ export class WorkoutDayStore {
     }
   }
 
-  /** Records every complete set not done yet: the "fill in at the end" way of logging. */
+  /** Records every complete set not done yet, one exercise at a time. */
   async markAllDone(exerciseId: number): Promise<void> {
-    const rows = this.exercises().find(({ entry }) => entry.exercise.id === exerciseId)?.rows ?? [];
-    for (const row of rows.filter((item) => !isDone(item) && item.values)) {
-      await this.record(exerciseId, row);
+    for (const row of this.findExercise(exerciseId)?.rows ?? []) {
+      if (!isDone(row) && row.values) {
+        await this.record(exerciseId, row);
+      }
     }
   }
 
   addSet(exerciseId: number): void {
-    const dayId = this.workout()?.day.id;
-    if (dayId !== undefined) {
-      this.drafts.addSet(dayId, exerciseId);
+    const item = this.findExercise(exerciseId);
+    if (item) {
+      this.resize(item, item.rows.length + 1);
     }
   }
 
-  async complete(loads: readonly LoadUpdate[]): Promise<void> {
+  /** Removes the last set of an exercise; if it was already recorded, the record goes too. */
+  async removeLastSet(exerciseId: number): Promise<void> {
+    const item = this.findExercise(exerciseId);
+    const last = item?.rows.at(-1);
+    if (!item || !last) {
+      return;
+    }
+    this.resize(item, item.rows.length - 1);
+    if (last.logId !== undefined) {
+      await this.sessions.removeSet(last.logId);
+    }
+  }
+
+  /** Saves the day; unticked sets are included when the user chose so in the summary. */
+  async save(loads: readonly LoadUpdate[]): Promise<void> {
     const workout = this.workout();
     if (workout) {
-      await this.sessions.completeDay(workout, loads);
+      const unticked = this.includeUnticked() ? this.untickedEntries() : [];
+      await this.sessions.saveDay(workout, unticked, loads);
       this.drafts.clearDay(workout.day.id);
     }
   }
@@ -129,16 +170,26 @@ export class WorkoutDayStore {
 
   private async record(exerciseId: number, row: SetRow): Promise<void> {
     const workout = this.workout();
-    const exercise = workout?.exercises.find((entry) => entry.exercise.id === exerciseId)?.exercise;
+    const exercise = this.findExercise(exerciseId)?.entry.exercise;
     if (workout && exercise && row.values) {
-      await this.sessions.recordSet(workout, exercise, row.setNo, row.values);
+      await this.sessions.recordSet(workout, { exercise, setNo: row.setNo, values: row.values });
     }
   }
 
+  /** The number of rows is kept as a difference from the plan, so plan edits still apply. */
+  private resize({ entry }: ExerciseRows, count: number): void {
+    const dayId = this.workout()?.day.id;
+    if (dayId !== undefined) {
+      this.drafts.setSetDelta(dayId, entry.exercise.id, count - entry.exercise.serie);
+    }
+  }
+
+  private findExercise(exerciseId: number): ExerciseRows | undefined {
+    return this.exercises().find(({ entry }) => entry.exercise.id === exerciseId);
+  }
+
   private findRow(exerciseId: number, setNo: number): SetRow | undefined {
-    return this.exercises()
-      .find(({ entry }) => entry.exercise.id === exerciseId)
-      ?.rows.find((row) => row.setNo === setNo);
+    return this.findExercise(exerciseId)?.rows.find((row) => row.setNo === setNo);
   }
 }
 

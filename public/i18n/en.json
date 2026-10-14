@@ -47,7 +47,7 @@
         "message": "This day is no longer part of the plan."
       },
       "startedOn": "In progress since {{date}}",
-      "hint": "Tick each set with ✓ as you train, or all of them at the end: every ticked set is already saved.",
+      "hint": "Tick each set with ✓ as you train, or fill everything in at the end and save: ticked sets are already saved.",
       "otherInProgress": "A workout is in progress: {{day}}. Save it or discard the draft before recording this day.",
       "resumeOther": "Go to the workout in progress",
       "editExercise": "Edit {{exercise}}",
@@ -62,20 +62,23 @@
       "setReps": "Set {{set}}, reps",
       "setDone": "Set {{set}} done",
       "addSet": "Add set",
+      "removeSet": "Remove set",
+      "noSets": "No sets: add one if you do this exercise.",
       "markAll": "Mark all done",
       "save": "Save day",
       "skip": "Skip day",
       "discard": "Discard draft",
-      "saveHint": "Tick at least one set to save the day.",
+      "saveHint": "Enter the kg and reps of at least one set to save the day.",
       "fixInvalid": "Fix the kg or reps of the highlighted sets before saving."
     },
     "finish": {
       "title": "Save day",
-      "recorded": "Recorded sets: {{count}}",
-      "pending": "Sets not ticked as done: {{count}}. They will not be saved.",
       "loadsTitle": "Update the load in the plan",
       "loadsHint": "Today you used loads that differ from the plan: choose which ones to update.",
-      "confirm": "Save"
+      "confirm": "Save",
+      "toSave": "Sets to save: {{count}}",
+      "includeUnticked": "Also save the unticked sets ({{count}})",
+      "includeUntickedHint": "With the values shown: handy when you fill everything in at the end."
     },
     "skip": {
       "title": "Skip day",

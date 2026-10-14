@@ -98,23 +98,8 @@ export class WorkoutSessionRepository {
   recordSet(day: TrainingDay, set: NewSet): Promise<number> {
     const { db } = this;
     return db.transaction('rw', db.sessions, db.setLogs, async () => {
-      const open = await this.findOpen();
-      if (open && open.dayId !== day.id) {
-        throw new OpenSessionConflictError(open.dayId);
-      }
-      const sessionId =
-        open?.id ??
-        (await db.sessions.add({ phaseId: day.phaseId, dayId: day.id, startedAt: set.date }));
-      const existing = await db.setLogs
-        .where('sessionId')
-        .equals(sessionId)
-        .filter((log) => log.exerciseId === set.exerciseId && log.setNo === set.setNo)
-        .first();
-      if (existing) {
-        await db.setLogs.update(existing.id, { kg: set.kg, rip: set.rip, date: set.date });
-        return existing.id;
-      }
-      return db.setLogs.add({ ...set, sessionId });
+      const sessionId = await this.openSessionFor(day, set.date);
+      return this.putSet(sessionId, set);
     });
   }
 
@@ -139,22 +124,32 @@ export class WorkoutSessionRepository {
     });
   }
 
-  /** Closes the draft as completed and copies the chosen loads into the plan, atomically. */
-  completeSession(
-    sessionId: number,
+  /**
+   * Saves the day atomically: the given sets (filled in but not ticked, when the user chose to
+   * include them) join the draft, which is created if nothing was ticked; then the session is
+   * closed as completed and the chosen loads are copied into the plan. Returns the session id.
+   */
+  saveDay(
+    day: TrainingDay,
+    sets: readonly NewSet[],
     endedAt: EpochMs,
     loads: readonly LoadUpdate[],
-  ): Promise<void> {
+  ): Promise<number> {
     const { db } = this;
-    return db.transaction('rw', db.sessions, db.exercises, async () => {
-      const session = await db.sessions.get(sessionId);
-      if (!session || session.endedAt !== undefined) {
-        throw new Error(`Session ${sessionId} is not in progress`);
+    return db.transaction('rw', db.sessions, db.setLogs, db.exercises, async () => {
+      const hasDraft = (await this.findOpen())?.dayId === day.id;
+      if (!hasDraft && !sets.length) {
+        throw new Error(`Training day ${day.id} has no sets to save`);
+      }
+      const sessionId = await this.openSessionFor(day, sets[0]?.date ?? endedAt);
+      for (const set of sets) {
+        await this.putSet(sessionId, set);
       }
       await db.sessions.update(sessionId, { endedAt, outcome: 'completed' });
       for (const { exerciseId, ultimoKg } of loads) {
         await db.exercises.update(exerciseId, { ultimoKg });
       }
+      return sessionId;
     });
   }
 
@@ -186,6 +181,29 @@ export class WorkoutSessionRepository {
       await db.setLogs.where('sessionId').equals(sessionId).delete();
       await db.sessions.delete(sessionId);
     });
+  }
+
+  /** The draft of the day, created when missing. Only one day can have a draft at a time. */
+  private async openSessionFor(day: TrainingDay, startedAt: EpochMs): Promise<number> {
+    const open = await this.findOpen();
+    if (open && open.dayId !== day.id) {
+      throw new OpenSessionConflictError(open.dayId);
+    }
+    return open?.id ?? this.db.sessions.add({ phaseId: day.phaseId, dayId: day.id, startedAt });
+  }
+
+  /** Adds a set to a session, or overwrites the one with the same exercise and number. */
+  private async putSet(sessionId: number, set: NewSet): Promise<number> {
+    const existing = await this.db.setLogs
+      .where('sessionId')
+      .equals(sessionId)
+      .filter((log) => log.exerciseId === set.exerciseId && log.setNo === set.setNo)
+      .first();
+    if (existing) {
+      await this.db.setLogs.update(existing.id, { kg: set.kg, rip: set.rip, date: set.date });
+      return existing.id;
+    }
+    return this.db.setLogs.add({ ...set, sessionId });
   }
 
   /** `endedAt` is not indexed: a scan, cheap for the few hundred sessions of a personal log. */

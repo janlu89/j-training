@@ -47,7 +47,7 @@
         "message": "Questo giorno non esiste più nella scheda."
       },
       "startedOn": "In corso dal {{date}}",
-      "hint": "Segna ogni serie con ✓ mentre ti alleni, oppure tutte alla fine: ogni serie segnata è già salvata.",
+      "hint": "Spunta ogni serie con ✓ mentre ti alleni, oppure compila tutto alla fine e salva: le serie spuntate sono già salvate.",
       "otherInProgress": "C'è una giornata in corso: {{day}}. Salvala o scarta la bozza prima di registrare questo giorno.",
       "resumeOther": "Vai alla giornata in corso",
       "editExercise": "Modifica {{exercise}}",
@@ -62,20 +62,23 @@
       "setReps": "Serie {{set}}, ripetizioni",
       "setDone": "Serie {{set}} fatta",
       "addSet": "Aggiungi serie",
+      "removeSet": "Togli serie",
+      "noSets": "Nessuna serie: aggiungine una se fai questo esercizio.",
       "markAll": "Segna tutte fatte",
       "save": "Salva giornata",
       "skip": "Salta giornata",
       "discard": "Scarta bozza",
-      "saveHint": "Segna almeno una serie per salvare la giornata.",
+      "saveHint": "Inserisci kg e ripetizioni di almeno una serie per salvare la giornata.",
       "fixInvalid": "Correggi kg o ripetizioni delle serie evidenziate prima di salvare."
     },
     "finish": {
       "title": "Salva giornata",
-      "recorded": "Serie registrate: {{count}}",
-      "pending": "Serie non segnate come fatte: {{count}}. Non verranno salvate.",
       "loadsTitle": "Aggiorna il carico in scheda",
       "loadsHint": "Oggi hai usato carichi diversi dalla scheda: scegli quali aggiornare.",
-      "confirm": "Salva"
+      "confirm": "Salva",
+      "toSave": "Serie da salvare: {{count}}",
+      "includeUnticked": "Salva anche le serie non spuntate ({{count}})",
+      "includeUntickedHint": "Con i valori mostrati: utile se compili tutto a fine allenamento."
     },
     "skip": {
       "title": "Salta giornata",

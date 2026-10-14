@@ -88,7 +88,45 @@ describe('WorkoutDayStore', () => {
     await store.markAllDone(exerciseId);
 
     await settled(() => store.recordedCount() === 4);
-    expect(store.pendingCount()).toBe(0);
+    expect(store.untickedEntries()).toEqual([]);
+  });
+
+  it('removes the last set, also below the plan and also when it was recorded', async () => {
+    await store.removeLastSet(exerciseId);
+    await settled(() => rows().length === 2);
+
+    await store.toggleSet(exerciseId, 2);
+    await settled(() => store.recordedCount() === 1);
+    await store.removeLastSet(exerciseId);
+
+    await settled(() => rows().length === 1 && store.recordedCount() === 0);
+    expect(store.workout()?.session).toBeUndefined();
+  });
+
+  it('saves a day filled in at the end, without ticking any set', async () => {
+    await store.setInput(exerciseId, 1, { kg: '85', rip: '8' });
+    expect(store.includeUnticked()).toBe(true);
+    expect(store.canSave()).toBe(true);
+    expect(store.loadProposals()[0]).toMatchObject({ current: 80, proposed: 85 });
+
+    await store.save([]);
+
+    const logs = await TestBed.inject(SetLogRepository).getAll();
+    expect(logs.map((log) => [log.setNo, log.kg])).toEqual([
+      [1, 85],
+      [2, 80],
+      [3, 80],
+    ]);
+  });
+
+  it('saves only the ticked sets when the user leaves the others out', async () => {
+    await store.toggleSet(exerciseId, 1);
+    await settled(() => store.recordedCount() === 1);
+    expect(store.includeUnticked()).toBe(false);
+
+    await store.save([]);
+
+    expect(await TestBed.inject(SetLogRepository).getAll()).toHaveLength(1);
   });
 
   it('proposes the load used today for the plan', async () => {

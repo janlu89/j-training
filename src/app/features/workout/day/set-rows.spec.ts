@@ -67,12 +67,20 @@ describe('buildRows', () => {
   it('prefers what the user typed and adds the extra sets requested', () => {
     const draft: DayDraft = {
       inputs: new Map([[setKey(EXERCISE_ID, 2), { kg: '6', rip: '' }]]),
-      extraSets: new Map([[EXERCISE_ID, 1]]),
+      setDelta: new Map([[EXERCISE_ID, 1]]),
     };
     const rows = buildRows(entry({}), draft, 'it');
 
     expect(rows).toHaveLength(4);
     expect(rows[1]).toMatchObject({ input: { kg: '6', rip: '' }, values: null });
+  });
+
+  it('removes sets below the plan, but never a recorded one', () => {
+    const removed: DayDraft = { inputs: new Map(), setDelta: new Map([[EXERCISE_ID, -2]]) };
+    expect(buildRows(entry({}), removed, 'it')).toHaveLength(1);
+    expect(buildRows(entry({}, [[2, 60]]), removed, 'it')).toHaveLength(2);
+    const all: DayDraft = { inputs: new Map(), setDelta: new Map([[EXERCISE_ID, -5]]) };
+    expect(buildRows(entry({}), all, 'it')).toEqual([]);
   });
 
   it('leaves the load empty for an exercise still to be tested', () => {
