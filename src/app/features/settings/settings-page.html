@@ -1,0 +1,28 @@
+<div class="settings">
+  <h2 class="settings__title">{{ 'settings.title' | transloco }}</h2>
+
+  <app-settings-section
+    [title]="'settings.language.title' | transloco"
+    [description]="'settings.language.description' | transloco"
+    headingId="settings-language-title"
+  >
+    <p-selectbutton
+      [options]="languageOptions"
+      optionLabel="label"
+      optionValue="code"
+      [allowEmpty]="false"
+      [ngModel]="language()"
+      (ngModelChange)="changeLanguage($event)"
+      ariaLabelledBy="settings-language-title"
+    />
+  </app-settings-section>
+
+  <app-settings-section [title]="'settings.storage.title' | transloco">
+    <p-tag
+      class="settings__status"
+      [severity]="storageSeverity()"
+      [value]="'settings.storage.status.' + storageStatus() | transloco"
+    />
+    <p class="settings__hint">{{ 'settings.storage.hint.' + storageStatus() | transloco }}</p>
+  </app-settings-section>
+</div>

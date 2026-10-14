@@ -1,0 +1,21 @@
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.settings__title {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.settings__status {
+  align-self: flex-start;
+}
+
+.settings__hint {
+  margin: 0;
+  color: var(--p-text-muted-color);
+  font-size: 0.875rem;
+}
