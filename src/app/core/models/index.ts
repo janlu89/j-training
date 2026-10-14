@@ -8,3 +8,4 @@ export * from './session.model';
 export * from './set-log.model';
 export * from './settings.model';
 export * from './training-day.model';
+export * from './workout.model';

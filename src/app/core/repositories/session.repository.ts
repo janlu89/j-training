@@ -9,10 +9,10 @@ export class SessionRepository extends EntityRepository<Session> {
     return this.db.sessions;
   }
 
-  /** Sessions of a phase, most recent first. */
+  /** Sessions of a phase, most recent first; the id breaks ties between equal start times. */
   async getByPhase(phaseId: number): Promise<Session[]> {
-    const sessions = await this.table.where('phaseId').equals(phaseId).sortBy('startedAt');
-    return sessions.reverse();
+    const sessions = await this.table.where('phaseId').equals(phaseId).toArray();
+    return sessions.sort((a, b) => b.startedAt - a.startedAt || b.id - a.id);
   }
 
   watchByPhase(phaseId: number): Observable<Session[]> {

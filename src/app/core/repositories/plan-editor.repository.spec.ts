@@ -84,6 +84,17 @@ describe('PlanEditorRepository', () => {
     expect(await TestBed.inject(ExerciseRepository).getAll()).toEqual([]);
   });
 
+  it('keeps a workout in progress on a deleted day as a completed session', async () => {
+    const { dayIds } = await planWithDays('A');
+    const sessions = TestBed.inject(SessionRepository);
+    const id = await sessions.add({ phaseId: 1, dayId: dayIds[0], startedAt: 1 });
+
+    await editor.deleteDay(dayIds[0]);
+
+    expect(await sessions.getById(id)).toMatchObject({ outcome: 'completed' });
+    expect((await sessions.getById(id))?.endedAt).toBeGreaterThan(0);
+  });
+
   it('adds manual exercises at the end of the day', async () => {
     const { phaseId, dayIds } = await planWithDays('A');
     await editor.addExercise(dayIds[0], exerciseInput('Squat'));
