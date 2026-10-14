@@ -15,10 +15,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 1rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--p-primary-200);
   border-radius: 12px;
-  background: var(--jt-chrome-gradient);
-  color: var(--jt-on-chrome);
+  background: var(--p-primary-50);
 }
 
 .resume__text {
@@ -34,7 +34,7 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--jt-accent-on-dark);
+  color: var(--p-primary-800);
 }
 
 .resume__day {
@@ -47,5 +47,5 @@
 .resume__meta {
   margin: 0;
   font-size: 0.875rem;
-  color: var(--jt-on-chrome-muted);
+  color: var(--p-text-muted-color);
 }

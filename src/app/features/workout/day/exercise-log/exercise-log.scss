@@ -28,8 +28,12 @@
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 50%;
-  color: var(--p-text-muted-color);
+  color: var(--jt-icon-muted);
   text-decoration: none;
+
+  i {
+    font-size: var(--jt-icon-size-sm);
+  }
 
   &:hover {
     background: var(--p-content-hover-background);
@@ -49,6 +53,37 @@
   font-variant-numeric: tabular-nums;
 }
 
+.log__rest {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2rem;
+  margin: -0.25rem 0;
+  padding: 0 0.625rem;
+  border: 1px solid var(--p-surface-200);
+  border-radius: 999px;
+  background: none;
+  color: var(--p-text-color);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+
+  i {
+    font-size: 0.75rem;
+    color: var(--jt-icon-muted);
+  }
+
+  &:hover {
+    border-color: var(--p-primary-300);
+    background: var(--p-primary-50);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--p-primary-color);
+    outline-offset: 2px;
+  }
+}
+
 .log__equipment {
   display: flex;
   align-items: center;
@@ -59,6 +94,11 @@
   background: var(--p-surface-100);
   font-weight: 600;
   overflow-wrap: anywhere;
+
+  i {
+    font-size: var(--jt-icon-size-sm);
+    color: var(--jt-icon-muted);
+  }
 }
 
 .log__note {
@@ -147,33 +187,60 @@ tbody .sets__no {
   }
 }
 
+// The button keeps a 44 px touch target; the visible mark is a small circle inside it.
 .sets__done {
   display: grid;
   place-items: center;
   width: 2.75rem;
   height: 2.75rem;
   margin: 0 auto;
-  border: 2px solid var(--p-surface-500);
+  padding: 0;
+  border: 0;
   border-radius: 50%;
-  background: var(--p-content-background);
-  color: var(--p-surface-600);
+  background: none;
   cursor: pointer;
 
-  &[aria-pressed='true'] {
+  &:focus-visible {
+    outline: 2px solid var(--p-primary-color);
+    outline-offset: 0;
+  }
+
+  &:disabled {
+    cursor: default;
+
+    .sets__mark {
+      opacity: 0.45;
+    }
+  }
+}
+
+.sets__mark {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid var(--p-surface-300);
+  border-radius: 50%;
+  color: var(--jt-icon-muted);
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+
+  i {
+    font-size: 0.75rem;
+  }
+
+  [aria-pressed='true'] > & {
     border-color: var(--p-primary-color);
     background: var(--p-primary-color);
     color: var(--p-primary-contrast-color);
   }
+}
 
-  &:focus-visible {
-    outline: 2px solid var(--jt-navy);
-    outline-offset: 2px;
-  }
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: default;
-  }
+.log__empty {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
 }
 
 .log__actions {
@@ -186,6 +253,7 @@ tbody .sets__no {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
+  font-size: 0.875rem;
   min-height: 2.75rem;
   padding: 0;
   border: 0;
@@ -198,6 +266,10 @@ tbody .sets__no {
   &:focus-visible {
     outline: 2px solid var(--p-primary-color);
     outline-offset: 2px;
+  }
+
+  i {
+    font-size: 0.6875rem;
   }
 
   &:disabled {

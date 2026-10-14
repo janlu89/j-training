@@ -1,6 +1,6 @@
 # J-Training — Piano di sviluppo per fasi
 
-Ultimo aggiornamento: 2026-10-14 (fasi F2–F5 riviste su richiesta di Gianluca; F5 include le correzioni dalla prova di F4)
+Ultimo aggiornamento: 2026-10-14 (fasi F2–F5 riviste su richiesta di Gianluca; F5 include le correzioni dalla prova di F4; F5 e F6 consegnate in una sola PR, con recupero tra esercizi e allarme continuo)
 
 ## Identità del progetto
 - Nome app: J-Training

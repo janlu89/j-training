@@ -8,17 +8,12 @@
 }
 
 .empty__icon {
-  display: grid;
-  place-items: center;
-  width: 4rem;
-  height: 4rem;
-  margin-bottom: 0.5rem;
-  border-radius: 50%;
-  background: var(--p-primary-50);
-  color: var(--p-primary-800);
+  margin-bottom: 0.25rem;
+  // Decorative (aria-hidden): a light, small mark rather than a badge.
+  color: var(--p-surface-400);
 
   i {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
 }
 

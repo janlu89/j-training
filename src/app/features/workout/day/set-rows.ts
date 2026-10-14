@@ -19,28 +19,33 @@ export interface SetRow {
   logId?: number;
 }
 
-/** What the user typed on a day and the sets added beyond the plan, per exercise. */
+/**
+ * What the user typed on a day, and per exercise how many sets were added (positive) or removed
+ * (negative) compared with the plan.
+ */
 export interface DayDraft {
   inputs: ReadonlyMap<string, SetInput>;
-  extraSets: ReadonlyMap<number, number>;
+  setDelta: ReadonlyMap<number, number>;
 }
 
-export const EMPTY_DAY_DRAFT: DayDraft = { inputs: new Map(), extraSets: new Map() };
+export const EMPTY_DAY_DRAFT: DayDraft = { inputs: new Map(), setDelta: new Map() };
 
 export function setKey(exerciseId: number, setNo: number): string {
   return `${exerciseId}:${setNo}`;
 }
 
 /**
- * Rows of an exercise: the planned sets plus any added or recorded beyond the plan. Each row shows
- * what the user typed, else the recorded set, else the prefilled proposal.
+ * Rows of an exercise: the planned sets, plus or minus those the user added or removed, and never
+ * fewer than the sets already recorded. Each row shows what the user typed, else the recorded set,
+ * else the prefilled proposal.
  */
 export function buildRows(entry: WorkoutExercise, draft: DayDraft, language: string): SetRow[] {
   const { exercise, sets } = entry;
   const recorded = new Map(sets.map((set) => [set.setNo, set]));
   const count = Math.max(
-    exercise.serie + (draft.extraSets.get(exercise.id) ?? 0),
+    exercise.serie + (draft.setDelta.get(exercise.id) ?? 0),
     sets.at(-1)?.setNo ?? 0,
+    0,
   );
   return Array.from({ length: count }, (_, index) => {
     const setNo = index + 1;

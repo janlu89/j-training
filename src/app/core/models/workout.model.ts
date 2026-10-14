@@ -10,6 +10,13 @@ export interface SetValues {
   rip: number;
 }
 
+/** A set filled in on the workout page: which exercise, which set and its values. */
+export interface SetEntry {
+  exercise: Exercise;
+  setNo: number;
+  values: SetValues;
+}
+
 /** An exercise on its workout page, with what was done today and last time. */
 export interface WorkoutExercise {
   exercise: Exercise;

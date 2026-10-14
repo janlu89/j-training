@@ -1,14 +1,10 @@
-import { Exercise, WorkoutExercise } from '../../models';
-import { newExercise, newSetLog } from '../../testing/fixtures';
-import { proposeLoadUpdates } from './load-updates';
+import { Exercise } from '../../models';
+import { newExercise } from '../../testing/fixtures';
+import { ExerciseLoads, proposeLoadUpdates } from './load-updates';
 
-function trained(id: number, ultimoKg: number | null, kgs: number[]): WorkoutExercise {
+function trained(id: number, ultimoKg: number | null, loads: number[]): ExerciseLoads {
   const exercise: Exercise = { id, ...newExercise({ esercizio: `Esercizio ${id}`, ultimoKg }) };
-  return {
-    exercise,
-    sets: kgs.map((kg, index) => ({ id: index + 1, ...newSetLog({ setNo: index + 1, kg }) })),
-    previous: [],
-  };
+  return { exercise, loads };
 }
 
 describe('proposeLoadUpdates', () => {

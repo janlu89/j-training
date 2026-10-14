@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { PlanEditorRepository } from '../../../core/repositories/plan-editor.repository';
 import { SetLogRepository } from '../../../core/repositories/set-log.repository';
 import { CLOCK } from '../../../core/services/clock';
+import { RestTimerService } from '../../../core/services/rest-timer/rest-timer.service';
 import { newExerciseInput } from '../../../core/testing/fixtures';
 import { useTestDatabase } from '../../../core/testing/test-database';
 import { provideTranslocoForTests } from '../../../core/testing/transloco-testing';
@@ -13,23 +14,27 @@ describe('WorkoutDayStore', () => {
   useTestDatabase();
   let store: WorkoutDayStore;
   let exerciseId: number;
+  let startRest: ReturnType<typeof vi.fn>;
+  let dayId: number;
 
   beforeEach(async () => {
     const params = new BehaviorSubject(convertToParamMap({}));
+    startRest = vi.fn();
     TestBed.configureTestingModule({
       providers: [
         WorkoutDayStore,
         provideTranslocoForTests(),
         { provide: CLOCK, useValue: () => 1_000 },
         { provide: ActivatedRoute, useValue: { paramMap: params } },
+        { provide: RestTimerService, useValue: { start: startRest } },
       ],
     });
     const editor = TestBed.inject(PlanEditorRepository);
     const phaseId = await editor.createPlan({ name: 'Ottobre', fase: 1 }, true);
-    const dayId = await editor.addDay(phaseId, { csvGiorno: 'A' });
+    dayId = await editor.addDay(phaseId, { csvGiorno: 'A' });
     exerciseId = await editor.addExercise(
       dayId,
-      newExerciseInput({ esercizio: 'Squat', serie: 3, rip: '8', ultimoKg: 80 }),
+      newExerciseInput({ esercizio: 'Squat', serie: 3, rip: '8', ultimoKg: 80, recSec: 150 }),
     );
     params.next(convertToParamMap({ dayId: String(dayId) }));
     store = TestBed.inject(WorkoutDayStore);
@@ -61,6 +66,39 @@ describe('WorkoutDayStore', () => {
     expect(store.workout()?.session).toBeUndefined();
   });
 
+  it('does not start any rest by itself when a set is ticked', async () => {
+    await store.toggleSet(exerciseId, 1);
+    await settled(() => rows()[0].logId !== undefined);
+    expect(startRest).not.toHaveBeenCalled();
+  });
+
+  it('starts the rest between sets by hand, with the exercise rest time', () => {
+    store.startRest(exerciseId);
+    expect(startRest).toHaveBeenCalledWith({
+      kind: 'sets',
+      exerciseId,
+      exercise: 'Squat',
+      seconds: 150,
+    });
+  });
+
+  it('starts the rest before an exercise by hand, 2 minutes by default', async () => {
+    const bench = await TestBed.inject(PlanEditorRepository).addExercise(
+      dayId,
+      newExerciseInput({ esercizio: 'Panca piana', serie: 2, recSec: 90 }),
+    );
+    await settled(() => store.exercises().length === 2);
+
+    store.startExerciseRest(bench);
+
+    expect(startRest).toHaveBeenCalledWith({
+      kind: 'exercises',
+      exerciseId: bench,
+      exercise: 'Panca piana',
+      seconds: 120,
+    });
+  });
+
   it('updates a recorded set while the user types', async () => {
     await store.toggleSet(exerciseId, 1);
     await settled(() => rows()[0].logId !== undefined);
@@ -88,7 +126,45 @@ describe('WorkoutDayStore', () => {
     await store.markAllDone(exerciseId);
 
     await settled(() => store.recordedCount() === 4);
-    expect(store.pendingCount()).toBe(0);
+    expect(store.untickedEntries()).toEqual([]);
+  });
+
+  it('removes the last set, also below the plan and also when it was recorded', async () => {
+    await store.removeLastSet(exerciseId);
+    await settled(() => rows().length === 2);
+
+    await store.toggleSet(exerciseId, 2);
+    await settled(() => store.recordedCount() === 1);
+    await store.removeLastSet(exerciseId);
+
+    await settled(() => rows().length === 1 && store.recordedCount() === 0);
+    expect(store.workout()?.session).toBeUndefined();
+  });
+
+  it('saves a day filled in at the end, without ticking any set', async () => {
+    await store.setInput(exerciseId, 1, { kg: '85', rip: '8' });
+    expect(store.includeUnticked()).toBe(true);
+    expect(store.canSave()).toBe(true);
+    expect(store.loadProposals()[0]).toMatchObject({ current: 80, proposed: 85 });
+
+    await store.save([]);
+
+    const logs = await TestBed.inject(SetLogRepository).getAll();
+    expect(logs.map((log) => [log.setNo, log.kg])).toEqual([
+      [1, 85],
+      [2, 80],
+      [3, 80],
+    ]);
+  });
+
+  it('saves only the ticked sets when the user leaves the others out', async () => {
+    await store.toggleSet(exerciseId, 1);
+    await settled(() => store.recordedCount() === 1);
+    expect(store.includeUnticked()).toBe(false);
+
+    await store.save([]);
+
+    expect(await TestBed.inject(SetLogRepository).getAll()).toHaveLength(1);
   });
 
   it('proposes the load used today for the plan', async () => {

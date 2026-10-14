@@ -10,8 +10,13 @@
   --jt-on-chrome: #ffffff;
   --jt-on-chrome-muted: #cbd5e1;
   --jt-surface: #f8fafc;
+  /* Quiet icons: small, slate 500 (4.8:1 on white, above the 3:1 needed by control icons). */
+  --jt-icon-size: 1rem;
+  --jt-icon-size-sm: 0.8125rem;
+  --jt-icon-muted: #64748b;
   --jt-header-height: 3.5rem;
   --jt-nav-height: 4rem;
+  --jt-timer-height: 3.75rem;
 }
 
 *,

@@ -1,0 +1,80 @@
+@if (exercises(); as exercises) {
+  @if (exercises.length) {
+    @let unit = unitKey() | transloco;
+    <div class="page">
+      <header class="page__header">
+        <h2 class="page__title">{{ 'analytics.title' | transloco }}</h2>
+      </header>
+
+      <div class="filters">
+        <!-- Explicit for/id: a select inside its label would add the chosen value to its name. -->
+        <div class="field">
+          <label class="field__label" for="analytics-exercise">
+            {{ 'analytics.exercise' | transloco }}
+          </label>
+          <select
+            #exerciseSelect
+            id="analytics-exercise"
+            (change)="selectExercise(exerciseSelect.value)"
+          >
+            @for (item of exercises; track item.esercizio) {
+              <option [value]="item.esercizio" [selected]="item.esercizio === selected()">
+                {{ item.esercizio }}
+              </option>
+            }
+          </select>
+        </div>
+        @if (repOptions().length) {
+          <div class="field">
+            <label class="field__label" for="analytics-reps">
+              {{ 'analytics.reps' | transloco }}
+            </label>
+            <select #repsSelect id="analytics-reps" (change)="selectReps(repsSelect.value)">
+              @for (option of repOptions(); track option) {
+                <option [value]="option" [selected]="option === reps()">{{ option }}</option>
+              }
+            </select>
+          </div>
+        }
+      </div>
+
+      @if (reps(); as reps) {
+        <div class="tiles">
+          @if (latest(); as latest) {
+            <div class="tile">
+              <span class="tile__label">{{ 'analytics.latest' | transloco: { reps } }}</span>
+              <span class="tile__value">
+                {{ latest.kg | localNumber: language() }} <span class="tile__unit">{{ unit }}</span>
+              </span>
+              <span class="tile__meta">{{ latest.date | localDate: language() }}</span>
+            </div>
+          }
+          @if (best(); as best) {
+            <div class="tile">
+              <span class="tile__label">{{ 'analytics.best' | transloco: { reps } }}</span>
+              <span class="tile__value">
+                {{ best.kg | localNumber: language() }} <span class="tile__unit">{{ unit }}</span>
+              </span>
+              <span class="tile__meta">{{ best.date | localDate: language() }}</span>
+            </div>
+          }
+        </div>
+
+        <app-progression-chart
+          [points]="progression()"
+          [reps]="reps"
+          [unit]="unit"
+          [language]="language()"
+        />
+      }
+
+      <app-weekly-reps-chart [weeks]="weeks()" [language]="language()" />
+    </div>
+  } @else {
+    <app-empty-state
+      icon="pi pi-chart-line"
+      [title]="'analytics.empty.title' | transloco"
+      [message]="'analytics.empty.message' | transloco"
+    />
+  }
+}

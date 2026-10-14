@@ -2,7 +2,8 @@ import { Injectable, signal } from '@angular/core';
 import { DayDraft, EMPTY_DAY_DRAFT, SetInput, setKey } from './set-rows';
 
 /**
- * Typed values and added sets of each workout day, kept in memory for the whole app session.
+ * Typed values and added or removed sets of each workout day, kept in memory for the whole app
+ * session.
  * Recorded sets are already in the database; this keeps the rest when the user leaves the day,
  * for example to edit an exercise in the middle of a workout, and comes back.
  */
@@ -21,13 +22,11 @@ export class WorkoutDrafts {
     }));
   }
 
-  addSet(dayId: number, exerciseId: number): void {
+  /** Sets added (positive) or removed (negative) for an exercise, compared with the plan. */
+  setSetDelta(dayId: number, exerciseId: number, delta: number): void {
     this.update(dayId, (draft) => ({
       ...draft,
-      extraSets: new Map(draft.extraSets).set(
-        exerciseId,
-        (draft.extraSets.get(exerciseId) ?? 0) + 1,
-      ),
+      setDelta: new Map(draft.setDelta).set(exerciseId, delta),
     }));
   }
 

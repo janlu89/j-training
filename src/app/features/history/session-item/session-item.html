@@ -1,0 +1,34 @@
+@let summary = item();
+@let day = summary.day;
+<a class="item" [routerLink]="['/history/session', summary.session.id]">
+  <span class="item__text">
+    <span class="item__head">
+      <span class="item__date">
+        {{ summary.session.startedAt | localDate: language() : 'weekday' }}
+      </span>
+      @if (summary.session.outcome === 'skipped') {
+        <p-tag severity="secondary" [value]="'history.skipped' | transloco" />
+      }
+    </span>
+    <span class="item__day">
+      @if (day) {
+        {{ 'plan.day' | transloco: { number: day.ordine } }}
+        @if (day.csvGiorno) {
+          · {{ day.csvGiorno }}
+        }
+      } @else {
+        {{ 'history.deletedDay' | transloco }}
+      }
+    </span>
+    <span class="item__meta">
+      {{ summary.planName }}
+      @if (summary.setCount) {
+        ·
+        {{
+          'history.counts' | transloco: { sets: summary.setCount, exercises: summary.exerciseCount }
+        }}
+      }
+    </span>
+  </span>
+  <i class="pi pi-chevron-right item__chevron" aria-hidden="true"></i>
+</a>

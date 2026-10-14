@@ -30,7 +30,9 @@ export class ExerciseLog {
   readonly inputChange = output<SetInputChange>();
   readonly doneToggle = output<number>();
   readonly addSet = output<void>();
+  readonly removeSet = output<void>();
   readonly markAll = output<void>();
+  readonly startRest = output<void>();
 
   protected readonly exercise = computed(() => this.entry().exercise);
   protected readonly headingId = computed(() => `exercise-${this.exercise().id}`);

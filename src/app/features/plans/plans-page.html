@@ -12,8 +12,7 @@
             <app-plan-card
               [summary]="summary"
               [language]="language()"
-              (activate)="activate($event)"
-              (deactivate)="deactivate($event)"
+              (activeChange)="setActive(summary.phase.id, $event)"
             />
           </li>
         }

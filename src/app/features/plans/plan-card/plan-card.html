@@ -2,11 +2,11 @@
 <article class="card" [class.card--active]="phase.status === 'active'">
   <div class="card__head">
     <h3 class="card__name">{{ phase.name }}</h3>
-    @if (phase.status === 'active') {
-      <p-tag severity="success" [value]="'plans.status.active' | transloco" />
-    } @else {
-      <p-tag severity="secondary" [value]="'plans.status.archived' | transloco" />
-    }
+    <app-plan-active-switch
+      [name]="phase.name"
+      [active]="phase.status === 'active'"
+      (activeChange)="activeChange.emit($event)"
+    />
   </div>
   <p class="card__meta">
     {{ 'plans.fase' | transloco: { fase: phase.fase } }} ·
@@ -24,14 +24,5 @@
     <a pButton severity="secondary" [routerLink]="['/plans', phase.id, 'edit']">
       <span pButtonLabel>{{ 'plans.edit' | transloco }}</span>
     </a>
-    @if (phase.status === 'active') {
-      <button pButton type="button" severity="secondary" (click)="deactivate.emit(phase.id)">
-        <span pButtonLabel>{{ 'plans.deactivate' | transloco }}</span>
-      </button>
-    } @else {
-      <button pButton type="button" (click)="activate.emit(phase.id)">
-        <span pButtonLabel>{{ 'plans.activate' | transloco }}</span>
-      </button>
-    }
   </div>
 </article>

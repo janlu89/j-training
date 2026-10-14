@@ -47,7 +47,7 @@
         "message": "Questo giorno non esiste più nella scheda."
       },
       "startedOn": "In corso dal {{date}}",
-      "hint": "Segna ogni serie con ✓ mentre ti alleni, oppure tutte alla fine: ogni serie segnata è già salvata.",
+      "hint": "Spunta ogni serie con ✓ mentre ti alleni, oppure compila tutto alla fine e salva: le serie spuntate sono già salvate.",
       "otherInProgress": "C'è una giornata in corso: {{day}}. Salvala o scarta la bozza prima di registrare questo giorno.",
       "resumeOther": "Vai alla giornata in corso",
       "editExercise": "Modifica {{exercise}}",
@@ -62,20 +62,25 @@
       "setReps": "Serie {{set}}, ripetizioni",
       "setDone": "Serie {{set}} fatta",
       "addSet": "Aggiungi serie",
+      "removeSet": "Togli serie",
+      "noSets": "Nessuna serie: aggiungine una se fai questo esercizio.",
+      "exerciseRest": "Recupero {{time}}",
+      "exerciseRestStart": "Avvia il recupero di {{time}} prima di {{exercise}}",
       "markAll": "Segna tutte fatte",
       "save": "Salva giornata",
       "skip": "Salta giornata",
       "discard": "Scarta bozza",
-      "saveHint": "Segna almeno una serie per salvare la giornata.",
+      "saveHint": "Inserisci kg e ripetizioni di almeno una serie per salvare la giornata.",
       "fixInvalid": "Correggi kg o ripetizioni delle serie evidenziate prima di salvare."
     },
     "finish": {
       "title": "Salva giornata",
-      "recorded": "Serie registrate: {{count}}",
-      "pending": "Serie non segnate come fatte: {{count}}. Non verranno salvate.",
       "loadsTitle": "Aggiorna il carico in scheda",
       "loadsHint": "Oggi hai usato carichi diversi dalla scheda: scegli quali aggiornare.",
-      "confirm": "Salva"
+      "confirm": "Salva",
+      "toSave": "Serie da salvare: {{count}}",
+      "includeUnticked": "Salva anche le serie non spuntate ({{count}})",
+      "includeUntickedHint": "Con i valori mostrati: utile se compili tutto a fine allenamento."
     },
     "skip": {
       "title": "Salta giornata",
@@ -88,6 +93,17 @@
       "accept": "Scarta"
     }
   },
+  "timer": {
+    "title": "Recupero",
+    "label": "Recupero · {{exercise}}",
+    "nextExercise": "Prossimo esercizio · {{exercise}}",
+    "start": "Avvia recupero di {{sec}} secondi",
+    "minus": "Togli {{sec}} secondi",
+    "plus": "Aggiungi {{sec}} secondi",
+    "stop": "Interrompi il recupero",
+    "done": "Recupero finito: tocca a te!",
+    "silence": "Ferma l'allarme"
+  },
   "plans": {
     "title": "Schede",
     "subtitle": "Tutte le schede importate restano qui. Una sola alla volta è attiva.",
@@ -99,8 +115,8 @@
       "active": "Attiva",
       "archived": "Archiviata"
     },
+    "activeToggle": "Scheda attiva: {{name}}",
     "open": "Apri",
-    "activate": "Rendi attiva",
     "backToList": "Tutte le schede",
     "empty": {
       "title": "Nessuna scheda importata",
@@ -110,7 +126,6 @@
       "title": "Scheda non trovata",
       "message": "Questa scheda non esiste su questo dispositivo."
     },
-    "deactivate": "Archivia",
     "create": "Crea scheda",
     "edit": "Modifica"
   },
@@ -177,22 +192,70 @@
     }
   },
   "history": {
+    "title": "Storico",
     "empty": {
       "title": "Ancora nessun allenamento",
       "message": "Lo storico comparirà dopo la prima sessione salvata."
+    },
+    "views": {
+      "label": "Viste dello storico",
+      "sessions": "Allenamenti",
+      "exercises": "Esercizi"
+    },
+    "back": "Storico",
+    "skipped": "Saltata",
+    "skippedDay": "Giornata saltata: nessuna serie registrata.",
+    "deletedDay": "Giorno eliminato dalla scheda",
+    "counts": "Serie: {{sets}} · Esercizi: {{exercises}}",
+    "set": "Serie {{set}}: {{kg}} kg per {{rip}} ripetizioni",
+    "unit": {
+      "totale": "kg",
+      "per_braccio": "kg per braccio"
+    },
+    "notFound": {
+      "title": "Allenamento non trovato",
+      "message": "Questo allenamento non è nello storico."
+    },
+    "exercise": {
+      "sessions": "Sessioni: {{count}}",
+      "lastDate": "Ultima volta: {{date}}",
+      "charts": "Vedi i grafici",
+      "empty": "Nessuna serie salvata per questo esercizio.",
+      "none": "Ancora nessun esercizio salvato."
     }
   },
   "analytics": {
+    "title": "Analisi",
     "empty": {
       "title": "Nessun dato da analizzare",
       "message": "I grafici di progressione compariranno dopo qualche allenamento."
-    }
+    },
+    "exercise": "Esercizio",
+    "reps": "Ripetizioni",
+    "latest": "Ultimo a {{reps}} rip",
+    "best": "Migliore a {{reps}} rip",
+    "progression": {
+      "title": "Carico a {{reps}} ripetizioni",
+      "fewPoints": "Servono almeno due sessioni con {{reps}} ripetizioni per vedere l'andamento."
+    },
+    "weekly": {
+      "title": "Ripetizioni a settimana",
+      "subtitle": "Ultime {{weeks}} settimane",
+      "week": "Settimana dal",
+      "reps": "Ripetizioni"
+    },
+    "table": "Mostra i dati in tabella",
+    "date": "Data"
   },
   "settings": {
     "title": "Impostazioni",
     "language": {
       "title": "Lingua",
       "description": "Lingua dell'interfaccia. La scelta resta salvata su questo dispositivo."
+    },
+    "exerciseRest": {
+      "title": "Recupero tra esercizi",
+      "description": "Durata del recupero che avvii con il pulsante tra un esercizio e l'altro."
     },
     "storage": {
       "title": "Archiviazione dati",

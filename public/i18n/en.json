@@ -47,7 +47,7 @@
         "message": "This day is no longer part of the plan."
       },
       "startedOn": "In progress since {{date}}",
-      "hint": "Tick each set with ✓ as you train, or all of them at the end: every ticked set is already saved.",
+      "hint": "Tick each set with ✓ as you train, or fill everything in at the end and save: ticked sets are already saved.",
       "otherInProgress": "A workout is in progress: {{day}}. Save it or discard the draft before recording this day.",
       "resumeOther": "Go to the workout in progress",
       "editExercise": "Edit {{exercise}}",
@@ -62,20 +62,25 @@
       "setReps": "Set {{set}}, reps",
       "setDone": "Set {{set}} done",
       "addSet": "Add set",
+      "removeSet": "Remove set",
+      "noSets": "No sets: add one if you do this exercise.",
+      "exerciseRest": "Rest {{time}}",
+      "exerciseRestStart": "Start the {{time}} rest before {{exercise}}",
       "markAll": "Mark all done",
       "save": "Save day",
       "skip": "Skip day",
       "discard": "Discard draft",
-      "saveHint": "Tick at least one set to save the day.",
+      "saveHint": "Enter the kg and reps of at least one set to save the day.",
       "fixInvalid": "Fix the kg or reps of the highlighted sets before saving."
     },
     "finish": {
       "title": "Save day",
-      "recorded": "Recorded sets: {{count}}",
-      "pending": "Sets not ticked as done: {{count}}. They will not be saved.",
       "loadsTitle": "Update the load in the plan",
       "loadsHint": "Today you used loads that differ from the plan: choose which ones to update.",
-      "confirm": "Save"
+      "confirm": "Save",
+      "toSave": "Sets to save: {{count}}",
+      "includeUnticked": "Also save the unticked sets ({{count}})",
+      "includeUntickedHint": "With the values shown: handy when you fill everything in at the end."
     },
     "skip": {
       "title": "Skip day",
@@ -88,6 +93,17 @@
       "accept": "Discard"
     }
   },
+  "timer": {
+    "title": "Rest",
+    "label": "Rest · {{exercise}}",
+    "nextExercise": "Next exercise · {{exercise}}",
+    "start": "Start a {{sec}} second rest",
+    "minus": "Remove {{sec}} seconds",
+    "plus": "Add {{sec}} seconds",
+    "stop": "Stop the rest",
+    "done": "Rest is over: your turn!",
+    "silence": "Stop the alarm"
+  },
   "plans": {
     "title": "Plans",
     "subtitle": "Every imported plan stays here. Only one at a time is active.",
@@ -99,8 +115,8 @@
       "active": "Active",
       "archived": "Archived"
     },
+    "activeToggle": "Active plan: {{name}}",
     "open": "Open",
-    "activate": "Make active",
     "backToList": "All plans",
     "empty": {
       "title": "No plans imported",
@@ -110,7 +126,6 @@
       "title": "Plan not found",
       "message": "This plan doesn't exist on this device."
     },
-    "deactivate": "Archive",
     "create": "Create plan",
     "edit": "Edit"
   },
@@ -177,22 +192,70 @@
     }
   },
   "history": {
+    "title": "History",
     "empty": {
       "title": "No workouts yet",
       "message": "Your history will appear after the first saved session."
+    },
+    "views": {
+      "label": "History views",
+      "sessions": "Workouts",
+      "exercises": "Exercises"
+    },
+    "back": "History",
+    "skipped": "Skipped",
+    "skippedDay": "Day skipped: no sets recorded.",
+    "deletedDay": "Day deleted from the plan",
+    "counts": "Sets: {{sets}} · Exercises: {{exercises}}",
+    "set": "Set {{set}}: {{kg}} kg for {{rip}} reps",
+    "unit": {
+      "totale": "kg",
+      "per_braccio": "kg per arm"
+    },
+    "notFound": {
+      "title": "Workout not found",
+      "message": "This workout is not in the history."
+    },
+    "exercise": {
+      "sessions": "Sessions: {{count}}",
+      "lastDate": "Last time: {{date}}",
+      "charts": "See the charts",
+      "empty": "No saved sets for this exercise.",
+      "none": "No exercise saved yet."
     }
   },
   "analytics": {
+    "title": "Analytics",
     "empty": {
       "title": "Nothing to analyse yet",
       "message": "Progress charts will appear after a few workouts."
-    }
+    },
+    "exercise": "Exercise",
+    "reps": "Reps",
+    "latest": "Latest at {{reps}} reps",
+    "best": "Best at {{reps}} reps",
+    "progression": {
+      "title": "Load at {{reps}} reps",
+      "fewPoints": "At least two sessions with {{reps}} reps are needed to see a trend."
+    },
+    "weekly": {
+      "title": "Reps per week",
+      "subtitle": "Last {{weeks}} weeks",
+      "week": "Week of",
+      "reps": "Reps"
+    },
+    "table": "Show the data as a table",
+    "date": "Date"
   },
   "settings": {
     "title": "Settings",
     "language": {
       "title": "Language",
       "description": "Interface language. Your choice is saved on this device."
+    },
+    "exerciseRest": {
+      "title": "Rest between exercises",
+      "description": "Length of the rest you start with the button between one exercise and the next."
     },
     "storage": {
       "title": "Data storage",

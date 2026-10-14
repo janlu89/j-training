@@ -8,11 +8,22 @@
   [style]="{ width: 'min(28rem, calc(100vw - 2rem))' }"
 >
   <div class="finish">
-    <p class="finish__count">{{ 'workout.finish.recorded' | transloco: { count: recorded() } }}</p>
-    @if (pending()) {
-      <p-message severity="warn">
-        {{ 'workout.finish.pending' | transloco: { count: pending() } }}
-      </p-message>
+    <p class="finish__count">{{ 'workout.finish.toSave' | transloco: { count: toSave() } }}</p>
+    @if (unticked()) {
+      <label class="check">
+        <input
+          #include
+          type="checkbox"
+          [checked]="includeUnticked()"
+          (change)="includeUnticked.set(include.checked)"
+        />
+        <span>
+          <span class="check__label">
+            {{ 'workout.finish.includeUnticked' | transloco: { count: unticked() } }}
+          </span>
+          <span class="check__hint">{{ 'workout.finish.includeUntickedHint' | transloco }}</span>
+        </span>
+      </label>
     }
 
     @if (proposals().length) {
@@ -57,7 +68,7 @@
     <button pButton type="button" severity="secondary" (click)="visible.set(false)">
       <span pButtonLabel>{{ 'editor.confirm.cancel' | transloco }}</span>
     </button>
-    <button pButton type="button" [disabled]="busy()" (click)="confirm()">
+    <button pButton type="button" [disabled]="busy() || !toSave()" (click)="confirm()">
       <i class="pi pi-check" pButtonIcon aria-hidden="true"></i>
       <span pButtonLabel>{{ 'workout.finish.confirm' | transloco }}</span>
     </button>

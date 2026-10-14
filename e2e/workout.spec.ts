@@ -68,8 +68,10 @@ test.describe('workout', () => {
 
     await page.getByRole('button', { name: 'Salva giornata' }).click();
     const dialog = page.getByRole('dialog', { name: 'Salva giornata' });
-    await expect(dialog).toContainText('Serie registrate: 1');
-    await expect(dialog).toContainText('Serie non segnate come fatte: 5');
+    await expect(dialog).toContainText('Serie da salvare: 1');
+    await expect(
+      dialog.getByRole('checkbox', { name: /Salva anche le serie non spuntate \(5\)/ }),
+    ).not.toBeChecked();
     await expect(dialog.getByRole('checkbox', { name: /Squat/ })).toBeChecked();
     await expect(dialog).toContainText('80 kg → 82,5 kg');
     await dialog.getByRole('button', { name: 'Salva', exact: true }).click();
@@ -82,6 +84,28 @@ test.describe('workout', () => {
     await page.getByRole('link', { name: 'Schede' }).click();
     await page.getByRole('link', { name: 'Apri' }).click();
     await expect(page.getByText('82,5 kg')).toBeVisible();
+  });
+
+  test('saves a day filled in at the end without ticking any set', async ({ page }) => {
+    await openDay(page, 'Giorno 1 · A');
+    const squat = exercise(page, 'Squat');
+    await squat.getByLabel('Serie 1, kg').fill('85');
+    await squat.getByRole('button', { name: 'Togli serie' }).click();
+    await expect(squat.getByLabel('Serie 3, kg')).toBeHidden();
+
+    await page.getByRole('button', { name: 'Salva giornata' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Salva giornata' });
+    await expect(
+      dialog.getByRole('checkbox', { name: /Salva anche le serie non spuntate \(5\)/ }),
+    ).toBeChecked();
+    await expect(dialog).toContainText('Serie da salvare: 5');
+    await expect(dialog).toContainText('80 kg → 85 kg');
+    await dialog.getByRole('button', { name: 'Salva', exact: true }).click();
+
+    await expect(page).toHaveURL(/\/workout$/);
+    await expect(dayItem(page, 'Giorno 1')).toContainText('Ultimo: 15/10/26 · completato');
+    await openDay(page, 'Giorno 1 · A');
+    await expect(exercise(page, 'Squat').getByLabel('Serie 1, kg')).toHaveValue('85');
   });
 
   test('skips a day and moves the rotation on', async ({ page }) => {
@@ -147,6 +171,97 @@ test.describe('workout', () => {
     await openDay(page, 'Giorno 2 · B');
     await expect(exercise(page, 'Lat machine').getByLabel('Serie 1, kg')).toHaveValue('45');
     await expect(exercise(page, 'Lat machine').getByLabel('Serie 2, kg')).toHaveValue('45');
+  });
+
+  test('counts down the last seconds and stops the start signal by itself', async ({ page }) => {
+    await page.addInitScript(() => {
+      const vibrations: VibratePattern[] = [];
+      Object.assign(window, { vibrations });
+      navigator.vibrate = (pattern) => vibrations.push(pattern) > 0;
+    });
+    await page.goto('/workout');
+    await openDay(page, 'Giorno 1 · A');
+    const squat = exercise(page, 'Squat');
+    const rest = page.getByRole('region', { name: 'Recupero', exact: true });
+
+    // Ticking a set never starts a rest: the rest is started by hand.
+    await squat.getByRole('button', { name: 'Serie 1 fatta' }).click();
+    await expect(squat.getByRole('button', { name: 'Serie 1 fatta' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await expect(rest).toBeHidden();
+
+    await squat.getByRole('button', { name: 'Avvia recupero di 150 secondi' }).click();
+    await expect(rest).toContainText('Recupero · Squat');
+    await expect(rest.getByRole('timer')).toHaveText('2:30');
+    await rest.getByRole('button', { name: 'Aggiungi 15 secondi' }).click();
+    await expect(rest.getByRole('timer')).toHaveText('2:45');
+
+    // The rest keeps running while the user looks at another page.
+    await page.getByRole('link', { name: 'Schede' }).click();
+    await expect(rest.getByRole('timer')).toHaveText('2:45');
+
+    // The countdown sounds in the last 5 seconds...
+    await page.clock.setFixedTime(new Date('2026-10-15T10:02:41'));
+    await expect(rest.getByRole('timer')).toHaveText('0:04');
+    await expect(rest.getByRole('button', { name: "Ferma l'allarme" })).toBeVisible();
+
+    // ...then the start signal, with vibration, until it stops by itself 15 seconds after zero.
+    await page.clock.setFixedTime(new Date('2026-10-15T10:02:46'));
+    await expect(rest).toContainText('Recupero finito: tocca a te!');
+    const vibrations = () =>
+      page.evaluate(() => (window as unknown as { vibrations: VibratePattern[] }).vibrations);
+    await expect.poll(vibrations, { timeout: 8_000 }).toContainEqual([400, 200, 400]);
+
+    await page.clock.setFixedTime(new Date('2026-10-15T10:03:01'));
+    await expect(rest).toBeHidden();
+    expect((await vibrations()).at(-1)).toEqual([]);
+  });
+
+  test('starts a rest by hand and stops it, or stops its alarm', async ({ page }) => {
+    await openDay(page, 'Giorno 1 · A');
+    await exercise(page, 'Curl')
+      .getByRole('button', { name: 'Avvia recupero di 75 secondi' })
+      .click();
+
+    const rest = page.getByRole('region', { name: 'Recupero', exact: true });
+    await expect(rest.getByRole('timer')).toHaveText('1:15');
+    await rest.getByRole('button', { name: 'Togli 15 secondi' }).click();
+    await expect(rest.getByRole('timer')).toHaveText('1:00');
+    await rest.getByRole('button', { name: 'Interrompi il recupero' }).click();
+    await expect(rest).toBeHidden();
+
+    await exercise(page, 'Curl')
+      .getByRole('button', { name: 'Avvia recupero di 75 secondi' })
+      .click();
+    await page.clock.setFixedTime(new Date('2026-10-15T10:01:12'));
+    await rest.getByRole('button', { name: "Ferma l'allarme" }).click();
+    await expect(rest).toBeHidden();
+  });
+
+  test('starts the rest before the next exercise from the button between them', async ({
+    page,
+  }) => {
+    await openDay(page, 'Giorno 1 · A');
+    const rest = page.getByRole('region', { name: 'Recupero', exact: true });
+
+    await page.getByRole('button', { name: 'Avvia il recupero di 2:00 prima di Curl' }).click();
+    await expect(rest).toContainText('Prossimo esercizio · Curl');
+    await expect(rest.getByRole('timer')).toHaveText('2:00');
+    await rest.getByRole('button', { name: 'Interrompi il recupero' }).click();
+
+    // Two minutes by default, changeable in the settings.
+    await page.getByRole('link', { name: 'Impostazioni' }).click();
+    await page.getByRole('button', { name: '1:30' }).click();
+    await expect(page.getByRole('button', { name: '1:30' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await page.goBack();
+
+    await page.getByRole('button', { name: 'Avvia il recupero di 1:30 prima di Curl' }).click();
+    await expect(rest.getByRole('timer')).toHaveText('1:30');
   });
 
   test('allows one workout in progress at a time', async ({ page }) => {

@@ -62,7 +62,24 @@
       <p class="hint">{{ 'workout.day.hint' | transloco }}</p>
     }
 
-    @for (item of store.exercises(); track item.entry.exercise.id) {
+    @for (item of store.exercises(); track item.entry.exercise.id; let first = $first) {
+      @if (!first) {
+        <!-- Between two exercises: the rest before the next one, started by hand. -->
+        <div class="between">
+          <button
+            type="button"
+            class="between__button"
+            [attr.aria-label]="
+              'workout.day.exerciseRestStart'
+                | transloco: { time: exerciseRestTime(), exercise: item.entry.exercise.esercizio }
+            "
+            (click)="store.startExerciseRest(item.entry.exercise.id)"
+          >
+            <i class="pi pi-stopwatch" aria-hidden="true"></i>
+            {{ 'workout.day.exerciseRest' | transloco: { time: exerciseRestTime() } }}
+          </button>
+        </div>
+      }
       <app-exercise-log
         [entry]="item.entry"
         [rows]="item.rows"
@@ -71,7 +88,9 @@
         (inputChange)="store.setInput(item.entry.exercise.id, $event.setNo, $event.input)"
         (doneToggle)="store.toggleSet(item.entry.exercise.id, $event)"
         (addSet)="store.addSet(item.entry.exercise.id)"
+        (removeSet)="store.removeLastSet(item.entry.exercise.id)"
         (markAll)="store.markAllDone(item.entry.exercise.id)"
+        (startRest)="store.startRest(item.entry.exercise.id)"
       />
     } @empty {
       <p class="hint">{{ 'workout.day.noExercises' | transloco }}</p>
@@ -86,14 +105,14 @@
     <section class="finish" [attr.aria-label]="'workout.finish.title' | transloco">
       @if (store.hasInvalidRecorded()) {
         <p class="finish__hint finish__hint--error">{{ 'workout.day.fixInvalid' | transloco }}</p>
-      } @else if (!workout.session) {
+      } @else if (!store.canSave()) {
         <p class="finish__hint">{{ 'workout.day.saveHint' | transloco }}</p>
       }
       <div class="page__actions">
         <button
           pButton
           type="button"
-          [disabled]="!workout.session || store.hasInvalidRecorded() || busy()"
+          [disabled]="!store.canSave() || busy()"
           (click)="finishing.set(true)"
         >
           <i class="pi pi-check" pButtonIcon aria-hidden="true"></i>
@@ -131,7 +150,8 @@
     [(visible)]="finishing"
     [proposals]="store.loadProposals()"
     [recorded]="store.recordedCount()"
-    [pending]="store.pendingCount()"
+    [unticked]="store.untickedEntries().length"
+    [(includeUnticked)]="store.includeUnticked"
     [language]="language()"
     [busy]="busy()"
     (save)="finish($event)"

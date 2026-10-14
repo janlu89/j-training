@@ -1,17 +1,17 @@
 import { ChangeDetectionStrategy, Component, inject, input, numberAttribute } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
-import { Tag } from 'primeng/tag';
 import { PlanRepository } from '../../../core/repositories/plan.repository';
 import { TrainingDayRepository } from '../../../core/repositories/training-day.repository';
 import { LanguageService } from '../../../core/services/language.service';
 import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { PlanDays, WeekdayChange } from '../../../shared/ui/plan-days/plan-days';
+import { PlanActiveSwitch } from '../active-switch/plan-active-switch';
 
-/** Any plan of the archive, with the option to make it the active one. */
+/** Any plan of the archive, with a switch to make it the active one. */
 @Component({
   selector: 'app-plan-detail-page',
   imports: [
@@ -20,10 +20,10 @@ import { PlanDays, WeekdayChange } from '../../../shared/ui/plan-days/plan-days'
     ButtonDirective,
     ButtonIcon,
     ButtonLabel,
-    Tag,
     LocalDatePipe,
     EmptyState,
     PlanDays,
+    PlanActiveSwitch,
   ],
   templateUrl: './plan-detail-page.html',
   styleUrl: './plan-detail-page.scss',
@@ -32,7 +32,6 @@ import { PlanDays, WeekdayChange } from '../../../shared/ui/plan-days/plan-days'
 export class PlanDetailPage {
   private readonly plans = inject(PlanRepository);
   private readonly days = inject(TrainingDayRepository);
-  private readonly router = inject(Router);
 
   /** Route parameter, bound by `withComponentInputBinding`. */
   readonly id = input.required({ transform: numberAttribute });
@@ -43,13 +42,9 @@ export class PlanDetailPage {
     stream: ({ params: id }) => this.plans.watchPlan(id),
   });
 
-  protected async activate(phaseId: number): Promise<void> {
-    await this.plans.activate(phaseId);
-    await this.router.navigateByUrl('/workout');
-  }
-
-  protected deactivate(phaseId: number): Promise<void> {
-    return this.plans.deactivate(phaseId);
+  /** Switching a plan on archives the active one; switching it off leaves no active plan. */
+  protected setActive(phaseId: number, active: boolean): Promise<void> {
+    return active ? this.plans.activate(phaseId) : this.plans.deactivate(phaseId);
   }
 
   protected async onWeekdayChange({ dayId, weekday }: WeekdayChange): Promise<void> {

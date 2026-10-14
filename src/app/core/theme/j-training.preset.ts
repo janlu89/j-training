@@ -87,6 +87,20 @@ export const JTrainingPreset = definePreset(Aura, {
         },
       },
     },
+    // Aura's off track (slate 300) is 1.5:1 on white and hides the white handle; slate 500 is
+    // 4.8:1. The on track uses orange 600 (3.6:1) instead of 500 (2.9:1), below the 3:1 for controls.
+    toggleswitch: {
+      colorScheme: {
+        light: {
+          root: {
+            background: '{surface.500}',
+            hoverBackground: '{surface.600}',
+            checkedBackground: '{primary.600}',
+            checkedHoverBackground: '{primary.700}',
+          },
+        },
+      },
+    },
     // Aura's warning text (yellow 600 on yellow 50) is 2.8:1; yellow 800 is 6.6:1.
     message: {
       colorScheme: {
