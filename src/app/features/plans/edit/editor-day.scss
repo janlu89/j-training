@@ -1,0 +1,104 @@
+@use '../../../../styles/form';
+
+.day {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 12px;
+  background: var(--p-content-background);
+}
+
+.day__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.day__title {
+  margin: 0;
+  font-size: 1.0625rem;
+}
+
+.day__tools {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.day__fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+.exercises {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.exercise {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-top: 1px solid var(--p-content-border-color);
+}
+
+.exercise__link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 3rem;
+  justify-content: center;
+  padding: 0.5rem 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.exercise__name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.exercise__plan {
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+}
+
+.exercises__empty {
+  padding: 0.5rem 0;
+  color: var(--p-text-muted-color);
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--p-text-muted-color);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--p-content-hover-background);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--p-primary-color);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+}
+
+.icon-button--danger {
+  color: var(--p-red-700);
+}

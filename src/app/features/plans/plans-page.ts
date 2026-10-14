@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
@@ -12,6 +13,7 @@ import { PlanCard } from './plan-card/plan-card';
 @Component({
   selector: 'app-plans-page',
   imports: [
+    NgTemplateOutlet,
     RouterLink,
     TranslocoPipe,
     ButtonDirective,

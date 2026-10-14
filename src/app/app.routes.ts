@@ -16,6 +16,25 @@ export const routes: Routes = [
       import('./features/plans/import/plan-import-page').then((m) => m.PlanImportPage),
   },
   {
+    path: 'plans/new',
+    loadComponent: () => import('./features/plans/new/plan-new-page').then((m) => m.PlanNewPage),
+  },
+  {
+    path: 'plans/:id/edit',
+    loadComponent: () =>
+      import('./features/plans/edit/plan-editor-page').then((m) => m.PlanEditorPage),
+  },
+  {
+    path: 'plans/:id/days/:dayId/exercises/new',
+    loadComponent: () =>
+      import('./features/plans/exercise/exercise-form-page').then((m) => m.ExerciseFormPage),
+  },
+  {
+    path: 'plans/:id/exercises/:exerciseId',
+    loadComponent: () =>
+      import('./features/plans/exercise/exercise-form-page').then((m) => m.ExerciseFormPage),
+  },
+  {
     path: 'plans/:id',
     loadComponent: () =>
       import('./features/plans/detail/plan-detail-page').then((m) => m.PlanDetailPage),

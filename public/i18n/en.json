@@ -46,7 +46,9 @@
       "title": "Plan not found",
       "message": "This plan doesn't exist on this device."
     },
-    "deactivate": "Archive"
+    "deactivate": "Archive",
+    "create": "Create plan",
+    "edit": "Edit"
   },
   "plan": {
     "day": "Day {{number}}",
@@ -140,6 +142,79 @@
         "persisted": "Your data stays on this device and the browser won't delete it to free up space.",
         "notPersisted": "If space runs low the browser may delete your data. Installing the app helps; back up regularly."
       }
+    }
+  },
+  "form": {
+    "required": "This field is required.",
+    "min": "The minimum value is {{min}}.",
+    "range": "Enter a value between {{min}} and {{max}}."
+  },
+  "editor": {
+    "title": "Edit plan",
+    "backToPlan": "Back to the plan",
+    "backToEditor": "Back to editing",
+    "save": "Save",
+    "done": "Done",
+    "noDays": "The plan has no days yet: add the first one.",
+    "newPlan": {
+      "title": "New plan",
+      "subtitle": "Create a plan by hand, without a CSV file. Then add days and exercises.",
+      "create": "Create and add days"
+    },
+    "plan": {
+      "name": "Plan name",
+      "fase": "Phase",
+      "faseHint": "Running number of the plan (1, 2, 3…).",
+      "deleteTitle": "Delete plan",
+      "deleteHint": "Delete the plan with all its days and exercises.",
+      "delete": "Delete plan",
+      "deleteConfirm": "Delete the plan “{{name}}” with all its days and exercises?",
+      "hasSessions": "This plan has recorded workouts: it can't be deleted without losing your history. You can archive it."
+    },
+    "day": {
+      "add": "Add day",
+      "name": "Day name",
+      "namePlaceholder": "E.g. chest and triceps",
+      "moveUp": "Move {{day}} up",
+      "moveDown": "Move {{day}} down",
+      "delete": "Delete {{day}}",
+      "deleteConfirm": "Delete {{day}} with all its exercises?",
+      "noExercises": "No exercises on this day."
+    },
+    "exercise": {
+      "add": "Add exercise",
+      "newTitle": "New exercise",
+      "editTitle": "Edit exercise",
+      "name": "Exercise",
+      "type": "Type",
+      "equipment": "Equipment",
+      "position": "Equipment position",
+      "positionPlaceholder": "E.g. seat 4, backrest 2",
+      "sets": "Sets",
+      "reps": "Reps",
+      "load": "Load (kg)",
+      "loadHint": "Leave empty if it still has to be tested.",
+      "loadUnit": "The load is",
+      "unit": {
+        "totale": "Total",
+        "per_braccio": "Per arm"
+      },
+      "rest": "Rest",
+      "restSeconds": "Rest in seconds",
+      "restHint": "Compound lifts 2–3 minutes, isolation 60–90 seconds.",
+      "rir": "RIR",
+      "status": "Status",
+      "day": "Day",
+      "note": "Notes",
+      "moveUp": "Move {{exercise}} up",
+      "moveDown": "Move {{exercise}} down",
+      "delete": "Delete exercise",
+      "deleteConfirm": "Remove “{{exercise}}” from the plan? Your workout history stays."
+    },
+    "confirm": {
+      "title": "Confirm",
+      "delete": "Delete",
+      "cancel": "Cancel"
     }
   }
 }
