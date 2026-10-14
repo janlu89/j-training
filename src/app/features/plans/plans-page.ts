@@ -1,7 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { PlanRepository } from '../../core/repositories/plan.repository';
@@ -28,17 +28,12 @@ import { PlanCard } from './plan-card/plan-card';
 })
 export class PlansPage {
   private readonly plans = inject(PlanRepository);
-  private readonly router = inject(Router);
 
   protected readonly language = inject(LanguageService).current;
   protected readonly summaries = toSignal(this.plans.watchSummaries());
 
-  protected async activate(phaseId: number): Promise<void> {
-    await this.plans.activate(phaseId);
-    await this.router.navigateByUrl('/workout');
-  }
-
-  protected deactivate(phaseId: number): Promise<void> {
-    return this.plans.deactivate(phaseId);
+  /** Switching a plan on archives the active one; switching it off leaves no active plan. */
+  protected setActive(phaseId: number, active: boolean): Promise<void> {
+    return active ? this.plans.activate(phaseId) : this.plans.deactivate(phaseId);
   }
 }

@@ -102,8 +102,8 @@
       "active": "Active",
       "archived": "Archived"
     },
+    "activeToggle": "Active plan: {{name}}",
     "open": "Open",
-    "activate": "Make active",
     "backToList": "All plans",
     "empty": {
       "title": "No plans imported",
@@ -113,7 +113,6 @@
       "title": "Plan not found",
       "message": "This plan doesn't exist on this device."
     },
-    "deactivate": "Archive",
     "create": "Create plan",
     "edit": "Edit"
   },

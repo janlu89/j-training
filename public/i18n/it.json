@@ -102,8 +102,8 @@
       "active": "Attiva",
       "archived": "Archiviata"
     },
+    "activeToggle": "Scheda attiva: {{name}}",
     "open": "Apri",
-    "activate": "Rendi attiva",
     "backToList": "Tutte le schede",
     "empty": {
       "title": "Nessuna scheda importata",
@@ -113,7 +113,6 @@
       "title": "Scheda non trovata",
       "message": "Questa scheda non esiste su questo dispositivo."
     },
-    "deactivate": "Archivia",
     "create": "Crea scheda",
     "edit": "Modifica"
   },

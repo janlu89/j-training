@@ -73,17 +73,24 @@ test.describe('plan import and archive', () => {
 
     await page.getByRole('link', { name: 'Schede' }).click();
     const cards = page.getByRole('article');
+    const july = page.getByRole('switch', { name: 'Scheda attiva: Luglio' });
+    const pyramids = page.getByRole('switch', { name: 'Scheda attiva: Piramidali' });
     await expect(cards).toHaveCount(2);
     await expect(cards.first()).toContainText('Piramidali');
-    await expect(cards.first()).toContainText('Attiva');
+    await expect(pyramids).toBeChecked();
+    await expect(july).not.toBeChecked();
     await expect(cards.filter({ hasText: 'Luglio' })).toContainText('Archiviata');
 
-    await cards.filter({ hasText: 'Luglio' }).getByRole('button', { name: 'Rendi attiva' }).click();
+    // Switching a plan on archives the active one: exactly one stays active.
+    await july.click();
+    await expect(july).toBeChecked();
+    await expect(pyramids).not.toBeChecked();
+    await page.getByRole('link', { name: 'Allenamento' }).click();
     await expect(page.getByText('Scheda attiva: Luglio')).toBeVisible();
 
     await page.getByRole('link', { name: 'Schede' }).click();
-    await cards.filter({ hasText: 'Luglio' }).getByRole('button', { name: 'Archivia' }).click();
-    await expect(page.getByText('Attiva', { exact: true })).toHaveCount(0);
+    await july.click();
+    await expect(page.getByRole('switch', { checked: true })).toHaveCount(0);
     await page.getByRole('link', { name: 'Allenamento' }).click();
     await expect(page.getByRole('heading', { name: 'Nessuna scheda attiva' })).toBeVisible();
   });
