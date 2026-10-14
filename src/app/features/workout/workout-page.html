@@ -5,41 +5,62 @@
         {{ 'workout.activePlan' | transloco: { name: today.plan.phase.name } }}
       </p>
       @if (today.suggestion; as suggestion) {
-        <h2 class="page__title">
-          @if (isSuggested()) {
-            {{ 'workout.reason.' + suggestion.reason | transloco }}
-          } @else {
-            {{ 'workout.chosenDay' | transloco }}
-          }
-        </h2>
-        @if (isSuggested() && suggestion.day.day.weekday; as weekday) {
+        <h2 class="page__title">{{ 'workout.reason.' + suggestion.reason | transloco }}</h2>
+        @if (suggestion.reason === 'restDay' && suggestion.day.day.weekday; as weekday) {
           <p class="page__subtitle">
-            @if (suggestion.reason === 'restDay') {
-              {{ 'workout.nextOn' | transloco: { weekday: ('weekday.' + weekday | transloco) } }}
-            } @else {
-              {{ 'weekday.' + weekday | transloco }}
-            }
+            {{ 'workout.nextOn' | transloco: { weekday: ('weekday.' + weekday | transloco) } }}
           </p>
         }
       }
     </header>
 
-    @if (today.plan.days.length > 1) {
-      <app-day-picker
-        [days]="today.plan.days"
-        [selectedId]="selectedDayId()"
-        [suggestedId]="today.suggestion?.day?.day?.id"
-        (selectedIdChange)="selectedDayId.set($event)"
-      />
+    @if (openSession(); as open) {
+      @let openLabel = 'plan.day' | transloco: { number: open.day.ordine };
+      <section class="resume" [attr.aria-label]="'workout.inProgress.title' | transloco">
+        <div class="resume__text">
+          <h3 class="resume__title">{{ 'workout.inProgress.title' | transloco }}</h3>
+          <p class="resume__day">
+            {{ openLabel }}
+            @if (open.day.csvGiorno) {
+              · {{ open.day.csvGiorno }}
+            }
+          </p>
+          <p class="resume__meta">
+            {{
+              'workout.inProgress.startedOn'
+                | transloco: { date: (open.session.startedAt | localDate: language()) }
+            }}
+          </p>
+        </div>
+        <a pButton [routerLink]="['/workout/day', open.day.id]">
+          <i class="pi pi-play" pButtonIcon aria-hidden="true"></i>
+          <span pButtonLabel>{{ 'workout.inProgress.resume' | transloco }}</span>
+        </a>
+      </section>
     }
 
-    @if (selectedDay(); as day) {
-      <app-plan-days
-        [days]="[day]"
-        [language]="language()"
-        [collapsible]="false"
-        (weekdayChange)="onWeekdayChange($event)"
-      />
+    @if (today.plan.days.length) {
+      <ul class="days" [attr.aria-label]="'workout.daysLabel' | transloco">
+        @for (planDay of today.plan.days; track planDay.day.id) {
+          <li>
+            <app-workout-day-item
+              [planDay]="planDay"
+              [language]="language()"
+              [badge]="planDay.day.id === suggestedDayId() ? badge() : undefined"
+              [inProgress]="planDay.day.id === openSession()?.day?.id"
+              [lastSession]="today.lastSessions.get(planDay.day.id)"
+            />
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="page__subtitle">{{ 'workout.noDays' | transloco }}</p>
+      <div class="page__actions">
+        <a pButton severity="secondary" [routerLink]="['/plans', today.plan.phase.id, 'edit']">
+          <i class="pi pi-pencil" pButtonIcon aria-hidden="true"></i>
+          <span pButtonLabel>{{ 'workout.editPlan' | transloco }}</span>
+        </a>
+      </div>
     }
   </div>
 } @else if (today() === null) {

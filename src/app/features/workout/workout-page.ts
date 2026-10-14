@@ -1,16 +1,16 @@
-import { ChangeDetectionStrategy, Component, computed, inject, linkedSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
-import { TrainingDayRepository } from '../../core/repositories/training-day.repository';
 import { LanguageService } from '../../core/services/language.service';
 import { WorkoutPlanService } from '../../core/services/workout-plan.service';
+import { WorkoutSessionService } from '../../core/services/workout-session.service';
+import { LocalDatePipe } from '../../shared/pipes/local-date.pipe';
 import { EmptyState } from '../../shared/ui/empty-state/empty-state';
-import { PlanDays, WeekdayChange } from '../../shared/ui/plan-days/plan-days';
-import { DayPicker } from './day-picker/day-picker';
+import { DayBadge, WorkoutDayItem } from './day-item/workout-day-item';
 
-/** The day to train today, from the active plan; another day can be picked. */
+/** The days of the active plan, today's one highlighted; ▶ opens the workout of a day. */
 @Component({
   selector: 'app-workout-page',
   imports: [
@@ -19,33 +19,24 @@ import { DayPicker } from './day-picker/day-picker';
     ButtonDirective,
     ButtonIcon,
     ButtonLabel,
+    LocalDatePipe,
     EmptyState,
-    PlanDays,
-    DayPicker,
+    WorkoutDayItem,
   ],
   templateUrl: './workout-page.html',
   styleUrl: './workout-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkoutPage {
-  private readonly days = inject(TrainingDayRepository);
-
   protected readonly language = inject(LanguageService).current;
   /** undefined while loading, null when there is no active plan. */
   protected readonly today = toSignal(inject(WorkoutPlanService).watchToday(), {
     initialValue: undefined,
   });
+  protected readonly openSession = toSignal(inject(WorkoutSessionService).watchOpenSession());
 
-  /** Follows the suggestion until the user picks another day. */
-  protected readonly selectedDayId = linkedSignal(() => this.today()?.suggestion?.day.day.id);
-  protected readonly selectedDay = computed(() =>
-    this.today()?.plan.days.find(({ day }) => day.id === this.selectedDayId()),
+  protected readonly suggestedDayId = computed(() => this.today()?.suggestion?.day.day.id);
+  protected readonly badge = computed<DayBadge>(() =>
+    this.today()?.suggestion?.reason === 'today' ? 'today' : 'next',
   );
-  protected readonly isSuggested = computed(
-    () => this.selectedDayId() === this.today()?.suggestion?.day.day.id,
-  );
-
-  protected async onWeekdayChange({ dayId, weekday }: WeekdayChange): Promise<void> {
-    await this.days.update(dayId, { weekday });
-  }
 }

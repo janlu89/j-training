@@ -26,7 +26,7 @@ test.describe('plan import and archive', () => {
     await expect(page.getByRole('heading', { name: 'Importa scheda' })).toBeVisible();
   });
 
-  test("imports a plan and shows only today's day", async ({ page }) => {
+  test("imports a plan and proposes today's day", async ({ page }) => {
     await page.goto('/plans/import');
     await page.getByTestId('plan-file').setInputFiles(fixture('scheda-luglio.csv'));
 
@@ -38,16 +38,23 @@ test.describe('plan import and archive', () => {
     await expect(page).toHaveURL(/\/workout$/);
     await expect(page.getByText('Scheda attiva: Luglio')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Allenamento di oggi' })).toBeVisible();
-    await expect(page.getByText('62,5 kg')).toBeVisible();
+    await expect(page.getByRole('listitem')).toHaveCount(3);
+    await expect(page.getByRole('listitem').filter({ hasText: 'Giorno 1' })).toContainText('Oggi');
+
+    await page.getByRole('link', { name: 'Inizia Giorno 1 · sabato' }).click();
+    await expect(page.getByRole('heading', { name: 'Giorno 1' })).toBeVisible();
+    await expect(
+      page.getByRole('region', { name: 'Panca piana' }).getByLabel('Serie 1, kg'),
+    ).toHaveValue('62,5');
     await expect(page.getByText('Stacco rumeno')).toBeHidden();
   });
 
   test('lets the user train another day', async ({ page }) => {
     await importPlan(page, 'scheda-luglio.csv', 'Luglio');
 
-    await page.getByRole('button', { name: /^Giorno 2/ }).click();
+    await page.getByRole('link', { name: 'Inizia Giorno 2 · mercoledi' }).click();
 
-    await expect(page.getByRole('heading', { name: 'Giorno scelto' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Giorno 2' })).toBeVisible();
     await expect(page.getByText('Stacco rumeno')).toBeVisible();
     await expect(page.getByText('Da testare', { exact: true })).toBeVisible();
     await expect(page.getByText('Squat')).toBeHidden();
@@ -109,11 +116,16 @@ test.describe('plan import and archive', () => {
     await importPlan(page, 'scheda-piramidali.csv');
     await expect(page.getByRole('heading', { name: 'Oggi riposo' })).toBeVisible();
 
-    await page.getByLabel('Giorno della settimana').selectOption({ label: 'Sabato' });
+    await page.getByRole('link', { name: 'Schede' }).click();
+    await page.getByRole('link', { name: 'Apri' }).click();
+    await page.getByLabel('Giorno della settimana').first().selectOption({ label: 'Sabato' });
+    await page.getByRole('link', { name: 'Allenamento' }).click();
     await expect(page.getByRole('heading', { name: 'Allenamento di oggi' })).toBeVisible();
 
     await page.reload();
     await expect(page.getByRole('heading', { name: 'Allenamento di oggi' })).toBeVisible();
-    await expect(page.getByLabel('Giorno della settimana')).toHaveValue('6');
+    await expect(page.getByRole('listitem').filter({ hasText: 'Giorno 1' })).toContainText(
+      'Sabato',
+    );
   });
 });

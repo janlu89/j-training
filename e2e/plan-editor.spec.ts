@@ -63,7 +63,8 @@ test.describe('plan editor', () => {
     await page.getByRole('link', { name: 'Allenamento' }).click();
     await expect(page.getByText('Scheda attiva: Mia scheda')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Allenamento di oggi' })).toBeVisible();
-    await expect(page.getByText('Panca piana')).toBeVisible();
+    await page.getByRole('link', { name: 'Inizia Giorno 1 · Petto e tricipiti' }).click();
+    await expect(page.getByRole('region', { name: 'Panca piana' })).toBeVisible();
   });
 
   test('edits every field of an exercise, including equipment position and rest', async ({

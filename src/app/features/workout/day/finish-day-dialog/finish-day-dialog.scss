@@ -1,0 +1,33 @@
+@use '../../../../../styles/form';
+
+.finish {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.finish__count {
+  margin: 0;
+  font-weight: 600;
+}
+
+.loads {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.loads__title {
+  margin-bottom: 0.25rem;
+  padding: 0;
+  font-weight: 700;
+}
+
+.loads__hint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+}

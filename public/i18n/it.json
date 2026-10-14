@@ -19,10 +19,74 @@
       "restDay": "Oggi riposo",
       "rotation": "Prossimo allenamento"
     },
-    "chosenDay": "Giorno scelto",
     "nextOn": "Prossimo allenamento: {{weekday}}",
-    "pickDay": "Scegli il giorno",
-    "suggested": "proposto"
+    "daysLabel": "Giorni della scheda",
+    "noDays": "La scheda attiva non ha ancora giorni.",
+    "editPlan": "Modifica la scheda",
+    "badge": {
+      "today": "Oggi",
+      "next": "Prossimo",
+      "inProgress": "In corso"
+    },
+    "start": "Inizia {{day}}",
+    "resume": "Riprendi {{day}}",
+    "last": {
+      "completed": "Ultimo: {{date}} · completato",
+      "skipped": "Ultimo: {{date}} · saltato"
+    },
+    "inProgress": {
+      "title": "Giornata in corso",
+      "startedOn": "Iniziata il {{date}}",
+      "resume": "Riprendi"
+    },
+    "day": {
+      "back": "Allenamento",
+      "backToWorkout": "Torna all'allenamento",
+      "notFound": {
+        "title": "Giorno non trovato",
+        "message": "Questo giorno non esiste più nella scheda."
+      },
+      "startedOn": "In corso dal {{date}}",
+      "hint": "Segna ogni serie con ✓ mentre ti alleni, oppure tutte alla fine: ogni serie segnata è già salvata.",
+      "otherInProgress": "C'è una giornata in corso: {{day}}. Salvala o scarta la bozza prima di registrare questo giorno.",
+      "resumeOther": "Vai alla giornata in corso",
+      "editExercise": "Modifica {{exercise}}",
+      "position": "Attrezzo e posizione",
+      "noExercises": "Questo giorno non ha esercizi.",
+      "set": "Serie",
+      "kg": "kg",
+      "kgPerArm": "kg/braccio",
+      "reps": "Rip",
+      "done": "Fatta",
+      "setKg": "Serie {{set}}, kg",
+      "setReps": "Serie {{set}}, ripetizioni",
+      "setDone": "Serie {{set}} fatta",
+      "addSet": "Aggiungi serie",
+      "markAll": "Segna tutte fatte",
+      "save": "Salva giornata",
+      "skip": "Salta giornata",
+      "discard": "Scarta bozza",
+      "saveHint": "Segna almeno una serie per salvare la giornata.",
+      "fixInvalid": "Correggi kg o ripetizioni delle serie evidenziate prima di salvare."
+    },
+    "finish": {
+      "title": "Salva giornata",
+      "recorded": "Serie registrate: {{count}}",
+      "pending": "Serie non segnate come fatte: {{count}}. Non verranno salvate.",
+      "loadsTitle": "Aggiorna il carico in scheda",
+      "loadsHint": "Oggi hai usato carichi diversi dalla scheda: scegli quali aggiornare.",
+      "confirm": "Salva"
+    },
+    "skip": {
+      "title": "Salta giornata",
+      "confirm": "Saltare {{day}}? Verrà registrato come saltato e la rotazione passerà al giorno successivo.",
+      "accept": "Salta"
+    },
+    "discard": {
+      "title": "Scarta bozza",
+      "confirm": "Eliminare la giornata in corso ({{day}}) con tutte le serie registrate?",
+      "accept": "Scarta"
+    }
   },
   "plans": {
     "title": "Schede",

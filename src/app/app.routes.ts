@@ -7,6 +7,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/workout/workout-page').then((m) => m.WorkoutPage),
   },
   {
+    path: 'workout/day/:dayId',
+    loadComponent: () =>
+      import('./features/workout/day/workout-day-page').then((m) => m.WorkoutDayPage),
+  },
+  {
     path: 'plans',
     loadComponent: () => import('./features/plans/plans-page').then((m) => m.PlansPage),
   },
