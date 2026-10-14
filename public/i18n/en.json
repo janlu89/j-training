@@ -77,7 +77,8 @@
     "samePhase": "A plan with phase {{fase}} already exists: this one will be added as a new plan, without replacing it.",
     "format": {
       "title": "File format",
-      "text": "One row per exercise. The first row must contain these columns:"
+      "text": "One row per exercise. The first row must contain these columns:",
+      "example": "Download an example plan"
     },
     "issues": {
       "title": "The file can't be imported",

@@ -60,6 +60,17 @@ test.describe('plan import', () => {
     await expect(page.getByText('Attiva', { exact: true })).toHaveCount(1);
   });
 
+  test('offers an example plan that can be imported as is', async ({ page }) => {
+    await page.goto('/plans/import');
+    const download = page.waitForEvent('download');
+    await page.getByRole('link', { name: 'Scarica una scheda di esempio' }).click();
+    const file = await (await download).path();
+
+    await page.getByTestId('plan-file').setInputFiles(file);
+
+    await expect(page.getByText('Fase 1 · Giorni: 2 · Esercizi: 6')).toBeVisible();
+  });
+
   test('explains what is wrong in an invalid file', async ({ page }) => {
     await page.goto('/plans/import');
     await page.getByTestId('plan-file').setInputFiles(fixture('scheda-con-errori.csv'));

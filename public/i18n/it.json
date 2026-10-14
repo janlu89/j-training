@@ -77,7 +77,8 @@
     "samePhase": "Esiste già una scheda con fase {{fase}}: questa verrà aggiunta come nuova scheda, senza sostituirla.",
     "format": {
       "title": "Formato del file",
-      "text": "Una riga per esercizio. La prima riga deve contenere queste colonne:"
+      "text": "Una riga per esercizio. La prima riga deve contenere queste colonne:",
+      "example": "Scarica una scheda di esempio"
     },
     "issues": {
       "title": "Il file non può essere importato",
