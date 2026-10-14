@@ -15,6 +15,7 @@
     "e2e": "playwright test"
   },
   "private": true,
+  "license": "MIT",
   "packageManager": "npm@11.9.0",
   "dependencies": {
     "@angular/cdk": "~21.2.14",
