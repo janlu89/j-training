@@ -32,7 +32,7 @@
               }
             ],
             "styles": ["src/styles.scss"],
-            "allowedCommonJsDependencies": ["papaparse"],
+            "allowedCommonJsDependencies": ["papaparse", "exceljs"],
             "webWorkerTsConfig": "tsconfig.worker.json"
           },
           "configurations": {

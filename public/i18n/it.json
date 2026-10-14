@@ -136,6 +136,43 @@
     "noWeekday": "Non assegnato",
     "dayShort": "G{{number}}"
   },
+  "planExport": {
+    "title": "Esporta la scheda",
+    "description": "La scheda e tutte le serie salvate. Excel per leggerla o stamparla, CSV per un'AI o altri programmi.",
+    "xlsx": "Excel",
+    "csv": "CSV",
+    "saved": "File salvato nei download: {{fileName}}",
+    "failed": "Esportazione non riuscita. Riprova.",
+    "fileName": "{{name}} - fase {{fase}}",
+    "sheet": {
+      "plan": "Scheda",
+      "sets": "Serie"
+    },
+    "column": {
+      "day": "Giorno",
+      "exercise": "Esercizio",
+      "type": "Tipo",
+      "equipment": "Attrezzo",
+      "sets": "Serie",
+      "reps": "Ripetizioni",
+      "position": "Posizione",
+      "load": "Carico (kg)",
+      "unit": "Unità",
+      "rest": "Recupero (s)",
+      "rir": "RIR",
+      "status": "Stato",
+      "note": "Note",
+      "date": "Data",
+      "set": "Serie",
+      "kg": "kg"
+    },
+    "unit": {
+      "totale": "totale",
+      "per_braccio": "per braccio"
+    },
+    "dateFormat": "dd/mm/yyyy",
+    "page": "Pagina &P di &N"
+  },
   "weekday": {
     "1": "Lunedì",
     "2": "Martedì",

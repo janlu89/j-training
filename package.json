@@ -28,6 +28,7 @@
     "@primeuix/themes": "~2.0.3",
     "chart.js": "~4.5.1",
     "dexie": "~4.4.6",
+    "exceljs": "~4.4.0",
     "papaparse": "~5.7.0",
     "primeicons": "^8.0.2",
     "primeng": "~21.1.10",

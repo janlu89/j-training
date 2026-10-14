@@ -136,6 +136,43 @@
     "noWeekday": "Not assigned",
     "dayShort": "D{{number}}"
   },
+  "planExport": {
+    "title": "Export the plan",
+    "description": "The plan and every saved set. Excel to read or print it, CSV for an AI or other tools.",
+    "xlsx": "Excel",
+    "csv": "CSV",
+    "saved": "File saved to downloads: {{fileName}}",
+    "failed": "Export failed. Try again.",
+    "fileName": "{{name}} - phase {{fase}}",
+    "sheet": {
+      "plan": "Plan",
+      "sets": "Sets"
+    },
+    "column": {
+      "day": "Day",
+      "exercise": "Exercise",
+      "type": "Type",
+      "equipment": "Equipment",
+      "sets": "Sets",
+      "reps": "Reps",
+      "position": "Position",
+      "load": "Load (kg)",
+      "unit": "Unit",
+      "rest": "Rest (s)",
+      "rir": "RIR",
+      "status": "Status",
+      "note": "Notes",
+      "date": "Date",
+      "set": "Set",
+      "kg": "kg"
+    },
+    "unit": {
+      "totale": "total",
+      "per_braccio": "per arm"
+    },
+    "dateFormat": "yyyy-mm-dd",
+    "page": "Page &P of &N"
+  },
   "weekday": {
     "1": "Monday",
     "2": "Tuesday",
