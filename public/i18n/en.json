@@ -99,7 +99,7 @@
     "plus": "Add {{sec}} seconds",
     "stop": "Stop the rest",
     "done": "Rest is over: your turn!",
-    "dismiss": "OK"
+    "silence": "Stop the alarm"
   },
   "plans": {
     "title": "Plans",

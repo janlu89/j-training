@@ -193,14 +193,23 @@ test.describe('workout', () => {
     await page.getByRole('link', { name: 'Schede' }).click();
     await expect(rest.getByRole('timer')).toHaveText('2:45');
 
-    await page.clock.setFixedTime(new Date('2026-10-15T10:02:46'));
+    // The alarm starts in the last 5 seconds...
+    await page.clock.setFixedTime(new Date('2026-10-15T10:02:41'));
+    await expect(rest.getByRole('timer')).toHaveText('0:04');
+    const silence = rest.getByRole('button', { name: "Ferma l'allarme" });
+    await expect(silence).toBeVisible();
+
+    // ...and keeps ringing after the end, until it is stopped.
+    await page.clock.setFixedTime(new Date('2026-10-15T10:03:30'));
     await expect(rest).toContainText('Recupero finito: tocca a te!');
-    const vibrations = await page.evaluate(
-      () => (window as unknown as { vibrations: VibratePattern[] }).vibrations,
-    );
-    expect(vibrations).toEqual([[200, 100, 200, 100, 400]]);
-    await rest.getByRole('button', { name: 'OK' }).click();
+    await expect(silence).toBeVisible();
+    const vibrations = () =>
+      page.evaluate(() => (window as unknown as { vibrations: VibratePattern[] }).vibrations);
+    expect((await vibrations())[0]).toEqual([400, 200, 400]);
+
+    await silence.click();
     await expect(rest).toBeHidden();
+    expect((await vibrations()).at(-1)).toEqual([]);
   });
 
   test('starts a rest by hand and stops it', async ({ page }) => {

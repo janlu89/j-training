@@ -1,4 +1,4 @@
-import { DOCUMENT } from '@angular/core';
+import { DOCUMENT, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { CLOCK } from '../clock';
 import { RestAlarm } from './rest-alarm';
@@ -21,16 +21,29 @@ class ManualTicker implements Ticker {
 describe('RestTimerService', () => {
   let now: number;
   let ticker: ManualTicker;
-  let alarm: { prepare: ReturnType<typeof vi.fn>; ring: ReturnType<typeof vi.fn> };
+  let alarm: {
+    prepare: ReturnType<typeof vi.fn>;
+    start: ReturnType<typeof vi.fn>;
+    stop: ReturnType<typeof vi.fn>;
+    ringing: ReturnType<typeof signal<boolean>>;
+  };
   let wakeLock: { acquire: ReturnType<typeof vi.fn>; release: ReturnType<typeof vi.fn> };
   let timer: RestTimerService;
 
   beforeEach(() => {
     now = 10_000;
     ticker = new ManualTicker();
-    alarm = { prepare: vi.fn(), ring: vi.fn() };
-    wakeLock = { acquire: vi.fn().mockResolvedValue(undefined), release: vi.fn() };
-    wakeLock.release.mockResolvedValue(undefined);
+    const ringing = signal(false);
+    alarm = {
+      prepare: vi.fn(),
+      start: vi.fn(() => ringing.set(true)),
+      stop: vi.fn(() => ringing.set(false)),
+      ringing,
+    };
+    wakeLock = {
+      acquire: vi.fn().mockResolvedValue(undefined),
+      release: vi.fn().mockResolvedValue(undefined),
+    };
     TestBed.configureTestingModule({
       providers: [
         { provide: CLOCK, useValue: () => now },
@@ -64,22 +77,48 @@ describe('RestTimerService', () => {
 
   it('uses the clock, not the number of ticks: a late tick after the background is exact', () => {
     timer.start(squat);
-    now += 85_000;
+    now += 80_000;
     advance(0);
-    expect(timer.remainingMs()).toBe(5_000);
+    expect(timer.remainingMs()).toBe(10_000);
   });
 
-  it('rings once when the time is up, then stops ticking and lets the screen sleep', () => {
+  it('starts the alarm in the last 5 seconds and keeps it ringing after the end', () => {
     timer.start(squat);
 
-    advance(90_000);
+    advance(84_000);
+    expect(timer.ringing()).toBe(false);
     advance(1_000);
+    expect(timer.ringing()).toBe(true);
 
+    advance(5_000);
+    advance(10_000);
     expect(timer.finished()).toBe(true);
     expect(timer.remainingMs()).toBe(0);
-    expect(alarm.ring).toHaveBeenCalledOnce();
+    expect(timer.ringing()).toBe(true);
     expect(ticker.running).toBe(false);
+    expect(wakeLock.release).not.toHaveBeenCalled();
+  });
+
+  it('silences the alarm and lets the screen sleep only when the user stops it', () => {
+    timer.start(squat);
+    advance(90_000);
+
+    timer.stop();
+
+    expect(timer.ringing()).toBe(false);
+    expect(timer.timer()).toBeNull();
     expect(wakeLock.release).toHaveBeenCalledOnce();
+  });
+
+  it('stops the alarm when time is added in the last seconds', () => {
+    timer.start(squat);
+    advance(87_000);
+    expect(timer.ringing()).toBe(true);
+
+    timer.adjust(15);
+
+    expect(timer.ringing()).toBe(false);
+    expect(timer.remainingMs()).toBe(18_000);
   });
 
   it('adds and removes time, never ending in the past', () => {
@@ -90,21 +129,22 @@ describe('RestTimerService', () => {
 
     timer.adjust(-200);
     expect(timer.finished()).toBe(true);
-    expect(alarm.ring).toHaveBeenCalledOnce();
+    expect(timer.ringing()).toBe(true);
   });
 
-  it('restarts with the new exercise when another set is ticked', () => {
+  it('restarts with the new exercise when another set is ticked, silencing the alarm', () => {
     timer.start(squat);
-    advance(80_000);
+    advance(90_000);
 
     timer.start({ exerciseId: 2, exercise: 'Panca', seconds: 120 });
 
     expect(timer.timer()?.target.exercise).toBe('Panca');
     expect(timer.remainingMs()).toBe(120_000);
     expect(timer.finished()).toBe(false);
+    expect(timer.ringing()).toBe(false);
   });
 
-  it('stops or dismisses the rest', () => {
+  it('stops a running rest', () => {
     timer.start(squat);
     timer.stop();
 

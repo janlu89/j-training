@@ -1,4 +1,4 @@
-<section class="bar" [class.bar--done]="finished()" [attr.aria-label]="'timer.title' | transloco">
+<section class="bar" [class.bar--ringing]="ringing()" [attr.aria-label]="'timer.title' | transloco">
   <div class="bar__track" aria-hidden="true">
     <span class="bar__fill" [style.transform]="'scaleX(' + progress() + ')'"></span>
   </div>
@@ -18,12 +18,8 @@
       {{ finished() ? ('timer.done' | transloco) : '' }}
     </span>
 
-    @if (finished()) {
-      <button type="button" class="bar__button bar__button--primary" (click)="stop.emit()">
-        {{ 'timer.dismiss' | transloco }}
-      </button>
-    } @else {
-      <div class="bar__actions">
+    <div class="bar__actions">
+      @if (!ringing()) {
         <button
           type="button"
           class="bar__button"
@@ -32,6 +28,8 @@
         >
           −{{ step }}
         </button>
+      }
+      @if (!finished()) {
         <button
           type="button"
           class="bar__button"
@@ -40,6 +38,14 @@
         >
           +{{ step }}
         </button>
+      }
+      @if (ringing()) {
+        <!-- The alarm rings until this button is pressed. -->
+        <button type="button" class="bar__button bar__button--primary" (click)="stop.emit()">
+          <i class="pi pi-volume-off" aria-hidden="true"></i>
+          {{ 'timer.silence' | transloco }}
+        </button>
+      } @else {
         <button
           type="button"
           class="bar__button"
@@ -48,7 +54,7 @@
         >
           <i class="pi pi-times" aria-hidden="true"></i>
         </button>
-      </div>
-    }
+      }
+    </div>
   </div>
 </section>

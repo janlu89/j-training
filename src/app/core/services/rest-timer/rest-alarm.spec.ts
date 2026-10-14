@@ -1,12 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { ALARM_PLATFORM, REST_VIBRATION, RestAlarm } from './rest-alarm';
 
-/** Just enough of Web Audio to count the beeps scheduled by the alarm. */
+/** Just enough of Web Audio to check the tone played by the alarm. */
 function fakeAudioContext() {
   const param = () => ({
     value: 0,
     setValueAtTime: vi.fn(),
-    exponentialRampToValueAtTime: vi.fn(),
+    linearRampToValueAtTime: vi.fn(),
+    setTargetAtTime: vi.fn(),
   });
   const node = () => {
     const audioNode = { connect: vi.fn() };
@@ -19,6 +20,7 @@ function fakeAudioContext() {
     resume: vi.fn().mockResolvedValue(undefined),
     createOscillator: vi.fn(() => ({
       ...node(),
+      type: 'sine',
       frequency: param(),
       start: vi.fn(),
       stop: vi.fn(),
@@ -41,22 +43,43 @@ describe('RestAlarm', () => {
     return { alarm: TestBed.inject(RestAlarm), vibrate };
   }
 
-  it('unlocks audio on the user tap, then beeps three times and vibrates', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('rings with a continuous tone and a repeated vibration until stopped', () => {
+    vi.useFakeTimers();
     const context = fakeAudioContext();
     const { alarm, vibrate } = setup(context);
 
     alarm.prepare();
-    alarm.ring();
+    alarm.start();
+    alarm.start();
+    vi.advanceTimersByTime(3_000);
 
     expect(context.resume).toHaveBeenCalledOnce();
-    expect(context.createOscillator).toHaveBeenCalledTimes(3);
+    expect(context.createOscillator).toHaveBeenCalledOnce();
+    const oscillator = context.createOscillator.mock.results[0].value;
+    expect(oscillator.start).toHaveBeenCalledOnce();
+    expect(oscillator.stop).not.toHaveBeenCalled();
+    expect(alarm.ringing()).toBe(true);
+    expect(vibrate).toHaveBeenCalledTimes(3);
     expect(vibrate).toHaveBeenCalledWith(REST_VIBRATION);
+
+    alarm.stop();
+    vi.advanceTimersByTime(3_000);
+
+    expect(alarm.ringing()).toBe(false);
+    expect(oscillator.stop).toHaveBeenCalledOnce();
+    expect(vibrate).toHaveBeenLastCalledWith([]);
+    expect(vibrate).toHaveBeenCalledTimes(4);
   });
 
   it('still vibrates where Web Audio is not available', () => {
     const { alarm, vibrate } = setup(null);
     alarm.prepare();
-    alarm.ring();
-    expect(vibrate).toHaveBeenCalledOnce();
+    alarm.start();
+    alarm.stop();
+    expect(vibrate).toHaveBeenCalledWith(REST_VIBRATION);
   });
 });

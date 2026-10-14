@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent } from 'rxjs';
 import { RestTarget, RestTimer } from '../../models';
 import { CLOCK } from '../clock';
-import { RestAlarm } from './rest-alarm';
+import { ALARM_LEAD_MS, RestAlarm } from './rest-alarm';
 import { ScreenWakeLock } from './screen-wake-lock';
 import { TICKER } from './ticker';
 
@@ -11,6 +11,7 @@ import { TICKER } from './ticker';
  * The rest timer between sets. One at a time, application-wide, so it keeps running while the
  * user edits an exercise or looks at another page. The remaining time is always `endsAt - now`:
  * ticks only wake the timer up, so throttled or late ticks never make the countdown drift.
+ * The alarm starts in the last seconds and rings until the user stops it.
  */
 @Injectable({ providedIn: 'root' })
 export class RestTimerService {
@@ -25,6 +26,8 @@ export class RestTimerService {
   private readonly done = signal(false);
 
   readonly timer = this.current.asReadonly();
+  /** The alarm is sounding: the last seconds of the rest, then until the user stops it. */
+  readonly ringing = this.alarm.ringing;
   /** True once the time is up, until the timer is dismissed or restarted. */
   readonly finished = this.done.asReadonly();
   /** Milliseconds left, never negative. */
@@ -49,6 +52,7 @@ export class RestTimerService {
   /** Starts (or restarts) the rest. Call it from the user's tap, so the alarm can play later. */
   start(target: RestTarget): void {
     const now = this.clock();
+    this.alarm.stop();
     this.alarm.prepare();
     this.current.set({ target, startedAt: now, endsAt: now + target.seconds * 1000 });
     this.now.set(now);
@@ -69,15 +73,19 @@ export class RestTimerService {
     this.tick();
   }
 
-  /** Stops the rest or dismisses the finished one. */
+  /** Stops the rest, or the alarm of the finished one. */
   stop(): void {
+    this.alarm.stop();
     this.ticker.stop();
     this.current.set(null);
     this.done.set(false);
     void this.wakeLock.release();
   }
 
-  /** Reads the clock; when the time is up, rings once and stops ticking. */
+  /**
+   * Reads the clock. In the last seconds the alarm starts (and stops again if time is added);
+   * when the time is up ticking stops, while the alarm and the screen stay on until `stop`.
+   */
   tick(): void {
     const timer = this.current();
     if (!timer || this.done()) {
@@ -85,11 +93,14 @@ export class RestTimerService {
     }
     const now = this.clock();
     this.now.set(now);
+    if (timer.endsAt - now <= ALARM_LEAD_MS) {
+      this.alarm.start();
+    } else {
+      this.alarm.stop();
+    }
     if (now >= timer.endsAt) {
       this.done.set(true);
       this.ticker.stop();
-      this.alarm.ring();
-      void this.wakeLock.release();
     }
   }
 }

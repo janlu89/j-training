@@ -99,7 +99,7 @@
     "plus": "Aggiungi {{sec}} secondi",
     "stop": "Interrompi il recupero",
     "done": "Recupero finito: tocca a te!",
-    "dismiss": "OK"
+    "silence": "Ferma l'allarme"
   },
   "plans": {
     "title": "Schede",
