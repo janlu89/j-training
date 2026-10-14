@@ -4,6 +4,8 @@
     <h3 class="card__name">{{ phase.name }}</h3>
     @if (phase.status === 'active') {
       <p-tag severity="success" [value]="'plans.status.active' | transloco" />
+    } @else {
+      <p-tag severity="secondary" [value]="'plans.status.archived' | transloco" />
     }
   </div>
   <p class="card__meta">
@@ -19,7 +21,11 @@
     <a pButton severity="secondary" [routerLink]="['/plans', phase.id]">
       <span pButtonLabel>{{ 'plans.open' | transloco }}</span>
     </a>
-    @if (phase.status !== 'active') {
+    @if (phase.status === 'active') {
+      <button pButton type="button" severity="secondary" (click)="deactivate.emit(phase.id)">
+        <span pButtonLabel>{{ 'plans.deactivate' | transloco }}</span>
+      </button>
+    } @else {
       <button pButton type="button" (click)="activate.emit(phase.id)">
         <span pButtonLabel>{{ 'plans.activate' | transloco }}</span>
       </button>

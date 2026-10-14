@@ -1,0 +1,23 @@
+<div class="picker" role="group" [attr.aria-label]="'workout.pickDay' | transloco">
+  @for (planDay of days(); track planDay.day.id) {
+    @let day = planDay.day;
+    <button
+      type="button"
+      class="picker__day"
+      [class.picker__day--selected]="day.id === selectedId()"
+      [attr.aria-pressed]="day.id === selectedId()"
+      [attr.aria-label]="
+        ('plan.day' | transloco: { number: day.ordine }) +
+        ' · ' +
+        day.csvGiorno +
+        (day.id === suggestedId() ? ' · ' + ('workout.suggested' | transloco) : '')
+      "
+      (click)="selectedIdChange.emit(day.id)"
+    >
+      {{ 'plan.dayShort' | transloco: { number: day.ordine } }}
+      @if (day.id === suggestedId()) {
+        <span class="picker__dot" aria-hidden="true"></span>
+      }
+    </button>
+  }
+</div>

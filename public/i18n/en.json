@@ -8,11 +8,21 @@
     "settings": "Settings"
   },
   "workout": {
-    "activePlan": "Active plan",
+    "activePlan": "Active plan: {{name}}",
     "empty": {
       "title": "No active plan",
-      "message": "Import your plan as a CSV file to start training."
-    }
+      "message": "Import your plan as a CSV file to start training.",
+      "yourPlans": "Your plans"
+    },
+    "reason": {
+      "today": "Today's workout",
+      "restDay": "Rest day today",
+      "rotation": "Next workout"
+    },
+    "chosenDay": "Chosen day",
+    "nextOn": "Next workout: {{weekday}}",
+    "pickDay": "Choose the day",
+    "suggested": "suggested"
   },
   "plans": {
     "title": "Plans",
@@ -22,10 +32,11 @@
     "importedOn": "imported on {{date}}",
     "counts": "Days: {{days}} · Exercises: {{exercises}}",
     "status": {
-      "active": "Active"
+      "active": "Active",
+      "archived": "Archived"
     },
     "open": "Open",
-    "activate": "Use this plan",
+    "activate": "Make active",
     "backToList": "All plans",
     "empty": {
       "title": "No plans imported",
@@ -34,13 +45,15 @@
     "notFound": {
       "title": "Plan not found",
       "message": "This plan doesn't exist on this device."
-    }
+    },
+    "deactivate": "Archive"
   },
   "plan": {
     "day": "Day {{number}}",
     "exerciseCount": "Exercises: {{count}}",
     "weekday": "Day of the week",
-    "noWeekday": "Not assigned"
+    "noWeekday": "Not assigned",
+    "dayShort": "D{{number}}"
   },
   "weekday": {
     "1": "Monday",

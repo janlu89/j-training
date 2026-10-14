@@ -48,6 +48,10 @@ export class PlanDetailPage {
     await this.router.navigateByUrl('/workout');
   }
 
+  protected deactivate(phaseId: number): Promise<void> {
+    return this.plans.deactivate(phaseId);
+  }
+
   protected async onWeekdayChange({ dayId, weekday }: WeekdayChange): Promise<void> {
     await this.days.update(dayId, { weekday });
   }

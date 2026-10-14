@@ -38,8 +38,13 @@ body {
   background: var(--jt-surface);
 }
 
-a {
+/* Text links only: anchors styled as buttons (pButton) keep the button colours. */
+a:not(.p-button) {
   color: var(--jt-link);
+}
+
+a.p-button {
+  text-decoration: none;
 }
 
 /* Hidden visually, still available to assistive technologies and to label/click APIs. */

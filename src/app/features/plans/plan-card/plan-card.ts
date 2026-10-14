@@ -18,4 +18,5 @@ export class PlanCard {
   readonly summary = input.required<PlanSummary>();
   readonly language = input.required<string>();
   readonly activate = output<number>();
+  readonly deactivate = output<number>();
 }

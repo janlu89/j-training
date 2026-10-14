@@ -47,6 +47,11 @@ export class PlanRepository {
     });
   }
 
+  /** Archives a plan: afterwards no plan is active until another one is activated. */
+  async deactivate(phaseId: number): Promise<void> {
+    await this.db.phases.update(phaseId, { status: 'archived' });
+  }
+
   findByFase(fase: number): Promise<Phase[]> {
     return this.db.phases.where('fase').equals(fase).toArray();
   }

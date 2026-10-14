@@ -8,11 +8,21 @@
     "settings": "Impostazioni"
   },
   "workout": {
-    "activePlan": "Scheda attiva",
+    "activePlan": "Scheda attiva: {{name}}",
     "empty": {
       "title": "Nessuna scheda attiva",
-      "message": "Importa la tua scheda in CSV per iniziare ad allenarti."
-    }
+      "message": "Importa la tua scheda in CSV per iniziare ad allenarti.",
+      "yourPlans": "Le tue schede"
+    },
+    "reason": {
+      "today": "Allenamento di oggi",
+      "restDay": "Oggi riposo",
+      "rotation": "Prossimo allenamento"
+    },
+    "chosenDay": "Giorno scelto",
+    "nextOn": "Prossimo allenamento: {{weekday}}",
+    "pickDay": "Scegli il giorno",
+    "suggested": "proposto"
   },
   "plans": {
     "title": "Schede",
@@ -22,10 +32,11 @@
     "importedOn": "importata il {{date}}",
     "counts": "Giorni: {{days}} · Esercizi: {{exercises}}",
     "status": {
-      "active": "Attiva"
+      "active": "Attiva",
+      "archived": "Archiviata"
     },
     "open": "Apri",
-    "activate": "Usa questa scheda",
+    "activate": "Rendi attiva",
     "backToList": "Tutte le schede",
     "empty": {
       "title": "Nessuna scheda importata",
@@ -34,13 +45,15 @@
     "notFound": {
       "title": "Scheda non trovata",
       "message": "Questa scheda non esiste su questo dispositivo."
-    }
+    },
+    "deactivate": "Archivia"
   },
   "plan": {
     "day": "Giorno {{number}}",
     "exerciseCount": "Esercizi: {{count}}",
     "weekday": "Giorno della settimana",
-    "noWeekday": "Non assegnato"
+    "noWeekday": "Non assegnato",
+    "dayShort": "G{{number}}"
   },
   "weekday": {
     "1": "Lunedì",

@@ -14,16 +14,20 @@
       </p>
     </header>
 
-    @if (plan.phase.status === 'active') {
-      <p-tag class="status" severity="success" [value]="'plans.status.active' | transloco" />
-    } @else {
-      <div class="page__actions">
+    <div class="page__actions">
+      @if (plan.phase.status === 'active') {
+        <p-tag class="status" severity="success" [value]="'plans.status.active' | transloco" />
+        <button pButton type="button" severity="secondary" (click)="deactivate(plan.phase.id)">
+          <span pButtonLabel>{{ 'plans.deactivate' | transloco }}</span>
+        </button>
+      } @else {
+        <p-tag class="status" severity="secondary" [value]="'plans.status.archived' | transloco" />
         <button pButton type="button" (click)="activate(plan.phase.id)">
           <i class="pi pi-check" pButtonIcon aria-hidden="true"></i>
           <span pButtonLabel>{{ 'plans.activate' | transloco }}</span>
         </button>
-      </div>
-    }
+      }
+    </div>
 
     <app-plan-days
       [days]="plan.days"

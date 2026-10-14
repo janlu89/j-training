@@ -1,25 +1,61 @@
-@if (plan(); as plan) {
+@if (today(); as today) {
   <div class="page">
     <header class="page__header">
-      <p class="page__eyebrow">{{ 'workout.activePlan' | transloco }}</p>
-      <h2 class="page__title">{{ plan.phase.name }}</h2>
-      <p class="page__subtitle">{{ 'plans.fase' | transloco: { fase: plan.phase.fase } }}</p>
+      <p class="page__eyebrow">
+        {{ 'workout.activePlan' | transloco: { name: today.plan.phase.name } }}
+      </p>
+      @if (today.suggestion; as suggestion) {
+        <h2 class="page__title">
+          @if (isSuggested()) {
+            {{ 'workout.reason.' + suggestion.reason | transloco }}
+          } @else {
+            {{ 'workout.chosenDay' | transloco }}
+          }
+        </h2>
+        @if (isSuggested() && suggestion.day.day.weekday; as weekday) {
+          <p class="page__subtitle">
+            @if (suggestion.reason === 'restDay') {
+              {{ 'workout.nextOn' | transloco: { weekday: ('weekday.' + weekday | transloco) } }}
+            } @else {
+              {{ 'weekday.' + weekday | transloco }}
+            }
+          </p>
+        }
+      }
     </header>
-    <app-plan-days
-      [days]="plan.days"
-      [language]="language()"
-      (weekdayChange)="onWeekdayChange($event)"
-    />
+
+    @if (today.plan.days.length > 1) {
+      <app-day-picker
+        [days]="today.plan.days"
+        [selectedId]="selectedDayId()"
+        [suggestedId]="today.suggestion?.day?.day?.id"
+        (selectedIdChange)="selectedDayId.set($event)"
+      />
+    }
+
+    @if (selectedDay(); as day) {
+      <app-plan-days
+        [days]="[day]"
+        [language]="language()"
+        [collapsible]="false"
+        (weekdayChange)="onWeekdayChange($event)"
+      />
+    }
   </div>
-} @else if (plan() === null) {
+} @else if (today() === null) {
   <app-empty-state
     icon="pi pi-bolt"
     [title]="'workout.empty.title' | transloco"
     [message]="'workout.empty.message' | transloco"
   >
-    <a pButton routerLink="/plans/import">
-      <i class="pi pi-upload" pButtonIcon aria-hidden="true"></i>
-      <span pButtonLabel>{{ 'plans.import' | transloco }}</span>
-    </a>
+    <div class="page__actions">
+      <a pButton routerLink="/plans/import">
+        <i class="pi pi-upload" pButtonIcon aria-hidden="true"></i>
+        <span pButtonLabel>{{ 'plans.import' | transloco }}</span>
+      </a>
+      <a pButton routerLink="/plans" severity="secondary">
+        <span pButtonLabel>{{ 'workout.empty.yourPlans' | transloco }}</span>
+      </a>
+    </div>
   </app-empty-state>
 }

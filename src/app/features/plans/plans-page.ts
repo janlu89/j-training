@@ -35,4 +35,8 @@ export class PlansPage {
     await this.plans.activate(phaseId);
     await this.router.navigateByUrl('/workout');
   }
+
+  protected deactivate(phaseId: number): Promise<void> {
+    return this.plans.deactivate(phaseId);
+  }
 }

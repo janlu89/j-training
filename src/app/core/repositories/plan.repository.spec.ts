@@ -82,6 +82,15 @@ describe('PlanRepository', () => {
     ]);
   });
 
+  it('archives the active plan, leaving no plan active', async () => {
+    const july = await plans.savePlan(newPlan('Luglio', 7), true);
+
+    await plans.deactivate(july);
+
+    expect(await phases.getActive()).toBeUndefined();
+    expect((await phases.getById(july))?.status).toBe('archived');
+  });
+
   it('rolls back the whole import when a write fails', async () => {
     await plans.savePlan(newPlan('Luglio', 7), true);
     const broken = newPlan('Rotta', 8);
