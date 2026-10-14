@@ -87,5 +87,17 @@ export const JTrainingPreset = definePreset(Aura, {
         },
       },
     },
+    // Aura's warning text (yellow 600 on yellow 50) is 2.8:1; yellow 800 is 6.6:1.
+    message: {
+      colorScheme: {
+        light: {
+          warn: {
+            color: '{yellow.800}',
+            outlined: { color: '{yellow.800}', borderColor: '{yellow.700}' },
+            simple: { color: '{yellow.800}' },
+          },
+        },
+      },
+    },
   },
 });
