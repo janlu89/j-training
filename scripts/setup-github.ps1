@@ -66,11 +66,8 @@ function Assert-Prerequisites {
   gh auth status 2>$null | Out-Null
   Assert-ExitCode 'gh auth status (run: gh auth login)'
 
-  $branch = git rev-parse --abbrev-ref HEAD
+  git rev-parse --verify --quiet HEAD | Out-Null
   Assert-ExitCode 'git rev-parse (is this a git repository with at least one commit?)'
-  if ($branch -ne 'master') {
-    throw "Current branch is '$branch': run this script from master."
-  }
   if (git status --porcelain) {
     throw 'Working tree is not clean: commit or stash your changes first.'
   }
@@ -90,9 +87,12 @@ function New-RepositoryIfMissing([string]$FullName) {
       git remote add origin "https://github.com/$FullName.git"
       Assert-ExitCode 'git remote add origin'
     }
-    git push -u origin master
-    Assert-ExitCode 'git push master'
     return
+  }
+  # First run only: the initial push of master happens before the rulesets exist.
+  $branch = git rev-parse --abbrev-ref HEAD
+  if ($branch -ne 'master') {
+    throw "Current branch is '$branch': create the repository from master."
   }
   gh repo create $FullName --public --description $Description --source . --remote origin --push
   Assert-ExitCode 'gh repo create'
@@ -168,8 +168,13 @@ function Set-BranchRuleset([string]$FullName, [string]$Branch, [string[]]$MergeM
   $name = "protect-$Branch"
   Write-Step "Ruleset $name (merge: $($MergeMethods -join ', '))"
   $body = New-RulesetBody -Name $name -Branch $Branch -MergeMethods $MergeMethods
-  $existingId = gh api "repos/$FullName/rulesets" --jq ".[] | select(.name == `"$name`") | .id"
+  # Filtered in PowerShell: Windows PowerShell 5.1 strips inner double quotes from native
+  # arguments, which breaks a --jq select(.name == "...") expression.
+  $rulesetsJson = gh api "repos/$FullName/rulesets"
   Assert-ExitCode 'list rulesets'
+  $rulesets = ($rulesetsJson -join "`n") | ConvertFrom-Json
+  $existingId = $rulesets | Where-Object { $_.name -eq $name } |
+    Select-Object -ExpandProperty id -First 1
   if ($existingId) {
     Invoke-GhApiJson -Method PUT -Endpoint "repos/$FullName/rulesets/$existingId" -Body $body
     Write-Host 'Updated.'
@@ -195,22 +200,29 @@ function Enable-PagesWithActions([string]$FullName) {
 }
 
 function Set-PagesEnvironmentBranch([string]$FullName, [string]$Branch) {
-  # The default branch is dev, but production deploys run from master:
-  # the github-pages environment must explicitly allow it.
-  Write-Step "Environment github-pages: allow deploys from $Branch"
+  # Production deploys run only from master. Enabling Pages auto-allows the default branch (dev),
+  # so every other branch policy is removed: least privilege on the production environment.
+  Write-Step "Environment github-pages: deploys allowed only from $Branch"
   $envEndpoint = "repos/$FullName/environments/github-pages"
   Invoke-GhApiJson -Method PUT -Endpoint $envEndpoint -Body @{
     deployment_branch_policy = @{ protected_branches = $false; custom_branch_policies = $true }
   }
-  $policies = gh api "$envEndpoint/deployment-branch-policies" --jq '.branch_policies[].name'
+  $policiesJson = gh api "$envEndpoint/deployment-branch-policies"
   Assert-ExitCode 'list deployment branch policies'
-  if ($policies -contains $Branch) {
-    Write-Host 'Already allowed.'
+  $policies = @((($policiesJson -join "`n") | ConvertFrom-Json).branch_policies)
+
+  foreach ($policy in $policies | Where-Object { $_.name -ne $Branch }) {
+    gh api -X DELETE "$envEndpoint/deployment-branch-policies/$($policy.id)" --silent
+    Assert-ExitCode "remove deployment branch policy $($policy.name)"
+    Write-Host "Removed $($policy.name)."
+  }
+  if ($policies | Where-Object { $_.name -eq $Branch }) {
+    Write-Host "$Branch already allowed."
     return
   }
   gh api -X POST "$envEndpoint/deployment-branch-policies" -f name=$Branch -f type=branch --silent
   Assert-ExitCode 'add deployment branch policy'
-  Write-Host 'Allowed.'
+  Write-Host "$Branch allowed."
 }
 
 try {
