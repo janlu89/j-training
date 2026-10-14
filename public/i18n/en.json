@@ -64,6 +64,8 @@
       "addSet": "Add set",
       "removeSet": "Remove set",
       "noSets": "No sets: add one if you do this exercise.",
+      "exerciseRest": "Rest {{time}}",
+      "exerciseRestStart": "Start the {{time}} rest before {{exercise}}",
       "markAll": "Mark all done",
       "save": "Save day",
       "skip": "Skip day",
@@ -253,7 +255,7 @@
     },
     "exerciseRest": {
       "title": "Rest between exercises",
-      "description": "Starts when you complete the last set of an exercise and shows the next one."
+      "description": "Length of the rest you start with the button between one exercise and the next."
     },
     "storage": {
       "title": "Data storage",

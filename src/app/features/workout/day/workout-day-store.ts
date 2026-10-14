@@ -40,6 +40,8 @@ export class WorkoutDayStore {
   });
 
   readonly workout = this.source.value;
+  /** Length of the rest between exercises, from the settings. */
+  readonly exerciseRestSeconds = this.restSettings.exerciseRestSeconds;
   readonly isLoading = this.source.isLoading;
 
   readonly exercises = computed<ExerciseRows[]>(() => {
@@ -104,10 +106,7 @@ export class WorkoutDayStore {
     }
   }
 
-  /**
-   * Marks a set as done (recording it and starting the rest) or not done (removing it, keeping
-   * the values shown).
-   */
+  /** Marks a set as done (recording it) or not done (removing it, keeping the values shown). */
   async toggleSet(exerciseId: number, setNo: number): Promise<void> {
     const workout = this.workout();
     const row = this.findRow(exerciseId, setNo);
@@ -118,13 +117,24 @@ export class WorkoutDayStore {
       this.drafts.setInput(workout.day.id, exerciseId, setNo, row.input);
       await this.sessions.removeSet(row.logId);
     } else if (row.values) {
-      // Started before the write, still inside the user's tap: browsers then allow the alarm.
-      this.startRestAfter(exerciseId, setNo);
       await this.record(exerciseId, row);
     }
   }
 
-  /** Starts the rest planned for the exercise; nothing happens when it has no rest time. */
+  /** Rest before an exercise, started from the button between two exercises. */
+  startExerciseRest(exerciseId: number): void {
+    const exercise = this.findExercise(exerciseId)?.entry.exercise;
+    if (exercise) {
+      this.restTimer.start({
+        kind: 'exercises',
+        exerciseId,
+        exercise: exercise.esercizio,
+        seconds: this.exerciseRestSeconds(),
+      });
+    }
+  }
+
+  /** Rest between sets, started by hand; nothing happens when the exercise has no rest time. */
   startRest(exerciseId: number): void {
     const exercise = this.findExercise(exerciseId)?.entry.exercise;
     if (exercise?.recSec) {
@@ -195,32 +205,6 @@ export class WorkoutDayStore {
     const exercise = this.findExercise(exerciseId)?.entry.exercise;
     if (workout && exercise && row.values) {
       await this.sessions.recordSet(workout, { exercise, setNo: row.setNo, values: row.values });
-    }
-  }
-
-  /**
-   * The rest after a ticked set: between sets, or, when it completes the exercise, the rest
-   * before the next exercise not done yet. After the last exercise of the day there is no rest.
-   */
-  private startRestAfter(exerciseId: number, setNo: number): void {
-    const exercises = this.exercises();
-    const index = exercises.findIndex(({ entry }) => entry.exercise.id === exerciseId);
-    const completed = exercises[index]?.rows.every((row) => row.setNo === setNo || isDone(row));
-    if (!completed) {
-      this.startRest(exerciseId);
-      return;
-    }
-    // The next one in plan order that still has sets to do, wrapping around the day.
-    const next = [...exercises.slice(index + 1), ...exercises.slice(0, index)].find(({ rows }) =>
-      rows.some((row) => !isDone(row)),
-    )?.entry.exercise;
-    if (next) {
-      this.restTimer.start({
-        kind: 'exercises',
-        exerciseId: next.id,
-        exercise: next.esercizio,
-        seconds: this.restSettings.exerciseRestSeconds(),
-      });
     }
   }
 

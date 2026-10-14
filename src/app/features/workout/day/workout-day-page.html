@@ -62,7 +62,24 @@
       <p class="hint">{{ 'workout.day.hint' | transloco }}</p>
     }
 
-    @for (item of store.exercises(); track item.entry.exercise.id) {
+    @for (item of store.exercises(); track item.entry.exercise.id; let first = $first) {
+      @if (!first) {
+        <!-- Between two exercises: the rest before the next one, started by hand. -->
+        <div class="between">
+          <button
+            type="button"
+            class="between__button"
+            [attr.aria-label]="
+              'workout.day.exerciseRestStart'
+                | transloco: { time: exerciseRestTime(), exercise: item.entry.exercise.esercizio }
+            "
+            (click)="store.startExerciseRest(item.entry.exercise.id)"
+          >
+            <i class="pi pi-stopwatch" aria-hidden="true"></i>
+            {{ 'workout.day.exerciseRest' | transloco: { time: exerciseRestTime() } }}
+          </button>
+        </div>
+      }
       <app-exercise-log
         [entry]="item.entry"
         [rows]="item.rows"

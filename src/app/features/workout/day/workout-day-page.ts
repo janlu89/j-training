@@ -8,6 +8,7 @@ import { Message } from 'primeng/message';
 import { Tag } from 'primeng/tag';
 import { LoadUpdate, OpenSession, TrainingDay } from '../../../core/models';
 import { LanguageService } from '../../../core/services/language.service';
+import { formatRest } from '../../../core/services/rest-timer/rest-timer.service';
 import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { ExerciseLog } from './exercise-log/exercise-log';
@@ -46,6 +47,9 @@ export class WorkoutDayPage {
   protected readonly finishing = signal(false);
   protected readonly busy = signal(false);
   protected readonly returnTo = computed(() => `/workout/day/${this.store.dayId()}`);
+  protected readonly exerciseRestTime = computed(() =>
+    formatRest(this.store.exerciseRestSeconds() * 1000),
+  );
 
   protected async finish(loads: LoadUpdate[]): Promise<void> {
     await this.run(async () => {

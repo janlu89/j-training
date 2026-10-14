@@ -66,63 +66,37 @@ describe('WorkoutDayStore', () => {
     expect(store.workout()?.session).toBeUndefined();
   });
 
-  it('starts the planned rest when a set is ticked, not when it is unticked', async () => {
+  it('does not start any rest by itself when a set is ticked', async () => {
     await store.toggleSet(exerciseId, 1);
+    await settled(() => rows()[0].logId !== undefined);
+    expect(startRest).not.toHaveBeenCalled();
+  });
+
+  it('starts the rest between sets by hand, with the exercise rest time', () => {
+    store.startRest(exerciseId);
     expect(startRest).toHaveBeenCalledWith({
       kind: 'sets',
       exerciseId,
       exercise: 'Squat',
       seconds: 150,
     });
-
-    await settled(() => rows()[0].logId !== undefined);
-    await store.toggleSet(exerciseId, 1);
-    expect(startRest).toHaveBeenCalledOnce();
   });
 
-  async function tickAll(id: number, sets: number): Promise<void> {
-    for (let setNo = 1; setNo <= sets; setNo++) {
-      await store.toggleSet(id, setNo);
-      await settled(
-        () =>
-          store.exercises().find(({ entry }) => entry.exercise.id === id)?.rows[setNo - 1].logId !==
-          undefined,
-      );
-    }
-  }
-
-  it('rests 2 minutes before the next exercise once every set of one is done', async () => {
+  it('starts the rest before an exercise by hand, 2 minutes by default', async () => {
     const bench = await TestBed.inject(PlanEditorRepository).addExercise(
       dayId,
       newExerciseInput({ esercizio: 'Panca piana', serie: 2, recSec: 90 }),
     );
     await settled(() => store.exercises().length === 2);
 
-    await tickAll(exerciseId, 3);
+    store.startExerciseRest(bench);
 
-    expect(startRest).toHaveBeenCalledTimes(3);
-    expect(startRest).toHaveBeenLastCalledWith({
+    expect(startRest).toHaveBeenCalledWith({
       kind: 'exercises',
       exerciseId: bench,
       exercise: 'Panca piana',
       seconds: 120,
     });
-  });
-
-  it('goes back to an exercise left behind, and does not rest after the last one', async () => {
-    const bench = await TestBed.inject(PlanEditorRepository).addExercise(
-      dayId,
-      newExerciseInput({ esercizio: 'Panca piana', serie: 1, recSec: 90 }),
-    );
-    await settled(() => store.exercises().length === 2);
-
-    await tickAll(bench, 1);
-    expect(startRest).toHaveBeenLastCalledWith(
-      expect.objectContaining({ kind: 'exercises', exerciseId }),
-    );
-
-    await tickAll(exerciseId, 3);
-    expect(startRest).toHaveBeenCalledTimes(3);
   });
 
   it('updates a recorded set while the user types', async () => {

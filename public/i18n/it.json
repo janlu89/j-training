@@ -64,6 +64,8 @@
       "addSet": "Aggiungi serie",
       "removeSet": "Togli serie",
       "noSets": "Nessuna serie: aggiungine una se fai questo esercizio.",
+      "exerciseRest": "Recupero {{time}}",
+      "exerciseRestStart": "Avvia il recupero di {{time}} prima di {{exercise}}",
       "markAll": "Segna tutte fatte",
       "save": "Salva giornata",
       "skip": "Salta giornata",
@@ -253,7 +255,7 @@
     },
     "exerciseRest": {
       "title": "Recupero tra esercizi",
-      "description": "Parte quando completi l'ultima serie di un esercizio e ti indica il prossimo."
+      "description": "Durata del recupero che avvii con il pulsante tra un esercizio e l'altro."
     },
     "storage": {
       "title": "Archiviazione dati",

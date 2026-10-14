@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { ALARM_PLATFORM, REST_VIBRATION, RestAlarm } from './rest-alarm';
+import { ALARM_PLATFORM, RestAlarm, START_VIBRATION } from './rest-alarm';
 
-/** Just enough of Web Audio to check the tone played by the alarm. */
+/** Just enough of Web Audio to check what the alarm schedules. */
 function fakeAudioContext() {
   const param = () => ({
     value: 0,
@@ -15,7 +15,7 @@ function fakeAudioContext() {
     return audioNode;
   };
   return {
-    currentTime: 0,
+    currentTime: 100,
     destination: {},
     resume: vi.fn().mockResolvedValue(undefined),
     createOscillator: vi.fn(() => ({
@@ -43,43 +43,87 @@ describe('RestAlarm', () => {
     return { alarm: TestBed.inject(RestAlarm), vibrate };
   }
 
+  /** [frequency, start time on the audio clock] of every scheduled beep. */
+  function beeps(context: ReturnType<typeof fakeAudioContext>): [number, number][] {
+    return context.createOscillator.mock.results.map(({ value }) => [
+      value.frequency.value,
+      value.start.mock.calls[0][0],
+    ]);
+  }
+
   afterEach(() => {
     vi.useRealTimers();
   });
 
-  it('rings with a continuous tone and a repeated vibration until stopped', () => {
+  it('counts down the last 5 seconds, then plays the start signal for 15 seconds', () => {
+    const context = fakeAudioContext();
+    const { alarm } = setup(context);
+    alarm.prepare();
+
+    alarm.start(10_000, 5_000);
+    alarm.start(10_000, 5_250);
+
+    const scheduled = beeps(context);
+    expect(scheduled.slice(0, 6)).toEqual([
+      [880, 100],
+      [880, 101],
+      [880, 102],
+      [880, 103],
+      [880, 104],
+      [1_320, 105],
+    ]);
+    // Then a double beep every 1.5 s until 15 s after zero.
+    const repeats = scheduled.slice(6);
+    expect(repeats).toHaveLength(18);
+    expect(repeats.every(([hz, at]) => hz === 1_320 && at > 105 && at < 120)).toBe(true);
+    expect(alarm.ringing()).toBe(true);
+  });
+
+  it('skips the pips already past when it starts late', () => {
+    const context = fakeAudioContext();
+    const { alarm } = setup(context);
+    alarm.prepare();
+
+    alarm.start(10_000, 7_500);
+
+    expect(beeps(context).slice(0, 3)).toEqual([
+      [880, 100.5],
+      [880, 101.5],
+      [1_320, 102.5],
+    ]);
+  });
+
+  it('vibrates from zero, repeatedly, and stops everything when stopped', () => {
     vi.useFakeTimers();
     const context = fakeAudioContext();
     const { alarm, vibrate } = setup(context);
-
     alarm.prepare();
-    alarm.start();
-    alarm.start();
-    vi.advanceTimersByTime(3_000);
 
-    expect(context.resume).toHaveBeenCalledOnce();
-    expect(context.createOscillator).toHaveBeenCalledOnce();
-    const oscillator = context.createOscillator.mock.results[0].value;
-    expect(oscillator.start).toHaveBeenCalledOnce();
-    expect(oscillator.stop).not.toHaveBeenCalled();
-    expect(alarm.ringing()).toBe(true);
+    alarm.start(10_000, 5_000);
+    vi.advanceTimersByTime(4_999);
+    expect(vibrate).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1 + 3_000);
     expect(vibrate).toHaveBeenCalledTimes(3);
-    expect(vibrate).toHaveBeenCalledWith(REST_VIBRATION);
+    expect(vibrate).toHaveBeenCalledWith(START_VIBRATION);
 
     alarm.stop();
-    vi.advanceTimersByTime(3_000);
+    vi.advanceTimersByTime(10_000);
 
     expect(alarm.ringing()).toBe(false);
-    expect(oscillator.stop).toHaveBeenCalledOnce();
     expect(vibrate).toHaveBeenLastCalledWith([]);
     expect(vibrate).toHaveBeenCalledTimes(4);
+    const output = context.createGain.mock.results[0].value;
+    expect(output.gain.setTargetAtTime).toHaveBeenCalledWith(0, 100, expect.any(Number));
   });
 
-  it('still vibrates where Web Audio is not available', () => {
+  it('stops vibrating by itself after the start signal', () => {
+    vi.useFakeTimers();
     const { alarm, vibrate } = setup(null);
     alarm.prepare();
-    alarm.start();
-    alarm.stop();
-    expect(vibrate).toHaveBeenCalledWith(REST_VIBRATION);
+    alarm.start(1_000, 0);
+
+    vi.advanceTimersByTime(60_000);
+
+    expect(vibrate).toHaveBeenCalledTimes(11);
   });
 });

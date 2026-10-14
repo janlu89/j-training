@@ -82,21 +82,30 @@ describe('RestTimerService', () => {
     expect(timer.remainingMs()).toBe(10_000);
   });
 
-  it('starts the alarm in the last 5 seconds and keeps it ringing after the end', () => {
+  it('plays the countdown in the last 5 seconds, then closes the rest 15 s after the end', () => {
     timer.start(squat);
+    const endsAt = now + 90_000;
 
     advance(84_000);
     expect(timer.ringing()).toBe(false);
     advance(1_000);
     expect(timer.ringing()).toBe(true);
+    expect(alarm.start).toHaveBeenLastCalledWith(endsAt, now);
 
     advance(5_000);
-    advance(10_000);
     expect(timer.finished()).toBe(true);
     expect(timer.remainingMs()).toBe(0);
     expect(timer.ringing()).toBe(true);
-    expect(ticker.running).toBe(false);
+    expect(ticker.running).toBe(true);
     expect(wakeLock.release).not.toHaveBeenCalled();
+
+    advance(14_000);
+    expect(timer.timer()).not.toBeNull();
+    advance(1_000);
+    expect(timer.timer()).toBeNull();
+    expect(timer.ringing()).toBe(false);
+    expect(ticker.running).toBe(false);
+    expect(wakeLock.release).toHaveBeenCalledOnce();
   });
 
   it('silences the alarm and lets the screen sleep only when the user stops it', () => {

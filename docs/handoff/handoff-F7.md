@@ -12,14 +12,15 @@ Gianluca); `dev` contiene F1 (#5), F2 (#6), F3 (#7), F4 (#8); `master` = release
 - **Interfaccia più sobria**: icone piccole in grigio ardesia (▶, ✓, matita, stato vuoto), card "Giornata in corso"
   chiara; area di tocco ≥ 44 px invariata.
 - **Schede**: toggle "Attiva" (`ToggleSwitch`) al posto di "Rendi attiva" / "Archivia", in lista e nel dettaglio.
-- **Cronometro di recupero**: parte spuntando una serie (con il recupero dell'esercizio) o a mano dal chip "⏱ N s";
-  barra sopra la bottom nav, visibile su tutte le pagine, con −15 / +15 / stop.
-- **Recupero tra esercizi** (richiesta di Gianluca): quando si spunta l'ultima serie di un esercizio parte il
-  recupero verso il **prossimo esercizio** ancora da fare ("Prossimo esercizio · Curl"), **2 minuti di default**,
-  modificabile in Impostazioni (1:00–3:00). Dopo l'ultimo esercizio della giornata non parte nulla. Una prima
-  versione con le righe di recupero tra le serie è stata tolta: non era ciò che Gianluca intendeva.
-- **Allarme**: negli **ultimi 5 secondi** parte un tono acuto e continuo (Web Audio, 1,76 kHz) con vibrazione
-  ripetuta, che **continua dopo lo zero finché non si preme "Ferma l'allarme"**; aggiungere tempo lo interrompe.
+- **Cronometro di recupero**, sempre **avviato a mano** (nessun avvio automatico alla spunta, come chiesto da
+  Gianluca): tra le serie dal chip "⏱ N s" dell'esercizio (recupero della scheda), tra gli esercizi dal pulsante
+  "⏱ Recupero 2:00" **tra una card esercizio e la successiva** ("Prossimo esercizio · Curl"), **2 minuti di default**
+  modificabili in Impostazioni (1:00–3:00). Barra sopra la bottom nav, visibile su tutte le pagine, −15 / +15 / stop.
+  Due versioni intermedie (righe tra le serie, avvio automatico all'ultima serie) sono state tolte: non erano ciò che
+  Gianluca intendeva.
+- **Suono di fine recupero**: negli **ultimi 5 secondi un bip al secondo** (880 Hz), a zero un **"via"** lungo e più
+  acuto (1,32 kHz), poi un doppio bip ogni 1,5 s con vibrazione; **si ferma da solo 15 secondi dopo lo zero** (e il
+  recupero si chiude) oppure con "Ferma l'allarme"; aggiungere tempo nel conto alla rovescia lo interrompe.
 - **Storico** (`/history`): allenamenti salvati e saltati per data (mai le bozze), dettaglio con le serie di ogni
   esercizio in ordine di scheda (`/history/session/:id`), vista Esercizi e storico per nome esatto tra schede
   diverse con il numero di fase (`/history/exercise/:name`); unità di carico sempre visibile.
@@ -36,11 +37,11 @@ Gianluca); `dev` contiene F1 (#5), F2 (#6), F3 (#7), F4 (#8); `master` = release
 - **Servizio root + barra nella shell**: il recupero sopravvive alla navigazione. Pulsanti nativi nella barra: con
   `ButtonDirective` di PrimeNG il bundle iniziale passava da 599 a 679 kB (budget 650).
 - **Audio sbloccato dal tocco che avvia il recupero** (`RestAlarm.prepare`): i browser mobili permettono l'audio solo
-  dopo un gesto dell'utente. Nessun file audio: tono generato.
-- **Wake lock** ripreso al ritorno in primo piano e rilasciato solo quando l'allarme viene fermato.
+  dopo un gesto dell'utente. Nessun file audio: suoni generati e **programmati tutti insieme sull'orologio audio**
+  all'inizio del conto alla rovescia, quindi puntuali anche se i timer della pagina sono rallentati.
+- **Wake lock** ripreso al ritorno in primo piano e rilasciato quando il recupero si chiude (a mano o da solo).
 - **Recupero tra esercizi come preferenza del dispositivo** (`AppSettings.exerciseRestSeconds`, campo non
-  indicizzato: nessuna nuova versione Dexie), letto con un `resource` da `RestSettingsService`. Il prossimo esercizio
-  è il primo in ordine di scheda con serie ancora da fare, così funziona anche saltando l'ordine.
+  indicizzato: nessuna nuova versione Dexie), letto con un `resource` da `RestSettingsService`.
 - **Righe di serie come differenza dal piano** (`setDelta` con segno): le modifiche al piano durante l'allenamento
   restano coerenti.
 - **`HistoryRepository`** come lato lettura separato (SRP); le bozze sono escluse in un solo punto (`finishedLogs`).
@@ -62,18 +63,17 @@ Gianluca); `dev` contiene F1 (#5), F2 (#6), F3 (#7), F4 (#8); `master` = release
 - `e2e/{workout,history,plan-import}.spec.ts`
 
 ## Stato test (unit / e2e / manuale)
-- Unit: 209/209 (salvataggio atomico con serie non spuntate; cronometro con orologio e ticker finti: conto alla
-  rovescia, allarme a −5 s e continuo, +15 che lo ferma, ritorno dal background; wake lock; allarme; recupero tra
-  esercizi e impostazione; storico; analisi).
-- E2E: 25/25 (salvataggio a fine allenamento e togli serie; recupero da spunta e a mano; recupero tra esercizi 2:00 e
-  1:30 dalle impostazioni; allarme negli ultimi 5 s fino al pulsante; toggle schede; storico e analisi con quattro
-  settimane di dati inseriti dall'app).
+- Unit: 211/211 (salvataggio atomico con serie non spuntate; cronometro con orologio e ticker finti: conto alla
+  rovescia, countdown a −5 s, chiusura da solo 15 s dopo lo zero, +15 che lo ferma, ritorno dal background; suoni
+  programmati e vibrazione; wake lock; recupero tra esercizi manuale e impostazione; storico; analisi).
+- E2E: 25/25 (salvataggio a fine allenamento e togli serie; nessun recupero automatico alla spunta; recupero a mano
+  e "Ferma l'allarme"; countdown e chiusura da solo 15 s dopo lo zero; pulsante tra gli esercizi 2:00 e 1:30 dalle
+  impostazioni; toggle schede; storico e analisi con quattro settimane di dati inseriti dall'app).
 - Manuale: browser integrato a 390 px ok; screenshot dei grafici dall'E2E (Pixel 7). Telefono reale: ESITO_TELEFONO.
 
 ## Problemi aperti / debito tecnico
 - **Wake lock solo in contesto sicuro**: su `http://192.168.1.231:4200` non è disponibile; da verificare su GitHub
   Pages (HTTPS) o con port forwarding USB su `localhost`.
-- **Allarme senza limite di durata** (richiesta esplicita): valutare un tetto se il telefono resta incustodito.
 - **Notifiche con l'app in background**: non previste; richiedono il service worker (F8).
 - Valori digitati e non spuntati in memoria (non sopravvivono alla chiusura forzata dell'app).
 - Aprendo il form esercizio dall'allenamento la bottom nav evidenzia "Schede".

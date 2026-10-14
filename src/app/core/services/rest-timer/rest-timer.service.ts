@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent } from 'rxjs';
 import { RestTarget, RestTimer } from '../../models';
 import { CLOCK } from '../clock';
-import { ALARM_LEAD_MS, RestAlarm } from './rest-alarm';
+import { ALARM_LEAD_MS, RestAlarm, START_SIGNAL_MS } from './rest-alarm';
 import { ScreenWakeLock } from './screen-wake-lock';
 import { TICKER } from './ticker';
 
@@ -11,7 +11,7 @@ import { TICKER } from './ticker';
  * The rest timer between sets. One at a time, application-wide, so it keeps running while the
  * user edits an exercise or looks at another page. The remaining time is always `endsAt - now`:
  * ticks only wake the timer up, so throttled or late ticks never make the countdown drift.
- * The alarm starts in the last seconds and rings until the user stops it.
+ * A countdown sounds in the last seconds and a start signal after zero, which stops by itself.
  */
 @Injectable({ providedIn: 'root' })
 export class RestTimerService {
@@ -26,7 +26,7 @@ export class RestTimerService {
   private readonly done = signal(false);
 
   readonly timer = this.current.asReadonly();
-  /** The alarm is sounding: the last seconds of the rest, then until the user stops it. */
+  /** The alarm is sounding: the countdown of the last seconds, then the start signal. */
   readonly ringing = this.alarm.ringing;
   /** True once the time is up, until the timer is dismissed or restarted. */
   readonly finished = this.done.asReadonly();
@@ -83,25 +83,26 @@ export class RestTimerService {
   }
 
   /**
-   * Reads the clock. In the last seconds the alarm starts (and stops again if time is added);
-   * when the time is up ticking stops, while the alarm and the screen stay on until `stop`.
+   * Reads the clock. In the last seconds the countdown starts (and stops again if time is added);
+   * the start signal then sounds after zero and, 15 seconds later, the rest closes by itself.
    */
   tick(): void {
     const timer = this.current();
-    if (!timer || this.done()) {
+    if (!timer) {
       return;
     }
     const now = this.clock();
     this.now.set(now);
+    if (now >= timer.endsAt + START_SIGNAL_MS) {
+      this.stop();
+      return;
+    }
     if (timer.endsAt - now <= ALARM_LEAD_MS) {
-      this.alarm.start();
+      this.alarm.start(timer.endsAt, now);
     } else {
       this.alarm.stop();
     }
-    if (now >= timer.endsAt) {
-      this.done.set(true);
-      this.ticker.stop();
-    }
+    this.done.set(now >= timer.endsAt);
   }
 }
 

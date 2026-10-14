@@ -1,4 +1,5 @@
 import { Injectable, InjectionToken, inject, signal } from '@angular/core';
+import { EpochMs } from '../../models';
 
 /** Browser features used by the alarm, behind a token so tests can replace them. */
 export interface AlarmPlatform {
@@ -16,52 +17,64 @@ export const ALARM_PLATFORM = new InjectionToken<AlarmPlatform>('ALARM_PLATFORM'
   }),
 });
 
-/** The alarm starts this long before the end of the rest. */
+/** The countdown pips start this long before the end of the rest, one per second. */
 export const ALARM_LEAD_MS = 5_000;
-/** A high pitch carries well over gym noise and phone speakers are loudest around 1–3 kHz. */
-const TONE_HZ = 1_760;
-const TONE_GAIN = 0.35;
-const FADE_S = 0.03;
-export const REST_VIBRATION = [400, 200, 400];
-const VIBRATION_EVERY_MS = 1_500;
+/** After zero the start signal repeats for this long, then stops by itself. */
+export const START_SIGNAL_MS = 15_000;
 
-interface Tone {
-  oscillator: OscillatorNode;
-  gain: GainNode;
-}
+const PIPS = 5;
+const PIP_HZ = 880;
+const PIP_S = 0.12;
+/** "Go": higher and longer than the pips, like the start of a race. */
+const GO_HZ = 1_320;
+const GO_S = 0.7;
+/** After the first "go", a short double beep repeats until the signal ends. */
+const REPEAT_EVERY_S = 1.5;
+const REPEAT_BEEP_S = 0.15;
+const REPEAT_GAP_S = 0.25;
+const VOLUME = 0.4;
+const FADE_S = 0.01;
+export const START_VIBRATION = [400, 200, 400];
 
 /**
- * End-of-rest alarm: a high continuous tone, generated with Web Audio (no audio file to download
- * or cache), plus a repeated vibration where supported. It rings until it is stopped.
+ * End-of-rest signal, generated with Web Audio (no audio file to download or cache): a pip per
+ * second in the last five seconds, a long "go" at zero, then a repeated double beep and vibration
+ * for 15 seconds. Every sound is scheduled on the audio clock at once, so it stays on time even
+ * when the page's own timers are throttled.
  */
 @Injectable({ providedIn: 'root' })
 export class RestAlarm {
   private readonly platform = inject(ALARM_PLATFORM);
   private context: AudioContext | null = null;
-  private tone: Tone | null = null;
-  private vibration?: ReturnType<typeof setInterval>;
+  /** All the sounds of one countdown go through this node, so they can be silenced together. */
+  private output: GainNode | null = null;
+  private scheduledEnd?: EpochMs;
+  private vibrationStart?: ReturnType<typeof setTimeout>;
+  private vibrationRepeat?: ReturnType<typeof setInterval>;
   private readonly ringingState = signal(false);
 
+  /** From the first pip until the start signal ends or is stopped. */
   readonly ringing = this.ringingState.asReadonly();
 
   /**
    * Mobile browsers only let a page play audio after a user gesture: call it from the tap that
-   * starts the rest, so the alarm can sound when the rest ends.
+   * starts the rest, so the countdown can sound when the rest ends.
    */
   prepare(): void {
     this.context ??= this.platform.createAudioContext();
     this.context?.resume().catch(() => undefined);
   }
 
-  /** Starts ringing; calling it again while ringing changes nothing. */
-  start(): void {
-    if (this.ringingState()) {
+  /** Plays the countdown of a rest ending at `endsAt`; calling it again for the same end is a no-op. */
+  start(endsAt: EpochMs, now: EpochMs): void {
+    if (this.ringingState() && this.scheduledEnd === endsAt) {
       return;
     }
+    this.stop();
     this.ringingState.set(true);
-    this.tone = this.playTone();
-    this.platform.vibrate(REST_VIBRATION);
-    this.vibration = setInterval(() => this.platform.vibrate(REST_VIBRATION), VIBRATION_EVERY_MS);
+    this.scheduledEnd = endsAt;
+    this.scheduleSounds((endsAt - now) / 1000);
+    this.scheduleVibration(endsAt - now);
   }
 
   stop(): void {
@@ -69,31 +82,73 @@ export class RestAlarm {
       return;
     }
     this.ringingState.set(false);
-    clearInterval(this.vibration);
+    this.scheduledEnd = undefined;
+    clearTimeout(this.vibrationStart);
+    clearInterval(this.vibrationRepeat);
     this.platform.vibrate([]);
-    const tone = this.tone;
-    this.tone = null;
-    if (tone && this.context) {
-      // A short fade out avoids the click of a hard stop.
-      const end = this.context.currentTime + FADE_S;
-      tone.gain.gain.setTargetAtTime(0, this.context.currentTime, FADE_S / 3);
-      tone.oscillator.stop(end);
+    if (this.output && this.context) {
+      // A very short fade avoids the click of a hard cut; scheduled beeps then play silently.
+      this.output.gain.setTargetAtTime(0, this.context.currentTime, FADE_S);
+    }
+    this.output = null;
+  }
+
+  private scheduleSounds(secondsToZero: number): void {
+    const context = this.context;
+    if (!context) {
+      return;
+    }
+    const output = context.createGain();
+    output.connect(context.destination);
+    this.output = output;
+    const now = context.currentTime;
+    const zero = now + Math.max(0, secondsToZero);
+    for (let pip = PIPS; pip >= 1; pip--) {
+      const at = zero - pip;
+      // A pip due a moment ago (the timer ticks every quarter second) still plays, at once.
+      if (at > now - 0.3) {
+        this.beep(output, Math.max(at, now), PIP_HZ, PIP_S);
+      }
+    }
+    this.beep(output, zero, GO_HZ, GO_S);
+    for (let at = zero + REPEAT_EVERY_S; at < zero + START_SIGNAL_MS / 1000; at += REPEAT_EVERY_S) {
+      this.beep(output, at, GO_HZ, REPEAT_BEEP_S);
+      this.beep(output, at + REPEAT_GAP_S, GO_HZ, REPEAT_BEEP_S);
     }
   }
 
-  private playTone(): Tone | null {
+  private beep(output: GainNode, at: number, hz: number, seconds: number): void {
     const context = this.context;
     if (!context) {
-      return null;
+      return;
     }
     const oscillator = context.createOscillator();
-    const gain = context.createGain();
+    const envelope = context.createGain();
     oscillator.type = 'triangle';
-    oscillator.frequency.value = TONE_HZ;
-    gain.gain.setValueAtTime(0, context.currentTime);
-    gain.gain.linearRampToValueAtTime(TONE_GAIN, context.currentTime + FADE_S);
-    oscillator.connect(gain).connect(context.destination);
-    oscillator.start();
-    return { oscillator, gain };
+    oscillator.frequency.value = hz;
+    envelope.gain.setValueAtTime(0, at);
+    envelope.gain.linearRampToValueAtTime(VOLUME, at + FADE_S);
+    envelope.gain.setValueAtTime(VOLUME, at + seconds - FADE_S);
+    envelope.gain.linearRampToValueAtTime(0, at + seconds);
+    oscillator.connect(envelope).connect(output);
+    oscillator.start(at);
+    oscillator.stop(at + seconds);
+  }
+
+  /** Vibration only marks the start: at zero, then with each repeated beep, for 15 seconds. */
+  private scheduleVibration(msToZero: number): void {
+    this.vibrationStart = setTimeout(
+      () => {
+        let repeats = Math.floor(START_SIGNAL_MS / (REPEAT_EVERY_S * 1000));
+        this.platform.vibrate(START_VIBRATION);
+        this.vibrationRepeat = setInterval(() => {
+          this.platform.vibrate(START_VIBRATION);
+          if (--repeats <= 0) {
+            clearInterval(this.vibrationRepeat);
+          }
+        }, REPEAT_EVERY_S * 1000);
+      },
+      Math.max(0, msToZero),
+    );
   }
 }
