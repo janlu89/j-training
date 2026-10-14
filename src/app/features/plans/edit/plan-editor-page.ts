@@ -65,11 +65,11 @@ export class PlanEditorPage {
   }
 
   protected renameDay(planDay: PlanDay, csvGiorno: string): Promise<void> {
-    return this.editor.updateDay(planDay.day.id, { csvGiorno, weekday: planDay.day.weekday });
+    return this.editor.updateDay(planDay.day.id, { csvGiorno });
   }
 
   protected changeWeekday(planDay: PlanDay, weekday: Weekday | undefined): Promise<void> {
-    return this.editor.updateDay(planDay.day.id, { csvGiorno: planDay.day.csvGiorno, weekday });
+    return this.editor.updateDay(planDay.day.id, { weekday });
   }
 
   protected moveDay(planDay: PlanDay, direction: MoveDirection): Promise<void> {

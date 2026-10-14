@@ -63,6 +63,20 @@ describe('PlanEditorRepository', () => {
     ]);
   });
 
+  it('changes only the given field of a day', async () => {
+    const { phaseId, dayIds } = await planWithDays('Gambe');
+    // The page still holds the day as it was before the rename.
+    await editor.updateDay(dayIds[0], { csvGiorno: 'Gambe e glutei' });
+    await editor.updateDay(dayIds[0], { weekday: 4 });
+
+    const [{ day }] = (await plans.getPlan(phaseId))!.days;
+    expect([day.csvGiorno, day.weekday]).toEqual(['Gambe e glutei', 4]);
+
+    await editor.updateDay(dayIds[0], { weekday: undefined });
+    const [{ day: cleared }] = (await plans.getPlan(phaseId))!.days;
+    expect([cleared.csvGiorno, cleared.weekday]).toEqual(['Gambe e glutei', undefined]);
+  });
+
   it('moves days up and down, ignoring moves past the ends', async () => {
     const { phaseId, dayIds } = await planWithDays('A', 'B', 'C');
 
