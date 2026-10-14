@@ -91,6 +91,16 @@
       "accept": "Scarta"
     }
   },
+  "timer": {
+    "title": "Recupero",
+    "label": "Recupero · {{exercise}}",
+    "start": "Avvia recupero di {{sec}} secondi",
+    "minus": "Togli {{sec}} secondi",
+    "plus": "Aggiungi {{sec}} secondi",
+    "stop": "Interrompi il recupero",
+    "done": "Recupero finito: tocca a te!",
+    "dismiss": "OK"
+  },
   "plans": {
     "title": "Schede",
     "subtitle": "Tutte le schede importate restano qui. Una sola alla volta è attiva.",

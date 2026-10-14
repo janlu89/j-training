@@ -9,6 +9,12 @@
   padding-bottom: calc(var(--jt-nav-height) + env(safe-area-inset-bottom) + 1rem);
 }
 
+.content--with-timer {
+  padding-bottom: calc(
+    var(--jt-nav-height) + var(--jt-timer-height) + env(safe-area-inset-bottom) + 1rem
+  );
+}
+
 .header-action {
   display: grid;
   place-items: center;

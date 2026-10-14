@@ -73,6 +73,7 @@
         (addSet)="store.addSet(item.entry.exercise.id)"
         (removeSet)="store.removeLastSet(item.entry.exercise.id)"
         (markAll)="store.markAllDone(item.entry.exercise.id)"
+        (startRest)="store.startRest(item.entry.exercise.id)"
       />
     } @empty {
       <p class="hint">{{ 'workout.day.noExercises' | transloco }}</p>

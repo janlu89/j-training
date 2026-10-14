@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { map, of } from 'rxjs';
 import { LoadUpdate, OpenSession, SetEntry, WorkoutExercise } from '../../../core/models';
 import { LanguageService } from '../../../core/services/language.service';
+import { RestTimerService } from '../../../core/services/rest-timer/rest-timer.service';
 import { proposeLoadUpdates } from '../../../core/services/workout/load-updates';
 import { WorkoutSessionService } from '../../../core/services/workout-session.service';
 import { SetInput, SetRow, buildRows } from './set-rows';
@@ -22,6 +23,7 @@ export interface ExerciseRows {
 export class WorkoutDayStore {
   private readonly sessions = inject(WorkoutSessionService);
   private readonly drafts = inject(WorkoutDrafts);
+  private readonly restTimer = inject(RestTimerService);
   private readonly language = inject(LanguageService).current;
 
   readonly dayId = toSignal(
@@ -100,7 +102,10 @@ export class WorkoutDayStore {
     }
   }
 
-  /** Marks a set as done (recording it) or not done (removing it, keeping the values shown). */
+  /**
+   * Marks a set as done (recording it and starting the rest) or not done (removing it, keeping
+   * the values shown).
+   */
   async toggleSet(exerciseId: number, setNo: number): Promise<void> {
     const workout = this.workout();
     const row = this.findRow(exerciseId, setNo);
@@ -111,7 +116,17 @@ export class WorkoutDayStore {
       this.drafts.setInput(workout.day.id, exerciseId, setNo, row.input);
       await this.sessions.removeSet(row.logId);
     } else if (row.values) {
+      // Started before the write, still inside the user's tap: browsers then allow the alarm.
+      this.startRest(exerciseId);
       await this.record(exerciseId, row);
+    }
+  }
+
+  /** Starts the rest planned for the exercise; nothing happens when it has no rest time. */
+  startRest(exerciseId: number): void {
+    const exercise = this.findExercise(exerciseId)?.entry.exercise;
+    if (exercise?.recSec) {
+      this.restTimer.start({ exerciseId, exercise: exercise.esercizio, seconds: exercise.recSec });
     }
   }
 

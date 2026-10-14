@@ -17,8 +17,16 @@
 
   <p class="log__plan">
     <span>{{ 'exercise.sets' | transloco: { serie: item.serie, rip: item.rip } }}</span>
-    @if (item.recSec !== null) {
-      <span>{{ 'exercise.rest' | transloco: { sec: item.recSec } }}</span>
+    @if (item.recSec) {
+      <button
+        type="button"
+        class="log__rest"
+        [attr.aria-label]="'timer.start' | transloco: { sec: item.recSec }"
+        (click)="startRest.emit()"
+      >
+        <i class="pi pi-stopwatch" aria-hidden="true"></i>
+        {{ item.recSec }} s
+      </button>
     }
     @if (item.rir) {
       <span>{{ 'exercise.rir' | transloco: { rir: item.rir } }}</span>

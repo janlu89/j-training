@@ -9,7 +9,17 @@
     <i class="pi pi-cog" aria-hidden="true"></i>
   </a>
 </app-header>
-<main class="content">
+<main class="content" [class.content--with-timer]="rest.timer()">
   <router-outlet />
 </main>
+@if (rest.timer(); as timer) {
+  <app-rest-timer-bar
+    [timer]="timer"
+    [remaining]="restRemaining()"
+    [progress]="rest.progress()"
+    [finished]="rest.finished()"
+    (adjust)="rest.adjust($event)"
+    (stop)="rest.stop()"
+  />
+}
 <app-bottom-nav [items]="navigation" />

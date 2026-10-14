@@ -1,0 +1,54 @@
+<section class="bar" [class.bar--done]="finished()" [attr.aria-label]="'timer.title' | transloco">
+  <div class="bar__track" aria-hidden="true">
+    <span class="bar__fill" [style.transform]="'scaleX(' + progress() + ')'"></span>
+  </div>
+  <div class="bar__body">
+    <div class="bar__text">
+      <span class="bar__label">
+        {{ 'timer.label' | transloco: { exercise: timer().target.exercise } }}
+      </span>
+      @if (finished()) {
+        <span class="bar__done">{{ 'timer.done' | transloco }}</span>
+      } @else {
+        <span class="bar__time" role="timer">{{ remaining() }}</span>
+      }
+    </div>
+    <!-- Always present, so screen readers announce the end of the rest when the text appears. -->
+    <span class="visually-hidden" role="status">
+      {{ finished() ? ('timer.done' | transloco) : '' }}
+    </span>
+
+    @if (finished()) {
+      <button type="button" class="bar__button bar__button--primary" (click)="stop.emit()">
+        {{ 'timer.dismiss' | transloco }}
+      </button>
+    } @else {
+      <div class="bar__actions">
+        <button
+          type="button"
+          class="bar__button"
+          [attr.aria-label]="'timer.minus' | transloco: { sec: step }"
+          (click)="adjust.emit(-step)"
+        >
+          −{{ step }}
+        </button>
+        <button
+          type="button"
+          class="bar__button"
+          [attr.aria-label]="'timer.plus' | transloco: { sec: step }"
+          (click)="adjust.emit(step)"
+        >
+          +{{ step }}
+        </button>
+        <button
+          type="button"
+          class="bar__button"
+          [attr.aria-label]="'timer.stop' | transloco"
+          (click)="stop.emit()"
+        >
+          <i class="pi pi-times" aria-hidden="true"></i>
+        </button>
+      </div>
+    }
+  </div>
+</section>

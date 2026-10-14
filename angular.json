@@ -32,7 +32,8 @@
               }
             ],
             "styles": ["src/styles.scss"],
-            "allowedCommonJsDependencies": ["papaparse"]
+            "allowedCommonJsDependencies": ["papaparse"],
+            "webWorkerTsConfig": "tsconfig.worker.json"
           },
           "configurations": {
             "production": {

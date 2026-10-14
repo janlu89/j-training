@@ -91,6 +91,16 @@
       "accept": "Discard"
     }
   },
+  "timer": {
+    "title": "Rest",
+    "label": "Rest · {{exercise}}",
+    "start": "Start a {{sec}} second rest",
+    "minus": "Remove {{sec}} seconds",
+    "plus": "Add {{sec}} seconds",
+    "stop": "Stop the rest",
+    "done": "Rest is over: your turn!",
+    "dismiss": "OK"
+  },
   "plans": {
     "title": "Plans",
     "subtitle": "Every imported plan stays here. Only one at a time is active.",

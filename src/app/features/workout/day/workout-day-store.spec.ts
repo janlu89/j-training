@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { PlanEditorRepository } from '../../../core/repositories/plan-editor.repository';
 import { SetLogRepository } from '../../../core/repositories/set-log.repository';
 import { CLOCK } from '../../../core/services/clock';
+import { RestTimerService } from '../../../core/services/rest-timer/rest-timer.service';
 import { newExerciseInput } from '../../../core/testing/fixtures';
 import { useTestDatabase } from '../../../core/testing/test-database';
 import { provideTranslocoForTests } from '../../../core/testing/transloco-testing';
@@ -13,15 +14,18 @@ describe('WorkoutDayStore', () => {
   useTestDatabase();
   let store: WorkoutDayStore;
   let exerciseId: number;
+  let startRest: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     const params = new BehaviorSubject(convertToParamMap({}));
+    startRest = vi.fn();
     TestBed.configureTestingModule({
       providers: [
         WorkoutDayStore,
         provideTranslocoForTests(),
         { provide: CLOCK, useValue: () => 1_000 },
         { provide: ActivatedRoute, useValue: { paramMap: params } },
+        { provide: RestTimerService, useValue: { start: startRest } },
       ],
     });
     const editor = TestBed.inject(PlanEditorRepository);
@@ -29,7 +33,7 @@ describe('WorkoutDayStore', () => {
     const dayId = await editor.addDay(phaseId, { csvGiorno: 'A' });
     exerciseId = await editor.addExercise(
       dayId,
-      newExerciseInput({ esercizio: 'Squat', serie: 3, rip: '8', ultimoKg: 80 }),
+      newExerciseInput({ esercizio: 'Squat', serie: 3, rip: '8', ultimoKg: 80, recSec: 150 }),
     );
     params.next(convertToParamMap({ dayId: String(dayId) }));
     store = TestBed.inject(WorkoutDayStore);
@@ -59,6 +63,15 @@ describe('WorkoutDayStore', () => {
     await settled(() => rows()[0].logId === undefined);
     expect(rows()[0].input).toEqual({ kg: '82,5', rip: '6' });
     expect(store.workout()?.session).toBeUndefined();
+  });
+
+  it('starts the planned rest when a set is ticked, not when it is unticked', async () => {
+    await store.toggleSet(exerciseId, 1);
+    expect(startRest).toHaveBeenCalledWith({ exerciseId, exercise: 'Squat', seconds: 150 });
+
+    await settled(() => rows()[0].logId !== undefined);
+    await store.toggleSet(exerciseId, 1);
+    expect(startRest).toHaveBeenCalledOnce();
   });
 
   it('updates a recorded set while the user types', async () => {

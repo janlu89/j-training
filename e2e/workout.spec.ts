@@ -173,6 +173,50 @@ test.describe('workout', () => {
     await expect(exercise(page, 'Lat machine').getByLabel('Serie 2, kg')).toHaveValue('45');
   });
 
+  test('starts the rest when a set is ticked and rings when it is over', async ({ page }) => {
+    await page.addInitScript(() => {
+      const vibrations: VibratePattern[] = [];
+      Object.assign(window, { vibrations });
+      navigator.vibrate = (pattern) => vibrations.push(pattern) > 0;
+    });
+    await page.goto('/workout');
+    await openDay(page, 'Giorno 1 · A');
+
+    await exercise(page, 'Squat').getByRole('button', { name: 'Serie 1 fatta' }).click();
+    const rest = page.getByRole('region', { name: 'Recupero', exact: true });
+    await expect(rest).toContainText('Recupero · Squat');
+    await expect(rest.getByRole('timer')).toHaveText('2:30');
+    await rest.getByRole('button', { name: 'Aggiungi 15 secondi' }).click();
+    await expect(rest.getByRole('timer')).toHaveText('2:45');
+
+    // The rest keeps running while the user looks at another page.
+    await page.getByRole('link', { name: 'Schede' }).click();
+    await expect(rest.getByRole('timer')).toHaveText('2:45');
+
+    await page.clock.setFixedTime(new Date('2026-10-15T10:02:46'));
+    await expect(rest).toContainText('Recupero finito: tocca a te!');
+    const vibrations = await page.evaluate(
+      () => (window as unknown as { vibrations: VibratePattern[] }).vibrations,
+    );
+    expect(vibrations).toEqual([[200, 100, 200, 100, 400]]);
+    await rest.getByRole('button', { name: 'OK' }).click();
+    await expect(rest).toBeHidden();
+  });
+
+  test('starts a rest by hand and stops it', async ({ page }) => {
+    await openDay(page, 'Giorno 1 · A');
+    await exercise(page, 'Curl')
+      .getByRole('button', { name: 'Avvia recupero di 75 secondi' })
+      .click();
+
+    const rest = page.getByRole('region', { name: 'Recupero', exact: true });
+    await expect(rest.getByRole('timer')).toHaveText('1:15');
+    await rest.getByRole('button', { name: 'Togli 15 secondi' }).click();
+    await expect(rest.getByRole('timer')).toHaveText('1:00');
+    await rest.getByRole('button', { name: 'Interrompi il recupero' }).click();
+    await expect(rest).toBeHidden();
+  });
+
   test('allows one workout in progress at a time', async ({ page }) => {
     await openDay(page, 'Giorno 1 · A');
     await exercise(page, 'Squat').getByRole('button', { name: 'Serie 1 fatta' }).click();

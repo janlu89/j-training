@@ -4,6 +4,7 @@ export * from './phase.model';
 export * from './plan-editor.model';
 export * from './plan-import.model';
 export * from './plan.model';
+export * from './rest-timer.model';
 export * from './session.model';
 export * from './set-log.model';
 export * from './settings.model';
