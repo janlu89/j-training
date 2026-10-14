@@ -69,7 +69,7 @@ Gianluca); `dev` contiene F1 (#5), F2 (#6), F3 (#7), F4 (#8); `master` = release
 - E2E: 25/25 (salvataggio a fine allenamento e togli serie; nessun recupero automatico alla spunta; recupero a mano
   e "Ferma l'allarme"; countdown e chiusura da solo 15 s dopo lo zero; pulsante tra gli esercizi 2:00 e 1:30 dalle
   impostazioni; toggle schede; storico e analisi con quattro settimane di dati inseriti dall'app).
-- Manuale: browser integrato a 390 px ok; screenshot dei grafici dall'E2E (Pixel 7). Telefono reale: ESITO_TELEFONO.
+- Manuale: browser integrato a 390 px ok; screenshot dei grafici dall'E2E (Pixel 7). Telefono reale: ok (Gianluca, 2026-10-14).
 
 ## Problemi aperti / debito tecnico
 - **Wake lock solo in contesto sicuro**: su `http://192.168.1.231:4200` non è disponibile; da verificare su GitHub
