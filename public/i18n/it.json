@@ -271,6 +271,35 @@
       }
     }
   },
+  "backup": {
+    "title": "Backup",
+    "description": "Salva tutte le schede e lo storico degli allenamenti in un file, per conservarli o spostarli su un altro dispositivo.",
+    "export": "Esporta backup",
+    "restore": "Ripristina da file",
+    "exported": "Backup salvato nei download: {{fileName}}",
+    "restored": "Backup ripristinato: schede e storico ora sono quelli del file.",
+    "failed": "Ripristino non riuscito.",
+    "unchanged": "I dati di questo dispositivo non sono stati modificati.",
+    "hint": "Le impostazioni (lingua, recupero) non fanno parte del backup. Il ripristino sostituisce tutte le schede e lo storico di questo dispositivo.",
+    "confirm": {
+      "title": "Ripristinare il backup?",
+      "message": "Backup del {{date}} · Schede: {{plans}} · Allenamenti: {{sessions}} · Serie: {{sets}}. Sostituirà tutte le schede e lo storico di questo dispositivo; se vuoi conservarli, annulla ed esporta prima un backup.",
+      "accept": "Sostituisci i dati",
+      "cancel": "Annulla"
+    },
+    "issue": {
+      "fileTooLarge": "Il file è troppo grande per essere un backup di J-Training.",
+      "notJson": "Il file non è un backup di J-Training: non è in formato JSON.",
+      "notBackup": "Il file non è un backup di J-Training.",
+      "newerVersion": "Il backup è stato creato da una versione più recente dell'app: aggiorna l'app e riprova.",
+      "invalidRecord": "Il backup è danneggiato: contiene un valore non valido.",
+      "duplicateId": "Il backup è danneggiato: due elementi hanno lo stesso identificativo.",
+      "brokenReference": "Il backup è danneggiato: un elemento si riferisce a dati mancanti.",
+      "multipleActivePlans": "Il backup è danneggiato: contiene più di una scheda attiva.",
+      "multipleOpenSessions": "Il backup è danneggiato: contiene più di un allenamento in corso.",
+      "at": "Posizione: {{path}}"
+    }
+  },
   "form": {
     "required": "Campo obbligatorio.",
     "min": "Il valore minimo è {{min}}.",

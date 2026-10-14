@@ -271,6 +271,35 @@
       }
     }
   },
+  "backup": {
+    "title": "Backup",
+    "description": "Save all plans and the workout history to a file, to keep them or move them to another device.",
+    "export": "Export backup",
+    "restore": "Restore from file",
+    "exported": "Backup saved to downloads: {{fileName}}",
+    "restored": "Backup restored: plans and history now come from the file.",
+    "failed": "Restore failed.",
+    "unchanged": "The data on this device has not been changed.",
+    "hint": "Settings (language, rest) are not part of the backup. Restoring replaces all plans and history on this device.",
+    "confirm": {
+      "title": "Restore the backup?",
+      "message": "Backup of {{date}} · Plans: {{plans}} · Workouts: {{sessions}} · Sets: {{sets}}. It will replace all plans and history on this device; to keep them, cancel and export a backup first.",
+      "accept": "Replace data",
+      "cancel": "Cancel"
+    },
+    "issue": {
+      "fileTooLarge": "The file is too large to be a J-Training backup.",
+      "notJson": "The file is not a J-Training backup: it is not JSON.",
+      "notBackup": "The file is not a J-Training backup.",
+      "newerVersion": "The backup was made by a newer version of the app: update the app and try again.",
+      "invalidRecord": "The backup is damaged: it contains an invalid value.",
+      "duplicateId": "The backup is damaged: two items have the same identifier.",
+      "brokenReference": "The backup is damaged: an item refers to missing data.",
+      "multipleActivePlans": "The backup is damaged: it contains more than one active plan.",
+      "multipleOpenSessions": "The backup is damaged: it contains more than one workout in progress.",
+      "at": "Location: {{path}}"
+    }
+  },
   "form": {
     "required": "This field is required.",
     "min": "The minimum value is {{min}}.",

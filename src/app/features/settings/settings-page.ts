@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  booleanAttribute,
+  computed,
+  inject,
+  input,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { SelectButton } from 'primeng/selectbutton';
@@ -13,6 +20,7 @@ import {
 import { formatRest } from '../../core/services/rest-timer/rest-timer.service';
 import { StoragePersistenceService } from '../../core/services/storage-persistence.service';
 import { SettingsSection } from '../../shared/ui/settings-section/settings-section';
+import { BackupSection } from './backup/backup-section';
 
 type StorageStatus = 'unknown' | 'persisted' | 'notPersisted';
 
@@ -24,7 +32,7 @@ const STORAGE_SEVERITY: Record<StorageStatus, 'secondary' | 'success' | 'warn'> 
 
 @Component({
   selector: 'app-settings-page',
-  imports: [FormsModule, SelectButton, Tag, TranslocoPipe, SettingsSection],
+  imports: [FormsModule, SelectButton, Tag, TranslocoPipe, SettingsSection, BackupSection],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,6 +41,9 @@ export class SettingsPage {
   private readonly languageService = inject(LanguageService);
   private readonly storage = inject(StoragePersistenceService);
   private readonly restSettings = inject(RestSettingsService);
+
+  /** `?restored=1`, set when the app restarts after a restore; bound by `withComponentInputBinding`. */
+  readonly restored = input(false, { transform: booleanAttribute });
 
   protected readonly languageOptions = AVAILABLE_LANGUAGES.map((code) => ({
     code,

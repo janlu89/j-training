@@ -9,13 +9,19 @@ const FORMATS: Record<LocalDateStyle, Intl.DateTimeFormatOptions> = {
   weekday: { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' },
 };
 
-/**
- * Formats a timestamp as a date in the given UI language. The language is an argument, so the
- * pure pipe re-runs when it changes.
- */
+/** Formats a timestamp as a date in the given UI language, also outside templates. */
+export function formatLocalDate(
+  value: EpochMs,
+  language: string,
+  style: LocalDateStyle = 'short',
+): string {
+  return new Intl.DateTimeFormat(language, FORMATS[style]).format(value);
+}
+
+/** The language is an argument, so the pure pipe re-runs when it changes. */
 @Pipe({ name: 'localDate' })
 export class LocalDatePipe implements PipeTransform {
   transform(value: EpochMs, language: string, style: LocalDateStyle = 'short'): string {
-    return new Intl.DateTimeFormat(language, FORMATS[style]).format(value);
+    return formatLocalDate(value, language, style);
   }
 }
