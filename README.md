@@ -34,16 +34,16 @@ device.
 
 ## Architecture choices
 
-| Choice                                           | Why                                                                                         |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| Standalone, zoneless, signals, OnPush            | Explicit, predictable change detection, no NgModules                                        |
-| Dexie only inside repositories (ESLint rule)     | Components know nothing about storage; reactive queries with `liveQuery` → `toSignal`       |
-| Plan (`Exercise`) separate from sets (`SetLog`)  | Discrepancies are data, not overwrites; history by exercise name across different plans    |
-| A transaction for every multi-table write        | Invariants by construction: a single active plan, a single workout in progress              |
-| "Parse, don't validate" for the backup           | A restore can never produce a state the app could not have created                          |
-| ExcelJS loaded on demand                         | ~1 MB downloaded only on the first export; initial bundle under 650 kB                      |
-| Angular service worker with full prefetch        | Everything available offline, export included, in a gym without signal                      |
-| PWA instead of a native app                      | One codebase, automatic updates, no store costs; persistent storage and backups             |
+| Choice                                          | Why                                                                                     |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Standalone, zoneless, signals, OnPush           | Explicit, predictable change detection, no NgModules                                    |
+| Dexie only inside repositories (ESLint rule)    | Components know nothing about storage; reactive queries with `liveQuery` → `toSignal`   |
+| Plan (`Exercise`) separate from sets (`SetLog`) | Discrepancies are data, not overwrites; history by exercise name across different plans |
+| A transaction for every multi-table write       | Invariants by construction: a single active plan, a single workout in progress          |
+| "Parse, don't validate" for the backup          | A restore can never produce a state the app could not have created                      |
+| ExcelJS loaded on demand                        | ~1 MB downloaded only on the first export; initial bundle under 650 kB                  |
+| Angular service worker with full prefetch       | Everything available offline, export included, in a gym without signal                  |
+| PWA instead of a native app                     | One codebase, automatic updates, no store costs; persistent storage and backups         |
 
 The domain fields keep the Italian names of the CSV format (`esercizio`, `serie`, `rip`, ...), so a plan file maps
 one to one onto the data model. Details in the [architecture](docs/architecture.md) and the
@@ -51,15 +51,15 @@ one to one onto the data model. Details in the [architecture](docs/architecture.
 
 ## Stack
 
-| Area      | Technology                                                    |
-| --------- | ------------------------------------------------------------- |
-| Framework | Angular 21 (standalone, zoneless, signals), service worker    |
-| UI        | PrimeNG 21, Chart.js                                          |
-| i18n      | Transloco (Italian / English, runtime language switch)        |
-| Storage   | Dexie on IndexedDB                                            |
-| Files     | PapaParse (CSV), ExcelJS (XLSX)                               |
-| Tests     | Vitest + fake-indexeddb, Playwright (Pixel 7, offline too)    |
-| Quality   | angular-eslint, Prettier, CI on every PR                      |
+| Area      | Technology                                                     |
+| --------- | -------------------------------------------------------------- |
+| Framework | Angular 21 (standalone, zoneless, signals), service worker     |
+| UI        | PrimeNG 21, Chart.js                                           |
+| i18n      | Transloco (Italian / English, runtime language switch)         |
+| Storage   | Dexie on IndexedDB                                             |
+| Files     | PapaParse (CSV), ExcelJS (XLSX)                                |
+| Tests     | Vitest + fake-indexeddb, Playwright (Pixel 7, offline too)     |
+| Quality   | angular-eslint, Prettier, CI on every PR                       |
 | Hosting   | GitHub Pages through GitHub Actions, deployed on every release |
 
 ## Requirements
@@ -69,19 +69,19 @@ one to one onto the data model. Details in the [architecture](docs/architecture.
 
 ## Commands
 
-| Command                           | Description                                                    |
-| --------------------------------- | -------------------------------------------------------------- |
-| `npm ci`                          | Install the dependencies from the lockfile                     |
-| `npm start`                       | Start the development server on `http://localhost:4200`        |
-| `npm test`                        | Run the unit tests in watch mode                               |
-| `npm run test:ci`                 | Run the unit tests once (CI)                                   |
+| Command                           | Description                                                   |
+| --------------------------------- | ------------------------------------------------------------- |
+| `npm ci`                          | Install the dependencies from the lockfile                    |
+| `npm start`                       | Start the development server on `http://localhost:4200`       |
+| `npm test`                        | Run the unit tests in watch mode                              |
+| `npm run test:ci`                 | Run the unit tests once (CI)                                  |
 | `npm run e2e`                     | End-to-end tests: development server and production PWA build |
-| `npm run lint`                    | Static analysis with angular-eslint                            |
-| `npm run format`                  | Format the code with Prettier                                  |
-| `npm run format:check`            | Check the formatting without changing files                    |
-| `npm run build:prod`              | Production build in `dist/`                                    |
-| `npm run build:pages`             | Production build for GitHub Pages (`/j-training/`)             |
-| `node scripts/generate-icons.mjs` | Regenerate the app icons from a single drawing                 |
+| `npm run lint`                    | Static analysis with angular-eslint                           |
+| `npm run format`                  | Format the code with Prettier                                 |
+| `npm run format:check`            | Check the formatting without changing files                   |
+| `npm run build:prod`              | Production build in `dist/`                                   |
+| `npm run build:pages`             | Production build for GitHub Pages (`/j-training/`)            |
+| `node scripts/generate-icons.mjs` | Regenerate the app icons from a single drawing                |
 
 ## Documentation
 
