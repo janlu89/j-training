@@ -191,9 +191,36 @@
     }
   },
   "history": {
+    "title": "History",
     "empty": {
       "title": "No workouts yet",
       "message": "Your history will appear after the first saved session."
+    },
+    "views": {
+      "label": "History views",
+      "sessions": "Workouts",
+      "exercises": "Exercises"
+    },
+    "back": "History",
+    "skipped": "Skipped",
+    "skippedDay": "Day skipped: no sets recorded.",
+    "deletedDay": "Day deleted from the plan",
+    "counts": "Sets: {{sets}} · Exercises: {{exercises}}",
+    "set": "Set {{set}}: {{kg}} kg for {{rip}} reps",
+    "unit": {
+      "totale": "kg",
+      "per_braccio": "kg per arm"
+    },
+    "notFound": {
+      "title": "Workout not found",
+      "message": "This workout is not in the history."
+    },
+    "exercise": {
+      "sessions": "Sessions: {{count}}",
+      "lastDate": "Last time: {{date}}",
+      "charts": "See the charts",
+      "empty": "No saved sets for this exercise.",
+      "none": "No exercise saved yet."
     }
   },
   "analytics": {

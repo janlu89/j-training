@@ -49,6 +49,18 @@ export const routes: Routes = [
     loadComponent: () => import('./features/history/history-page').then((m) => m.HistoryPage),
   },
   {
+    path: 'history/session/:sessionId',
+    loadComponent: () =>
+      import('./features/history/session/session-detail-page').then((m) => m.SessionDetailPage),
+  },
+  {
+    path: 'history/exercise/:name',
+    loadComponent: () =>
+      import('./features/history/exercise/exercise-history-page').then(
+        (m) => m.ExerciseHistoryPage,
+      ),
+  },
+  {
     path: 'analytics',
     loadComponent: () => import('./features/analytics/analytics-page').then((m) => m.AnalyticsPage),
   },

@@ -191,9 +191,36 @@
     }
   },
   "history": {
+    "title": "Storico",
     "empty": {
       "title": "Ancora nessun allenamento",
       "message": "Lo storico comparirà dopo la prima sessione salvata."
+    },
+    "views": {
+      "label": "Viste dello storico",
+      "sessions": "Allenamenti",
+      "exercises": "Esercizi"
+    },
+    "back": "Storico",
+    "skipped": "Saltata",
+    "skippedDay": "Giornata saltata: nessuna serie registrata.",
+    "deletedDay": "Giorno eliminato dalla scheda",
+    "counts": "Serie: {{sets}} · Esercizi: {{exercises}}",
+    "set": "Serie {{set}}: {{kg}} kg per {{rip}} ripetizioni",
+    "unit": {
+      "totale": "kg",
+      "per_braccio": "kg per braccio"
+    },
+    "notFound": {
+      "title": "Allenamento non trovato",
+      "message": "Questo allenamento non è nello storico."
+    },
+    "exercise": {
+      "sessions": "Sessioni: {{count}}",
+      "lastDate": "Ultima volta: {{date}}",
+      "charts": "Vedi i grafici",
+      "empty": "Nessuna serie salvata per questo esercizio.",
+      "none": "Ancora nessun esercizio salvato."
     }
   },
   "analytics": {

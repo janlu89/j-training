@@ -1,0 +1,64 @@
+@if (sessions(); as sessions) {
+  @if (sessions.length) {
+    <div class="page">
+      <header class="page__header">
+        <h2 class="page__title">{{ 'history.title' | transloco }}</h2>
+      </header>
+
+      <nav class="views" [attr.aria-label]="'history.views.label' | transloco">
+        <a
+          class="views__item"
+          routerLink="/history"
+          [attr.aria-current]="view() === 'sessions' ? 'page' : null"
+        >
+          {{ 'history.views.sessions' | transloco }}
+        </a>
+        <a
+          class="views__item"
+          routerLink="/history"
+          [queryParams]="{ view: 'exercises' }"
+          [attr.aria-current]="view() === 'exercises' ? 'page' : null"
+        >
+          {{ 'history.views.exercises' | transloco }}
+        </a>
+      </nav>
+
+      @if (view() === 'sessions') {
+        <ul class="list">
+          @for (item of sessions; track item.session.id) {
+            <li><app-session-item [item]="item" [language]="language()" /></li>
+          }
+        </ul>
+      } @else {
+        <ul class="list">
+          @for (exercise of exercises(); track exercise.esercizio) {
+            <li>
+              <a class="row" [routerLink]="['/history/exercise', exercise.esercizio]">
+                <span class="row__text">
+                  <span class="row__name">{{ exercise.esercizio }}</span>
+                  <span class="row__meta">
+                    {{
+                      'history.exercise.lastDate'
+                        | transloco: { date: (exercise.lastDate | localDate: language()) }
+                    }}
+                    ·
+                    {{ 'history.exercise.sessions' | transloco: { count: exercise.sessionCount } }}
+                  </span>
+                </span>
+                <i class="pi pi-chevron-right row__chevron" aria-hidden="true"></i>
+              </a>
+            </li>
+          } @empty {
+            <li class="list__empty">{{ 'history.exercise.none' | transloco }}</li>
+          }
+        </ul>
+      }
+    </div>
+  } @else {
+    <app-empty-state
+      icon="pi pi-history"
+      [title]="'history.empty.title' | transloco"
+      [message]="'history.empty.message' | transloco"
+    />
+  }
+}
