@@ -89,7 +89,8 @@ Branch / ultimo commit: `feature/f7-export` (PR → `dev`); `dev` contiene F1–
   Screenshot Pixel 7: conferma, errore, sezione export.
 - Manuale: telefono reale (Gianluca, 2026-10-15): sul vecchio server 4200 Impostazioni bianca e toggle rotti per la
   cache di Vite (vedi sotto), non riproducibili su un server nuovo; dopo il riavvio l'app funziona; da lì la
-  correzione dell'ordine in Schede. Backup, ripristino ed export sul telefono: ESITO_TELEFONO.
+  correzione dell'ordine in Schede. Dopo la correzione: schede ferme al loro posto, backup, ripristino ed export
+  Excel/CSV ok (Gianluca, 2026-10-15).
 
 ## Problemi aperti / debito tecnico
 - **Bug preesistente dell'editor (F3), E2E instabile**: rinominando un giorno e cambiando subito il giorno della
