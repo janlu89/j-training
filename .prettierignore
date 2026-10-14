@@ -1,0 +1,9 @@
+/dist
+/coverage
+/.angular
+/node_modules
+package-lock.json
+
+# Documentazione scritta a mano: formattazione gestita dall'autore
+/CLAUDE.md
+/docs
