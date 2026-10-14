@@ -1,13 +1,14 @@
 # J-Training — Piano di sviluppo per fasi
 
-Ultimo aggiornamento: 2026-10-15 (fasi F2–F5 riviste su richiesta di Gianluca; F5 include le correzioni dalla prova di F4; F5 e F6 consegnate in una sola PR, con recupero tra esercizi e allarme continuo; F8 con promemoria di backup, nuova F9 per l'APK TWA)
+Ultimo aggiornamento: 2026-10-15 (fasi F2–F5 riviste su richiesta di Gianluca; F5 include le correzioni dalla prova di F4; F5 e F6 consegnate in una sola PR, con recupero tra esercizi e allarme continuo; F8 con promemoria di backup; v1.0.0 pubblicata; F9 per l'APK TWA valutata e annullata)
 
 ## Identità del progetto
 - Nome app: J-Training
 - Repository GitHub: `j-training` (pubblico, necessario per GitHub Pages gratuito)
 - Cartella locale: `A:\Personal dev projects\j-training`
 - URL produzione: `https://<utente>.github.io/j-training/` (`base-href` = `/j-training/`)
-- Gestione GitHub: GitHub CLI (`gh`), con script versionato in `scripts/`
+- Gestione GitHub: GitHub CLI (`gh`). La configurazione iniziale del repository (branch, regole di protezione,
+  Pages) è stata fatta in F0 con uno script PowerShell, rimosso dopo la v1.0.0 e recuperabile dalla storia git
 
 ## Versioni bloccate
 - Node 24.x
@@ -39,7 +40,7 @@ Ultimo aggiornamento: 2026-10-15 (fasi F2–F5 riviste su richiesta di Gianluca;
 | F6 | Storico per esercizio e analisi: progressione kg a parità di rip, rip settimanali | Grafici con dati di prova realistici |
 | F7 | Export CSV/XLSX di fase, backup/restore JSON | File aperti in Excel; restore su un altro browser identico all'originale |
 | F8 | PWA e rilascio: service worker, manifest, icone, prompt di installazione, avviso di nuova versione, "Ultimo backup" in Impostazioni con promemoria dopo una settimana, licenza MIT, test su Android, v1.0.0 | App installata sul telefono e funzionante offline; archiviazione "Protetta" |
-| F9 | APK Android come Trusted Web Activity (Bubblewrap) della PWA pubblicata: Digital Asset Links, chiave di firma di Gianluca, APK su GitHub Releases | APK installato sul telefono che apre l'app a schermo intero, senza barra dell'indirizzo |
+| F9 | ~~APK Android come Trusted Web Activity (Bubblewrap)~~ **Annullata** (2026-10-15): l'app installata da Chrome è già un pacchetto Android (WebAPK) con gli stessi dati, offline e aggiornamenti automatici; i passi per farla in futuro sono in `docs/handoff/handoff-F9.md` | — |
 
 ## Strategia di test
 - **Unit (Vitest)**: servizi e repository, mapping CSV, regole di precompilazione, calcoli dell'analisi. Dexie testato con fake-indexeddb.

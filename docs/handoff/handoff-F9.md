@@ -1,8 +1,8 @@
-# Handoff F9 — APK Android (TWA)
+# Handoff F9 — Stato dopo la v1.0.0 (F9 non necessaria)
 
 Data: 2026-10-15
-Branch / ultimo commit: `feature/f8-pwa` (PR → `dev`), poi release `dev` → `master` = **v1.0.0**; `dev` contiene
-F1–F7 (#5–#10); prima di questa release `master` conteneva solo F0
+Branch / ultimo commit: `dev` contiene F1–F8 (#5–#11); `master` = release **v1.0.0** (#12, tag `v1.0.0`), pubblicata
+su <https://janlu89.github.io/j-training/>. F9 (APK TWA) annullata da Gianluca: vedi l'ultima sezione.
 
 ## Fatto (F8 — PWA e rilascio)
 - **Ultimo backup** in Impostazioni → Backup: "Ultimo backup: 3 giorni fa" (oggi, ieri, giorni, settimane, mesi,
@@ -74,8 +74,9 @@ F1–F7 (#5–#10); prima di questa release `master` conteneva solo F0
   giorni, "Più tardi", torna dopo una settimana, export, poi silenzio senza dati nuovi). Progetto `pwa` (build di
   produzione): manifest e icone; offline dopo il primo caricamento, con pagina lazy, traduzioni e link interno.
 - Build di produzione: bundle iniziale 611 kB (budget 650).
-- Manuale: telefono su GitHub Pages (installazione, offline, archiviazione "Protetta", dati spostati con il
-  backup): ESITO_TELEFONO.
+- Manuale: telefono su GitHub Pages (Gianluca, 2026-10-15): ok. Installata da Chrome, si apre dall'icona,
+  funziona offline, archiviazione "Protetta", dati spostati dal vecchio indirizzo di rete locale con il backup.
+  Release `v1.0.0` pubblicata su GitHub.
 
 ## Problemi aperti / debito tecnico
 - **Server di sviluppo nella stessa cartella condividono la cache di Vite** (`.angular/cache`): dopo l'installazione
@@ -88,12 +89,16 @@ F1–F7 (#5–#10); prima di questa release `master` conteneva solo F0
   dall'allenamento; altre `<select>` dentro `<label>`; CSV con doppio clic in Excel italiano.
 
 ## Prossima fase: obiettivo e primo passo
-**F9 — APK Android (TWA)**: un APK costruito con Bubblewrap che apre `https://janlu89.github.io/j-training/` a
-schermo intero (Trusted Web Activity), firmato con una chiave di Gianluca e pubblicato su GitHub Releases.
-L'APK usa l'archiviazione di Chrome per lo stesso sito: i dati sono quelli dell'app installata.
+**Nessuna fase pianificata.** F9 (APK Android come Trusted Web Activity) è stata annullata da Gianluca il
+2026-10-15. L'app installata da Chrome è già un pacchetto Android (WebAPK): si apre dall'icona a schermo intero,
+funziona offline, ha l'archiviazione "Protetta" e si aggiorna da sola. Un APK TWA avrebbe usato gli stessi dati di
+Chrome per lo stesso sito, aggiungendo solo un file `.apk` da distribuire, al prezzo di un repository in più e di
+una chiave di firma da custodire.
 
-Primo passo: sostituire ESITO_TELEFONO qui sopra con l'esito della prova su GitHub Pages; poi tre decisioni di
-Gianluca: (1) creare il repository `janlu89.github.io`, perché `/.well-known/assetlinks.json` deve stare alla
-radice del dominio e un sito di progetto non può servirlo; (2) l'id del pacchetto (es. `io.github.janlu89.jtraining`);
-(3) la chiave di firma, creata e custodita da lui fuori dal repository, di cui va solo l'impronta SHA-256 in
-`assetlinks.json`. Bubblewrap scarica da sé JDK e Android SDK; verificare che la versione abbia almeno 2 settimane.
+Lavori possibili in futuro: il debito tecnico qui sopra. Se un giorno servisse l'APK (per esempio per il Play
+Store), i passi sono:
+1. creare il repository `janlu89.github.io`, perché `/.well-known/assetlinks.json` deve stare alla radice del dominio;
+2. scegliere l'id del pacchetto (es. `io.github.janlu89.jtraining`), che non si può più cambiare;
+3. far creare a Gianluca la chiave di firma, custodita fuori dal repository (nel file va solo l'impronta SHA-256);
+4. generare l'APK con Bubblewrap: `npx @bubblewrap/cli@1.25.0`, l'ultima versione con almeno 2 settimane il
+   2026-10-15. Bubblewrap scarica da sé JDK 17 e Android SDK; sul PC c'è solo Java 8.

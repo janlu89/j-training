@@ -5,7 +5,6 @@
 package-lock.json
 
 # Documentazione scritta a mano: formattazione gestita dall'autore
-/CLAUDE.md
 /docs
 /test-results
 /playwright-report

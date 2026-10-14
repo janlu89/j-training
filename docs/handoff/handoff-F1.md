@@ -7,7 +7,7 @@ Branch / ultimo commit: `master` @ `b76efd2` (release F0, PR #2) · `dev` @ `ecf
 - Ambiente verificato: Git 2.55, GitHub CLI 2.102 (login `janlu89`), Node 24.14, npm 11.9, Angular CLI 21.2.
 - Scaffold Angular 21.2 nella cartella esistente: standalone, zoneless (default in v21, nessun `zone.js`),
   SCSS, routing, Vitest, niente SSR, nessun file di configurazione AI.
-- Qualità: angular-eslint 21 con regole che applicano `CLAUDE.md` (OnPush, signals, control flow,
+- Qualità: angular-eslint 21 con regole che applicano le convenzioni del progetto (OnPush, signals, control flow,
   self-closing tags; standalone e `inject()` già nel set raccomandato), Prettier, `.editorconfig`, LF ovunque.
 - Componente root `OnPush`, pagina demo rimossa: solo titolo "J-Training" + `<router-outlet />`.
 - Repository pubblico https://github.com/janlu89/j-training configurato da `scripts/setup-github.ps1`:
@@ -19,12 +19,12 @@ Branch / ultimo commit: `master` @ `b76efd2` (release F0, PR #2) · `dev` @ `ecf
   pubblicazione su https://janlu89.github.io/j-training/. Ambiente `github-pages` limitato a `master`.
 
 ## Decisioni prese (con il perché)
-- **Regole di `CLAUDE.md` nel lint**: una convenzione scritta solo nei documenti si erode, una regola di lint
+- **Convenzioni del progetto nel lint**: una convenzione scritta solo nei documenti si erode, una regola di lint
   la fa rispettare la CI su ogni PR. Costo: qualche falso positivo da gestire caso per caso.
 - **angular-eslint 21, non 22**: la 22 è allineata ad Angular 22; il progetto resta su Angular 21 per PrimeNG 21.
 - **LF imposto da `.gitattributes`, `.editorconfig` e Prettier**: stessi file su Windows e sulla CI Linux,
   nessun diff fantasma.
-- **`CLAUDE.md` e `docs/` esclusi da Prettier**: documenti scritti a mano, la formattazione resta all'autore.
+- **`docs/` esclusa da Prettier**: documenti scritti a mano, la formattazione resta all'autore.
 - **Metodo di merge imposto dal ruleset** (`allowed_merge_methods`), non solo dalle impostazioni del repo:
   la strategia di branching non dipende dal pulsante scelto. Squash con titolo e corpo della PR:
   il titolo Conventional Commit della PR diventa il commit su `dev`.
@@ -62,7 +62,7 @@ Branch / ultimo commit: `master` @ `b76efd2` (release F0, PR #2) · `dev` @ `ecf
   `NG04002` in console. Da risolvere in F1 con le prime rotte e un `**` di fallback.
 - **Licenza assente**: il repository è pubblico ma "tutti i diritti riservati". Decisione presa: aggiungere MIT.
 - **Squash commit della PR #1** contiene ancora un trailer `Co-authored-by` di Gianluca stesso (innocuo).
-- I permessi automatici di Claude Code bloccano merge di PR e force push: li esegue Gianluca.
+- Merge delle PR e force push li esegue sempre Gianluca.
 - Push diretti su `master`/`dev` impossibili per costruzione: anche le correzioni allo script passano da PR.
 
 ## Prossima fase: obiettivo e primo passo
