@@ -1,0 +1,38 @@
+<section class="card" aria-labelledby="weekly-title">
+  <header class="card__header">
+    <h3 class="card__title" id="weekly-title">{{ 'analytics.weekly.title' | transloco }}</h3>
+    <p class="card__subtitle">
+      {{ 'analytics.weekly.subtitle' | transloco: { weeks: weeks().length } }}
+    </p>
+  </header>
+
+  <div class="card__chart">
+    <p-chart
+      type="bar"
+      [data]="data()"
+      [options]="options()"
+      [height]="height"
+      [ariaLabel]="'analytics.weekly.title' | transloco"
+    />
+  </div>
+
+  <details class="card__table">
+    <summary>{{ 'analytics.table' | transloco }}</summary>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">{{ 'analytics.weekly.week' | transloco }}</th>
+          <th scope="col">{{ 'analytics.weekly.reps' | transloco }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (week of weeks(); track week.weekStart) {
+          <tr>
+            <td>{{ week.weekStart | localDate: language() }}</td>
+            <td>{{ week.reps }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </details>
+</section>

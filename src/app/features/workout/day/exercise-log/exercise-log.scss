@@ -241,44 +241,6 @@ tbody .sets__no {
   padding: 0;
 }
 
-.rest {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  min-height: 1.75rem;
-  padding: 0 0.75rem;
-  border: 0;
-  border-radius: 999px;
-  background: none;
-  color: var(--p-text-muted-color);
-  font: inherit;
-  font-size: 0.8125rem;
-  font-variant-numeric: tabular-nums;
-
-  i {
-    font-size: 0.6875rem;
-  }
-
-  &:is(button) {
-    cursor: pointer;
-
-    &:hover:not(:disabled) {
-      background: var(--p-content-hover-background);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--p-primary-color);
-      outline-offset: 1px;
-    }
-  }
-}
-
-.rest--running {
-  background: var(--p-primary-50);
-  color: var(--p-primary-800);
-  font-weight: 700;
-}
-
 .log__empty {
   margin: 0;
   font-size: 0.875rem;

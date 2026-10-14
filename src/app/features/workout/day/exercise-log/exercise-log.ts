@@ -3,8 +3,8 @@ import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Tag } from 'primeng/tag';
 import { WorkoutExercise } from '../../../../core/models';
-import { formatRest } from '../../../../core/services/rest-timer/rest-timer.service';
 import { statusSeverity } from '../../../../shared/ui/exercise-item/exercise-status';
+import { SetRest } from '../set-rest/set-rest';
 import { SetInput, SetRow } from '../set-rows';
 
 /** The running rest, when it belongs to this exercise. */
@@ -26,7 +26,7 @@ export interface SetInputChange {
  */
 @Component({
   selector: 'app-exercise-log',
-  imports: [RouterLink, TranslocoPipe, Tag],
+  imports: [RouterLink, TranslocoPipe, Tag, SetRest],
   templateUrl: './exercise-log.html',
   styleUrl: './exercise-log.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,8 +54,6 @@ export class ExerciseLog {
   protected readonly equipment = computed(() =>
     [this.exercise().attrezzo, this.exercise().posizione].filter(Boolean).join(' · '),
   );
-  /** The planned rest as a clock ("2:30"), shown between the sets. */
-  protected readonly restLabel = computed(() => formatRest((this.exercise().recSec ?? 0) * 1000));
   /** "All done" is offered when at least two complete sets are still to be marked. */
   protected readonly canMarkAll = computed(
     () => this.rows().filter((row) => row.logId === undefined && row.values).length > 1,

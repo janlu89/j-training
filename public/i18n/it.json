@@ -224,10 +224,27 @@
     }
   },
   "analytics": {
+    "title": "Analisi",
     "empty": {
       "title": "Nessun dato da analizzare",
       "message": "I grafici di progressione compariranno dopo qualche allenamento."
-    }
+    },
+    "exercise": "Esercizio",
+    "reps": "Ripetizioni",
+    "latest": "Ultimo a {{reps}} rip",
+    "best": "Migliore a {{reps}} rip",
+    "progression": {
+      "title": "Carico a {{reps}} ripetizioni",
+      "fewPoints": "Servono almeno due sessioni con {{reps}} ripetizioni per vedere l'andamento."
+    },
+    "weekly": {
+      "title": "Ripetizioni a settimana",
+      "subtitle": "Ultime {{weeks}} settimane",
+      "week": "Settimana dal",
+      "reps": "Ripetizioni"
+    },
+    "table": "Mostra i dati in tabella",
+    "date": "Data"
   },
   "settings": {
     "title": "Impostazioni",

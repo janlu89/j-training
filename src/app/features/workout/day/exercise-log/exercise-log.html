@@ -124,25 +124,15 @@
             @let current = rest();
             <tr class="sets__rest">
               <td colspan="4">
-                @if (current && current.afterSet === row.setNo) {
-                  <span class="rest rest--running">
-                    <i class="pi pi-stopwatch" aria-hidden="true"></i>
-                    {{ current.finished ? ('timer.over' | transloco) : current.remaining }}
-                  </span>
-                } @else {
-                  <button
-                    type="button"
-                    class="rest"
-                    [disabled]="locked()"
-                    [attr.aria-label]="
-                      'timer.startAfter' | transloco: { sec: item.recSec, set: row.setNo }
-                    "
-                    (click)="startRest.emit(row.setNo)"
-                  >
-                    <i class="pi pi-stopwatch" aria-hidden="true"></i>
-                    {{ restLabel() }}
-                  </button>
-                }
+                <app-set-rest
+                  [seconds]="item.recSec"
+                  [afterSet]="row.setNo"
+                  [running]="current?.afterSet === row.setNo"
+                  [remaining]="current?.remaining ?? ''"
+                  [finished]="!!current?.finished"
+                  [locked]="locked()"
+                  (restStart)="startRest.emit(row.setNo)"
+                />
               </td>
             </tr>
           }

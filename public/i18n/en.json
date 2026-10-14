@@ -224,10 +224,27 @@
     }
   },
   "analytics": {
+    "title": "Analytics",
     "empty": {
       "title": "Nothing to analyse yet",
       "message": "Progress charts will appear after a few workouts."
-    }
+    },
+    "exercise": "Exercise",
+    "reps": "Reps",
+    "latest": "Latest at {{reps}} reps",
+    "best": "Best at {{reps}} reps",
+    "progression": {
+      "title": "Load at {{reps}} reps",
+      "fewPoints": "At least two sessions with {{reps}} reps are needed to see a trend."
+    },
+    "weekly": {
+      "title": "Reps per week",
+      "subtitle": "Last {{weeks}} weeks",
+      "week": "Week of",
+      "reps": "Reps"
+    },
+    "table": "Show the data as a table",
+    "date": "Date"
   },
   "settings": {
     "title": "Settings",
