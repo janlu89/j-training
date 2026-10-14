@@ -12,13 +12,24 @@ describe('PhaseRepository', () => {
   });
 
   it('adds a phase and reads it back by id', async () => {
-    const id = await repository.add({ fase: 1, status: 'active', importedAt: 1 });
-    expect(await repository.getById(id)).toEqual({ id, fase: 1, status: 'active', importedAt: 1 });
+    const id = await repository.add({ name: 'Scheda', fase: 1, status: 'active', importedAt: 1 });
+    expect(await repository.getById(id)).toEqual({
+      id,
+      name: 'Scheda',
+      fase: 1,
+      status: 'active',
+      importedAt: 1,
+    });
   });
 
   it('returns the active phase, ignoring archived ones', async () => {
-    await repository.add({ fase: 1, status: 'archived', importedAt: 1 });
-    const activeId = await repository.add({ fase: 2, status: 'active', importedAt: 2 });
+    await repository.add({ name: 'Scheda', fase: 1, status: 'archived', importedAt: 1 });
+    const activeId = await repository.add({
+      name: 'Scheda',
+      fase: 2,
+      status: 'active',
+      importedAt: 2,
+    });
     expect((await repository.getActive())?.id).toBe(activeId);
   });
 
@@ -27,7 +38,7 @@ describe('PhaseRepository', () => {
   });
 
   it('updates an existing phase and reports missing ids', async () => {
-    const id = await repository.add({ fase: 1, status: 'active', importedAt: 1 });
+    const id = await repository.add({ name: 'Scheda', fase: 1, status: 'active', importedAt: 1 });
     expect(await repository.update(id, { status: 'archived' })).toBe(true);
     expect((await repository.getById(id))?.status).toBe('archived');
     expect(await repository.update(999, { status: 'archived' })).toBe(false);
@@ -37,7 +48,7 @@ describe('PhaseRepository', () => {
     const changes = repository.watchActive();
     const next = firstValueFrom(changes.pipe(skip(1)));
     await firstValueFrom(changes);
-    await repository.add({ fase: 3, status: 'active', importedAt: 3 });
+    await repository.add({ name: 'Scheda', fase: 3, status: 'active', importedAt: 3 });
     expect((await next)?.fase).toBe(3);
   });
 });

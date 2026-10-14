@@ -29,7 +29,7 @@ Ultimo aggiornamento: 2026-10-14
 2. **Precompilazione dei kg**: ultimo kg registrato per quel nome esercizio; se non esiste, `ultimo_kg` della scheda. Sempre modificabile dall'utente.
 3. **Stati esercizio**: `attivo`, `da_testare`, `sospeso`, `rimosso`. `rimosso` è un soft delete: l'esercizio sparisce dalla scheda, lo storico resta.
 4. **Stato fase**: `active` / `archived`. L'import di una nuova scheda archivia la precedente e attiva la nuova in una sola transazione. Due fasi attive sono impossibili per costruzione.
-5. **Giorni di allenamento**: etichette ordinate (Giorno 1, 2, 3...) create dai valori di `giorno` del CSV nell'ordine di prima apparizione. L'utente può associare a ciascuno un giorno della settimana. L'app propone il giorno successivo nella rotazione, ma l'utente sceglie.
+5. **Giorni di allenamento**: etichette ordinate (Giorno 1, 2, 3...) create dai valori di `giorno` del CSV nell'ordine di prima apparizione. L'utente può associare a ciascuno un giorno della settimana. L'app propone il giorno di oggi: quello associato al giorno della settimana corrente; se gli altri giorni hanno un giorno della settimana ma oggi no, è riposo e propone il prossimo; senza associazioni propone il successivo nella rotazione (dopo l'ultima sessione, completata o saltata). L'utente può sempre scegliere un altro giorno.
 6. **Cronometro**: solo recupero tra le serie. Valore predefinito da `rec_sec`, modificabile. Nessun timer di durata sessione per ora.
 7. **Storico**: separato per nome esercizio esatto ("Leg press" e "Leg press leggera" sono distinti). L'unità di carico (`totale` / `per_braccio`) è sempre mostrata.
 8. **Analisi**: progressione kg a parità di ripetizioni; ripetizioni settimanali per esercizio.
@@ -45,12 +45,12 @@ Colonne: `fase,giorno,ordine,esercizio,tipo,attrezzo,serie,rip,posizione,ultimo_
 
 ## Modello dati
 ```
-Phase        { id, fase, status: active|archived, importedAt }
-TrainingDay  { id, phaseId, label, ordine, csvGiorno, weekday? }
+Phase        { id, name, fase, status: active|archived, importedAt }
+TrainingDay  { id, phaseId, ordine, csvGiorno, weekday? }   // etichetta "Giorno N" tradotta a runtime
 Exercise     { id, phaseId, dayId, ordine, esercizio, tipo, attrezzo, serie, rip,
                posizione, ultimo_kg, unita_carico, rec_sec, rir,
                stato: attivo|da_testare|sospeso|rimosso, note, isManual }
-Session      { id, phaseId, dayId, startedAt, endedAt? }
+Session      { id, phaseId, dayId, startedAt, endedAt?, outcome?: completed|skipped }
 SetLog       { id, sessionId, exerciseId, esercizio, fase, date, setNo,
                kg, rip, rir?, unita_carico, recSecUsed?, note? }
 ```

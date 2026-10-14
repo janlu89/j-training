@@ -33,3 +33,7 @@
   margin: 0;
   color: var(--p-text-muted-color);
 }
+
+.empty__action:not(:empty) {
+  margin-top: 1rem;
+}

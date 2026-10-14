@@ -1,0 +1,99 @@
+<div class="page">
+  <a class="back" routerLink="/plans">
+    <i class="pi pi-arrow-left" aria-hidden="true"></i>
+    {{ 'plans.backToList' | transloco }}
+  </a>
+  <header class="page__header">
+    <h2 class="page__title">{{ 'import.title' | transloco }}</h2>
+    <p class="page__subtitle">{{ 'import.subtitle' | transloco }}</p>
+  </header>
+
+  <input
+    #fileInput
+    class="visually-hidden"
+    type="file"
+    accept=".csv,text/csv"
+    tabindex="-1"
+    aria-hidden="true"
+    data-testid="plan-file"
+    (change)="onFileSelected(fileInput)"
+  />
+
+  @if (preview(); as preview) {
+    <p class="file">
+      <i class="pi pi-file" aria-hidden="true"></i>
+      {{ preview.fileName }}
+    </p>
+
+    @if (parsedPlan(); as plan) {
+      <app-import-summary [plan]="plan" />
+
+      @if (preview.samePhase.length) {
+        <p-message severity="warn">
+          {{ 'import.samePhase' | transloco: { fase: plan.fase, count: preview.samePhase.length } }}
+        </p-message>
+      }
+
+      <label class="field">
+        <span class="field__label">{{ 'import.name' | transloco }}</span>
+        <input
+          #nameInput
+          pInputText
+          type="text"
+          maxlength="60"
+          [value]="name()"
+          (input)="name.set(nameInput.value)"
+        />
+      </label>
+
+      <label class="check">
+        <input
+          #activateInput
+          type="checkbox"
+          [checked]="activate()"
+          (change)="activate.set(activateInput.checked)"
+        />
+        <span>
+          <span class="check__label">{{ 'import.activate' | transloco }}</span>
+          <span class="check__hint">{{ 'import.activateHint' | transloco }}</span>
+        </span>
+      </label>
+
+      <div class="page__actions">
+        <button pButton type="button" [disabled]="!canImport()" (click)="confirm()">
+          <i class="pi pi-check" pButtonIcon aria-hidden="true"></i>
+          <span pButtonLabel>{{ 'import.confirm' | transloco }}</span>
+        </button>
+        <button pButton type="button" severity="secondary" (click)="reset()">
+          <span pButtonLabel>{{ 'import.chooseAnother' | transloco }}</span>
+        </button>
+      </div>
+    }
+
+    @if (issues(); as issues) {
+      <app-import-issues [issues]="issues" />
+      <div class="page__actions">
+        <button pButton type="button" (click)="fileInput.click()">
+          <i class="pi pi-upload" pButtonIcon aria-hidden="true"></i>
+          <span pButtonLabel>{{ 'import.chooseAnother' | transloco }}</span>
+        </button>
+      </div>
+    }
+  } @else {
+    <div class="page__actions">
+      <button pButton type="button" [disabled]="busy()" (click)="fileInput.click()">
+        <i class="pi pi-upload" pButtonIcon aria-hidden="true"></i>
+        <span pButtonLabel>{{ 'import.chooseFile' | transloco }}</span>
+      </button>
+    </div>
+    <section class="format">
+      <h3 class="format__title">{{ 'import.format.title' | transloco }}</h3>
+      <p class="format__text">{{ 'import.format.text' | transloco }}</p>
+      <code class="format__columns">{{ columns }}</code>
+      <a class="format__example" href="examples/scheda-esempio.csv" download="scheda-esempio.csv">
+        <i class="pi pi-download" aria-hidden="true"></i>
+        {{ 'import.format.example' | transloco }}
+      </a>
+    </section>
+  }
+</div>

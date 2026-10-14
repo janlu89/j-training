@@ -1,15 +1,113 @@
 {
   "nav": {
     "label": "Navigazione principale",
-    "schedule": "Scheda",
+    "workout": "Allenamento",
+    "plans": "Schede",
     "history": "Storico",
     "analytics": "Analisi",
     "settings": "Impostazioni"
   },
-  "schedule": {
+  "workout": {
+    "activePlan": "Scheda attiva: {{name}}",
     "empty": {
       "title": "Nessuna scheda attiva",
-      "message": "Importa una scheda CSV per iniziare ad allenarti."
+      "message": "Importa la tua scheda in CSV per iniziare ad allenarti.",
+      "yourPlans": "Le tue schede"
+    },
+    "reason": {
+      "today": "Allenamento di oggi",
+      "restDay": "Oggi riposo",
+      "rotation": "Prossimo allenamento"
+    },
+    "chosenDay": "Giorno scelto",
+    "nextOn": "Prossimo allenamento: {{weekday}}",
+    "pickDay": "Scegli il giorno",
+    "suggested": "proposto"
+  },
+  "plans": {
+    "title": "Schede",
+    "subtitle": "Tutte le schede importate restano qui. Una sola alla volta è attiva.",
+    "import": "Importa scheda CSV",
+    "fase": "Fase {{fase}}",
+    "importedOn": "importata il {{date}}",
+    "counts": "Giorni: {{days}} · Esercizi: {{exercises}}",
+    "status": {
+      "active": "Attiva",
+      "archived": "Archiviata"
+    },
+    "open": "Apri",
+    "activate": "Rendi attiva",
+    "backToList": "Tutte le schede",
+    "empty": {
+      "title": "Nessuna scheda importata",
+      "message": "Importa un file CSV: ogni scheda che carichi resta nell'archivio."
+    },
+    "notFound": {
+      "title": "Scheda non trovata",
+      "message": "Questa scheda non esiste su questo dispositivo."
+    },
+    "deactivate": "Archivia"
+  },
+  "plan": {
+    "day": "Giorno {{number}}",
+    "exerciseCount": "Esercizi: {{count}}",
+    "weekday": "Giorno della settimana",
+    "noWeekday": "Non assegnato",
+    "dayShort": "G{{number}}"
+  },
+  "weekday": {
+    "1": "Lunedì",
+    "2": "Martedì",
+    "3": "Mercoledì",
+    "4": "Giovedì",
+    "5": "Venerdì",
+    "6": "Sabato",
+    "7": "Domenica"
+  },
+  "exercise": {
+    "sets": "{{serie}} × {{rip}}",
+    "load": "{{kg}} kg",
+    "perArm": "per braccio",
+    "loadToTest": "Carico da testare",
+    "rest": "Recupero {{sec}} s",
+    "rir": "RIR {{rir}}",
+    "status": {
+      "attivo": "Attivo",
+      "da_testare": "Da testare",
+      "sospeso": "Sospeso",
+      "rimosso": "Rimosso"
+    }
+  },
+  "import": {
+    "title": "Importa scheda",
+    "subtitle": "Carica il file CSV della scheda: vedrai un'anteprima prima di salvarla.",
+    "chooseFile": "Scegli file CSV",
+    "chooseAnother": "Scegli un altro file",
+    "name": "Nome della scheda",
+    "activate": "Usala come scheda attiva",
+    "activateHint": "La scheda attiva attuale resta nell'archivio e puoi riattivarla quando vuoi.",
+    "confirm": "Importa",
+    "samePhase": "Esiste già una scheda con fase {{fase}}: questa verrà aggiunta come nuova scheda, senza sostituirla.",
+    "format": {
+      "title": "Formato del file",
+      "text": "Una riga per esercizio. La prima riga deve contenere queste colonne:",
+      "example": "Scarica una scheda di esempio"
+    },
+    "issues": {
+      "title": "Il file non può essere importato",
+      "row": "Riga {{row}}:",
+      "more": "…e altri {{count}} problemi."
+    },
+    "issue": {
+      "emptyFile": "Il file non contiene esercizi.",
+      "fileTooLarge": "Il file supera 1 MB: non sembra una scheda.",
+      "missingColumns": "Mancano le colonne: {{value}}.",
+      "malformedRow": "il numero di colonne non corrisponde all'intestazione.",
+      "mixedPhases": "Il file contiene più fasi ({{value}}): importa una fase per file.",
+      "required": "{{column}} è obbligatorio.",
+      "notInteger": "{{column}}: «{{value}}» non è un numero intero valido.",
+      "notNumber": "{{column}}: «{{value}}» non è un numero valido.",
+      "invalidValue": "{{column}}: «{{value}}» non è un valore ammesso."
     }
   },
   "history": {

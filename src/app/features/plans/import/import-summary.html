@@ -1,0 +1,17 @@
+<section class="summary">
+  <p class="summary__totals">
+    {{ 'plans.fase' | transloco: { fase: plan().fase } }} ·
+    {{ 'plans.counts' | transloco: { days: days().length, exercises: plan().exercises.length } }}
+  </p>
+  <ul class="summary__days">
+    @for (day of days(); track day.key) {
+      <li>
+        <span class="summary__day">{{ 'plan.day' | transloco: { number: day.ordine } }}</span>
+        <span class="summary__source">{{ day.csvGiorno }}</span>
+        <span class="summary__count">
+          {{ 'plan.exerciseCount' | transloco: { count: day.exerciseCount } }}
+        </span>
+      </li>
+    }
+  </ul>
+</section>

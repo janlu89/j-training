@@ -6,5 +6,28 @@
 .content {
   max-width: 40rem;
   margin: 0 auto;
-  padding-bottom: calc(var(--jt-nav-height) + env(safe-area-inset-bottom));
+  padding-bottom: calc(var(--jt-nav-height) + env(safe-area-inset-bottom) + 1rem);
+}
+
+.header-action {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  color: var(--jt-on-chrome);
+  text-decoration: none;
+
+  i {
+    font-size: 1.25rem;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--jt-accent-on-dark);
+    outline-offset: 2px;
+  }
+}
+
+.header-action--active {
+  color: var(--jt-accent-on-dark);
 }

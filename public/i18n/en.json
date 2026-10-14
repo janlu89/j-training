@@ -1,15 +1,113 @@
 {
   "nav": {
     "label": "Main navigation",
-    "schedule": "Plan",
+    "workout": "Workout",
+    "plans": "Plans",
     "history": "History",
     "analytics": "Analytics",
     "settings": "Settings"
   },
-  "schedule": {
+  "workout": {
+    "activePlan": "Active plan: {{name}}",
     "empty": {
       "title": "No active plan",
-      "message": "Import a CSV plan to start training."
+      "message": "Import your plan as a CSV file to start training.",
+      "yourPlans": "Your plans"
+    },
+    "reason": {
+      "today": "Today's workout",
+      "restDay": "Rest day today",
+      "rotation": "Next workout"
+    },
+    "chosenDay": "Chosen day",
+    "nextOn": "Next workout: {{weekday}}",
+    "pickDay": "Choose the day",
+    "suggested": "suggested"
+  },
+  "plans": {
+    "title": "Plans",
+    "subtitle": "Every imported plan stays here. Only one at a time is active.",
+    "import": "Import CSV plan",
+    "fase": "Phase {{fase}}",
+    "importedOn": "imported on {{date}}",
+    "counts": "Days: {{days}} · Exercises: {{exercises}}",
+    "status": {
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "open": "Open",
+    "activate": "Make active",
+    "backToList": "All plans",
+    "empty": {
+      "title": "No plans imported",
+      "message": "Import a CSV file: every plan you load stays in the archive."
+    },
+    "notFound": {
+      "title": "Plan not found",
+      "message": "This plan doesn't exist on this device."
+    },
+    "deactivate": "Archive"
+  },
+  "plan": {
+    "day": "Day {{number}}",
+    "exerciseCount": "Exercises: {{count}}",
+    "weekday": "Day of the week",
+    "noWeekday": "Not assigned",
+    "dayShort": "D{{number}}"
+  },
+  "weekday": {
+    "1": "Monday",
+    "2": "Tuesday",
+    "3": "Wednesday",
+    "4": "Thursday",
+    "5": "Friday",
+    "6": "Saturday",
+    "7": "Sunday"
+  },
+  "exercise": {
+    "sets": "{{serie}} × {{rip}}",
+    "load": "{{kg}} kg",
+    "perArm": "per arm",
+    "loadToTest": "Load to be tested",
+    "rest": "Rest {{sec}} s",
+    "rir": "RIR {{rir}}",
+    "status": {
+      "attivo": "Active",
+      "da_testare": "To test",
+      "sospeso": "Paused",
+      "rimosso": "Removed"
+    }
+  },
+  "import": {
+    "title": "Import plan",
+    "subtitle": "Load the plan's CSV file: you'll see a preview before saving it.",
+    "chooseFile": "Choose CSV file",
+    "chooseAnother": "Choose another file",
+    "name": "Plan name",
+    "activate": "Use it as the active plan",
+    "activateHint": "The current active plan stays in the archive and you can reactivate it at any time.",
+    "confirm": "Import",
+    "samePhase": "A plan with phase {{fase}} already exists: this one will be added as a new plan, without replacing it.",
+    "format": {
+      "title": "File format",
+      "text": "One row per exercise. The first row must contain these columns:",
+      "example": "Download an example plan"
+    },
+    "issues": {
+      "title": "The file can't be imported",
+      "row": "Row {{row}}:",
+      "more": "…and {{count}} more problems."
+    },
+    "issue": {
+      "emptyFile": "The file contains no exercises.",
+      "fileTooLarge": "The file is larger than 1 MB: it doesn't look like a plan.",
+      "missingColumns": "Missing columns: {{value}}.",
+      "malformedRow": "the number of columns doesn't match the header.",
+      "mixedPhases": "The file contains more than one phase ({{value}}): import one phase per file.",
+      "required": "{{column}} is required.",
+      "notInteger": "{{column}}: “{{value}}” is not a valid whole number.",
+      "notNumber": "{{column}}: “{{value}}” is not a valid number.",
+      "invalidValue": "{{column}}: “{{value}}” is not an allowed value."
     }
   },
   "history": {

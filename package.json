@@ -11,7 +11,8 @@
     "test:ci": "ng test --watch=false",
     "lint": "ng lint",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "e2e": "playwright test"
   },
   "private": true,
   "packageManager": "npm@11.9.0",
@@ -26,6 +27,7 @@
     "@jsverse/transloco": "~8.4.0",
     "@primeuix/themes": "~2.0.3",
     "dexie": "~4.4.6",
+    "papaparse": "~5.7.0",
     "primeicons": "^8.0.2",
     "primeng": "~21.1.10",
     "rxjs": "~7.8.0",
@@ -36,6 +38,8 @@
     "@angular/cli": "^21.2.26",
     "@angular/compiler-cli": "^21.2.0",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
+    "@types/papaparse": "^5.5.2",
     "angular-eslint": "21.4.0",
     "eslint": "^10.3.0",
     "fake-indexeddb": "^6.2.5",
