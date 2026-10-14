@@ -39,7 +39,7 @@ Branch / ultimo commit: `feature/f3-plan-editor` (PR → `dev`); `dev` contiene 
   sposta esercizio tra giorni, soft delete; recupero predefinito).
 - E2E: 12/12 (8 import/archivio + 4 editor: scheda da zero usata in Allenamento, tutti i campi dell'esercizio,
   riordino/spostamento/eliminazione, eliminazione scheda).
-- Manuale: DOM verificato a 375 px (nessun overflow). Telefono reale: ESITO_TELEFONO
+- Manuale: DOM verificato a 375 px (nessun overflow). Telefono reale: non registrato.
 
 ## Problemi aperti / debito tecnico
 - **Licenza MIT** da aggiungere. **Release su `master`** di F1–F3 da fare.

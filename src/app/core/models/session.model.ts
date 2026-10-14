@@ -3,6 +3,8 @@ import { Entity, EpochMs } from './entity.model';
 /** How a finished session ended. Both outcomes move the rotation to the next day. */
 export type SessionOutcome = 'completed' | 'skipped';
 
+export const SESSION_OUTCOMES: readonly SessionOutcome[] = ['completed', 'skipped'];
+
 /**
  * A workout session on a training day. While `endedAt` is undefined the session is a draft:
  * every recorded set is already stored, so closing the app loses nothing.

@@ -10,6 +10,7 @@ import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { PlanDays, WeekdayChange } from '../../../shared/ui/plan-days/plan-days';
 import { PlanActiveSwitch } from '../active-switch/plan-active-switch';
+import { PlanExport } from './plan-export/plan-export';
 
 /** Any plan of the archive, with a switch to make it the active one. */
 @Component({
@@ -24,6 +25,7 @@ import { PlanActiveSwitch } from '../active-switch/plan-active-switch';
     EmptyState,
     PlanDays,
     PlanActiveSwitch,
+    PlanExport,
   ],
   templateUrl: './plan-detail-page.html',
   styleUrl: './plan-detail-page.scss',

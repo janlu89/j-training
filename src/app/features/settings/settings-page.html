@@ -41,4 +41,6 @@
     />
     <p class="settings__hint">{{ 'settings.storage.hint.' + storageStatus() | transloco }}</p>
   </app-settings-section>
+
+  <app-backup-section [restored]="restored()" />
 </div>

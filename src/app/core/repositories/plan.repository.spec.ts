@@ -113,19 +113,29 @@ describe('PlanRepository', () => {
     ]);
   });
 
-  it('lists summaries with the active plan first, then the newest', async () => {
+  it('lists summaries newest first, the active plan keeping its place', async () => {
     await plans.savePlan(newPlan('Vecchia', 5, 100), true);
     await plans.savePlan(newPlan('Recente', 6, 300), false);
-    await plans.savePlan(newPlan('Attiva', 7, 200), true);
+    const active = await plans.savePlan(newPlan('Attiva', 7, 200), true);
+    const names = async () =>
+      (await firstValueFrom(plans.watchSummaries())).map((summary) => summary.phase.name);
+
+    expect(await names()).toEqual(['Recente', 'Attiva', 'Vecchia']);
+    await plans.deactivate(active);
+    expect(await names()).toEqual(['Recente', 'Attiva', 'Vecchia']);
+    expect((await firstValueFrom(plans.watchSummaries()))[1]).toMatchObject({
+      dayCount: 2,
+      exerciseCount: 3,
+    });
+  });
+
+  it('lists plans created at the same time newest first', async () => {
+    await plans.savePlan(newPlan('Prima', 1, 100), false);
+    await plans.savePlan(newPlan('Seconda', 2, 100), true);
 
     const summaries = await firstValueFrom(plans.watchSummaries());
 
-    expect(summaries.map((summary) => summary.phase.name)).toEqual([
-      'Attiva',
-      'Recente',
-      'Vecchia',
-    ]);
-    expect(summaries[0]).toMatchObject({ dayCount: 2, exerciseCount: 3 });
+    expect(summaries.map((summary) => summary.phase.name)).toEqual(['Seconda', 'Prima']);
   });
 
   it('finds plans by fase number', async () => {

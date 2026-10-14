@@ -17,6 +17,7 @@ import { ConfirmationService } from 'primeng/api';
 import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { InputText } from 'primeng/inputtext';
+import { LOAD_UNITS } from '../../../core/models';
 import { ExerciseRepository } from '../../../core/repositories/exercise.repository';
 import { PlanEditorRepository } from '../../../core/repositories/plan-editor.repository';
 import { PlanRepository } from '../../../core/repositories/plan.repository';
@@ -27,7 +28,6 @@ import {
 } from '../../../core/services/exercise-defaults';
 import {
   EDITABLE_STATUSES,
-  LOAD_UNITS,
   REST_PRESETS,
   buildExerciseForm,
   toExerciseInput,

@@ -1,8 +1,8 @@
 import Papa from 'papaparse';
 import {
-  ExerciseStatus,
+  EXERCISE_STATUSES,
   ImportIssue,
-  LoadUnit,
+  LOAD_UNITS,
   NewPlanDay,
   NewPlanExercise,
   PlanParseResult,
@@ -11,8 +11,6 @@ import { PLAN_CSV_COLUMNS, PlanCsvRow } from './plan-csv-columns';
 import { RowReader } from './row-reader';
 import { weekdayFromText } from './weekday';
 
-const LOAD_UNITS: readonly LoadUnit[] = ['totale', 'per_braccio'];
-const EXERCISE_STATUSES: readonly ExerciseStatus[] = ['attivo', 'da_testare', 'sospeso', 'rimosso'];
 /** The header is spreadsheet row 1, so data row i (0-based) is row i + 2. */
 const FIRST_DATA_ROW = 2;
 
