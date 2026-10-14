@@ -11,7 +11,7 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
   selector: 'app-plan-active-switch',
   imports: [FormsModule, TranslocoPipe, ToggleSwitch],
   template: `
-    <label class="switch">
+    <div class="switch">
       <span class="switch__state" aria-hidden="true">
         {{ (active() ? 'plans.status.active' : 'plans.status.archived') | transloco }}
       </span>
@@ -20,7 +20,7 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
         [ariaLabel]="'plans.activeToggle' | transloco: { name: name() }"
         (onChange)="activeChange.emit($event.checked)"
       />
-    </label>
+    </div>
   `,
   styles: `
     .switch {
@@ -28,7 +28,6 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
       align-items: center;
       gap: 0.5rem;
       min-height: 2.75rem;
-      cursor: pointer;
     }
     .switch__state {
       font-size: 0.875rem;
