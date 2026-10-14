@@ -1,6 +1,47 @@
 {
-  "language": {
-    "it": "Italiano",
-    "en": "English"
+  "nav": {
+    "label": "Navigazione principale",
+    "schedule": "Scheda",
+    "history": "Storico",
+    "analytics": "Analisi",
+    "settings": "Impostazioni"
+  },
+  "schedule": {
+    "empty": {
+      "title": "Nessuna scheda attiva",
+      "message": "Importa una scheda CSV per iniziare ad allenarti."
+    }
+  },
+  "history": {
+    "empty": {
+      "title": "Ancora nessun allenamento",
+      "message": "Lo storico comparirà dopo la prima sessione salvata."
+    }
+  },
+  "analytics": {
+    "empty": {
+      "title": "Nessun dato da analizzare",
+      "message": "I grafici di progressione compariranno dopo qualche allenamento."
+    }
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "language": {
+      "title": "Lingua",
+      "description": "Lingua dell'interfaccia. La scelta resta salvata su questo dispositivo."
+    },
+    "storage": {
+      "title": "Archiviazione dati",
+      "status": {
+        "unknown": "Verifica in corso",
+        "persisted": "Protetta",
+        "notPersisted": "Non garantita"
+      },
+      "hint": {
+        "unknown": "Controllo in corso sulla conservazione permanente dei dati.",
+        "persisted": "I dati restano su questo dispositivo e il browser non li cancella per liberare spazio.",
+        "notPersisted": "Se lo spazio scarseggia il browser potrebbe cancellare i dati. Installare l'app aiuta; fai backup regolari."
+      }
+    }
   }
 }

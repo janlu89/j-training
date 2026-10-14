@@ -1,14 +1,10 @@
 :host {
-  display: flex;
-  flex-direction: column;
+  display: block;
   min-height: 100dvh;
 }
 
-.app-header {
-  padding: 1rem;
-}
-
-.app-header__title {
-  margin: 0;
-  font-size: 1.5rem;
+.content {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding-bottom: calc(var(--jt-nav-height) + env(safe-area-inset-bottom));
 }

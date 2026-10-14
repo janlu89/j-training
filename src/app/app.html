@@ -1,6 +1,5 @@
-<header class="app-header">
-  <h1 class="app-header__title">{{ appName }}</h1>
-</header>
-<main>
+<app-header [title]="appName" />
+<main class="content">
   <router-outlet />
 </main>
+<app-bottom-nav [items]="navigation" />

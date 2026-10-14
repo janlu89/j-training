@@ -1,6 +1,47 @@
 {
-  "language": {
-    "it": "Italiano",
-    "en": "English"
+  "nav": {
+    "label": "Main navigation",
+    "schedule": "Plan",
+    "history": "History",
+    "analytics": "Analytics",
+    "settings": "Settings"
+  },
+  "schedule": {
+    "empty": {
+      "title": "No active plan",
+      "message": "Import a CSV plan to start training."
+    }
+  },
+  "history": {
+    "empty": {
+      "title": "No workouts yet",
+      "message": "Your history will appear after the first saved session."
+    }
+  },
+  "analytics": {
+    "empty": {
+      "title": "Nothing to analyse yet",
+      "message": "Progress charts will appear after a few workouts."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "language": {
+      "title": "Language",
+      "description": "Interface language. Your choice is saved on this device."
+    },
+    "storage": {
+      "title": "Data storage",
+      "status": {
+        "unknown": "Checking",
+        "persisted": "Protected",
+        "notPersisted": "Not guaranteed"
+      },
+      "hint": {
+        "unknown": "Checking whether the browser keeps your data permanently.",
+        "persisted": "Your data stays on this device and the browser won't delete it to free up space.",
+        "notPersisted": "If space runs low the browser may delete your data. Installing the app helps; back up regularly."
+      }
+    }
   }
 }
