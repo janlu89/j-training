@@ -14,6 +14,8 @@ Branch / ultimo commit: `feature/f7-export` (PR → `dev`); `dev` contiene F1–
   (es. `setLogs[3].kg`) e "I dati di questo dispositivo non sono stati modificati".
 - **Export di una scheda** dal dettaglio scheda (sezione "Esporta la scheda"): **Excel** (fogli "Scheda" e "Serie")
   e **CSV** (una tabella con la scheda e tutte le serie salvate), file `Nome - fase N.xlsx|csv`.
+- **Schede, dalla prova sul telefono**: le schede restano al loro posto, dalla più recente, quando si attivano o si
+  archiviano; prima l'attiva saliva in cima e spegnendo l'ultima si animavano anche gli altri toggle.
 - Segnaposto "ESITO_TELEFONO" sostituiti in `handoff-F4.md` (non registrato) e `handoff-F7.md` (ok).
 
 ## Decisioni prese (con il perché)
@@ -59,10 +61,14 @@ Branch / ultimo commit: `feature/f7-export` (PR → `dev`); `dev` contiene F1–
   `BACKUP_TABLES`): parser CSV, form esercizio e backup usano la stessa fonte.
 - **Nessun escape anti-formula nel CSV**: i dati sono dell'utente e il file è pensato per un'AI, dove un apice
   iniziale sarebbe rumore; l'XLSX scrive i testi come testo.
+- **Ordine delle schede indipendente dallo stato** (`importedAt` decrescente, poi id): con "attiva per prima" la
+  card cambiava posto al tocco e quella che scivolava sotto il dito prendeva lo stato hover (persistente sul
+  telefono), da cui l'animazione su tutti i toggle. La scheda attiva resta riconoscibile dal bordo arancione.
+  Misurato fotogramma per fotogramma nel browser prima e dopo la correzione.
 
 ## File creati/modificati (percorsi)
 - `src/app/core/models/{backup,plan-export}.model.ts`, costanti in `{exercise,phase,session}.model.ts`
-- `src/app/core/repositories/{backup,plan-export}.repository.ts`
+- `src/app/core/repositories/{backup,plan-export}.repository.ts`, `plan.repository.ts` (ordine delle schede)
 - `src/app/core/services/backup/**` (parser, lettore dei record, integrità, servizio)
 - `src/app/core/services/plan-export/**` (righe, CSV, XLSX, servizio)
 - `src/app/core/services/{file-download.service,app-restart.service,iso-date}.ts`
@@ -70,17 +76,20 @@ Branch / ultimo commit: `feature/f7-export` (PR → `dev`); `dev` contiene F1–
 - `src/app/features/plans/detail/plan-export/**`, `src/app/features/plans/detail/plan-detail-page.{ts,html}`
 - `src/app/shared/pipes/local-date.pipe.ts` (`formatLocalDate`), `src/app/core/testing/plan-records.ts`
 - `src/app/core/services/plan-csv/plan-csv-parser.ts`, `src/app/features/plans/exercise/exercise-form*.ts`
-- `public/i18n/{it,en}.json`, `angular.json`, `package.json` (exceljs ~4.4.0), `e2e/{backup,plan-export}.spec.ts`
+- `public/i18n/{it,en}.json`, `angular.json`, `package.json` (exceljs ~4.4.0), `e2e/{backup,plan-export,plan-import}.spec.ts`
 
 ## Stato test (unit / e2e / manuale)
-- Unit: 274/274. Backup: round trip identico su database vuoto, sostituzione con gli id originali, id successivi,
+- Unit: 275/275 (ordine stabile delle schede, anche a parità di data). Backup: round trip identico su database vuoto, sostituzione con gli id originali, id successivi,
   rollback di un ripristino fallito, impostazioni escluse e intatte, file troppo grande non letto, ogni tipo di
   rifiuto con il percorso. Export: righe in ordine di scheda e di diario, CSV riletto con PapaParse, XLSX riletto con
   ExcelJS (fogli, intestazioni, valori tradotti, date locali, stampa, filtri, inglese), nomi file sicuri.
 - E2E: 29/29 (+4): backup esportato e ripristinato su **un secondo browser** (contesto Playwright nuovo) e
   riesportato **identico all'originale**; file non di backup rifiutato senza toccare i dati; Excel scaricato e
-  riletto; CSV scaricato e verificato riga per riga. Screenshot Pixel 7: conferma, errore, sezione export.
-- Manuale: telefono reale: ESITO_TELEFONO.
+  riletto; CSV scaricato e verificato riga per riga; le schede non cambiano posto attivandole o archiviandole.
+  Screenshot Pixel 7: conferma, errore, sezione export.
+- Manuale: telefono reale (Gianluca, 2026-10-15): sul vecchio server 4200 Impostazioni bianca e toggle rotti per la
+  cache di Vite (vedi sotto), non riproducibili su un server nuovo; dopo il riavvio l'app funziona; da lì la
+  correzione dell'ordine in Schede. Backup, ripristino ed export sul telefono: ESITO_TELEFONO.
 
 ## Problemi aperti / debito tecnico
 - **Bug preesistente dell'editor (F3), E2E instabile**: rinominando un giorno e cambiando subito il giorno della
@@ -90,7 +99,8 @@ Branch / ultimo commit: `feature/f7-export` (PR → `dev`); `dev` contiene F1–
 - `npm audit`: 2 moderate da `uuid` < 11 dentro ExcelJS (riguarda v3/v5/v6 con `buf`; ExcelJS usa solo v4 e il
   bundle browser ha la sua copia). Nessuna correzione senza tornare a ExcelJS 3.
 - Server di sviluppo nella stessa cartella condividono `.angular/cache`: dopo un cambio di dipendenze un server
-  già avviato può rompersi (`getBaseHref` di null). Riavviarlo.
+  già avviato serve chunk di due ottimizzazioni diverse, cioè due copie di Angular (`getBaseHref` di null,
+  `NG01203: No value accessor`). Riavviarlo.
 - CSV aperto con doppio clic in Excel italiano: il separatore è la virgola e finisce in una colonna; per Excel
   c'è l'XLSX (oppure Dati → Da testo/CSV).
 - Selettore file su Android con `accept=".json,application/json"`: da verificare sul telefono.

@@ -85,12 +85,16 @@ test.describe('plan import and archive', () => {
     await july.click();
     await expect(july).toBeChecked();
     await expect(pyramids).not.toBeChecked();
+    // Plans keep their place, newest first, whatever their status.
+    await expect(cards.first()).toContainText('Piramidali');
+    await expect(cards.last()).toContainText('Luglio');
     await page.getByRole('link', { name: 'Allenamento' }).click();
     await expect(page.getByText('Scheda attiva: Luglio')).toBeVisible();
 
     await page.getByRole('link', { name: 'Schede' }).click();
     await july.click();
     await expect(page.getByRole('switch', { checked: true })).toHaveCount(0);
+    await expect(cards.last()).toContainText('Luglio');
     await page.getByRole('link', { name: 'Allenamento' }).click();
     await expect(page.getByRole('heading', { name: 'Nessuna scheda attiva' })).toBeVisible();
   });

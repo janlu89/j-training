@@ -77,7 +77,10 @@ export class PlanRepository {
     );
   }
 
-  /** All plans: the active one first, then the most recently imported. */
+  /**
+   * All plans, the most recently imported first. The order does not depend on the status, so a plan
+   * keeps its place when it is switched on or off.
+   */
   watchSummaries(): Observable<PlanSummary[]> {
     return from(liveQuery(() => this.getSummaries()));
   }
@@ -97,9 +100,7 @@ export class PlanRepository {
       })),
     );
     return summaries.sort(
-      (a, b) =>
-        Number(b.phase.status === 'active') - Number(a.phase.status === 'active') ||
-        b.phase.importedAt - a.phase.importedAt,
+      (a, b) => b.phase.importedAt - a.phase.importedAt || b.phase.id - a.phase.id,
     );
   }
 
