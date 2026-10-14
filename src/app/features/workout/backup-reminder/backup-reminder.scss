@@ -1,0 +1,34 @@
+.reminder {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--p-content-border-color);
+  border-radius: 12px;
+  background: var(--p-content-background);
+}
+
+.reminder__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 1rem;
+
+  .pi {
+    font-size: var(--jt-icon-size);
+    color: var(--jt-icon-muted);
+  }
+}
+
+.reminder__text {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+}
+
+.reminder__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

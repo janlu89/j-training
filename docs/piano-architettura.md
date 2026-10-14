@@ -1,6 +1,6 @@
 # J-Training — Piano architetturale
 
-Ultimo aggiornamento: 2026-10-14
+Ultimo aggiornamento: 2026-10-15
 
 ## Vincoli
 - Solo frontend, nessun backend, nessun login. Dati solo sul dispositivo (IndexedDB), mai in cloud.
@@ -22,7 +22,7 @@ Ultimo aggiornamento: 2026-10-14
 | Timer | Web Worker + calcolo su timestamp; suono (prioritario) e vibrazione | I timer sul main thread vengono rallentati in background |
 | Hosting | GitHub Pages + GitHub Actions | Gratuito; richiede repository pubblico |
 | Routing su Pages | Path routing + copia di `index.html` in `404.html` in fase di deploy | URL puliti; Pages non ha fallback SPA nativo |
-| Distribuzione | PWA installabile; APK opzionale via GitHub Releases | Il Play Store per un account personale richiede 25 $ e 12 tester per 14 giorni |
+| Distribuzione | PWA installabile (su Android Chrome la installa come WebAPK); APK TWA via GitHub Releases in F9 | Il Play Store per un account personale richiede 25 $ e 12 tester per 14 giorni; un'app iOS nativa richiede Mac e Apple Developer Program |
 
 ## Decisioni funzionali
 1. **Log per singola serie**: kg e rip salvati separatamente per ogni serie (supporta i piramidali).
@@ -59,6 +59,7 @@ SetLog       { id, sessionId, exerciseId, esercizio, fase, date, setNo,
 ## Export
 - CSV / XLSX di una fase: piano + tutti i SetLog (stampabile, analizzabile da un'AI).
 - JSON completo e versionato `{ schemaVersion, exportedAt, phases, days, exercises, sessions, setLogs }` per backup e cambio dispositivo.
+- Promemoria di backup: "Ultimo backup" in Impostazioni; un avviso in Allenamento solo se ci sono allenamenti non salvati in un backup da almeno una settimana, rimandabile di una settimana.
 
 ## Struttura cartelle
 ```

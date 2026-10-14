@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter, withComponentInputBinding } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
 import { App } from './app';
 import { routes } from './app.routes';
 import { useTestDatabase } from './core/testing/test-database';
@@ -10,7 +11,11 @@ describe('App shell', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideRouter(routes, withComponentInputBinding()), provideTranslocoForTests()],
+      providers: [
+        provideRouter(routes, withComponentInputBinding()),
+        provideTranslocoForTests(),
+        provideServiceWorker('ngsw-worker.js', { enabled: false }),
+      ],
     });
   });
 

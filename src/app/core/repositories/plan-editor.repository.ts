@@ -59,8 +59,12 @@ export class PlanEditorRepository {
     });
   }
 
-  async updateDay(dayId: number, day: DayInput): Promise<void> {
-    await this.db.days.update(dayId, { csvGiorno: day.csvGiorno, weekday: day.weekday });
+  /**
+   * Writes only the given fields: renaming a day and then changing its weekday must not write the
+   * old name back from a copy read before the rename. An explicit `weekday: undefined` clears it.
+   */
+  async updateDay(dayId: number, changes: Partial<DayInput>): Promise<void> {
+    await this.db.days.update(dayId, changes);
   }
 
   /** Swaps a day with its neighbour in the plan order. */

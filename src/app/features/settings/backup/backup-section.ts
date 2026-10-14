@@ -6,8 +6,11 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Message } from 'primeng/message';
 import { BackupFile, BackupIssue } from '../../../core/models';
 import { AppRestartService } from '../../../core/services/app-restart.service';
+import { BackupStatusService } from '../../../core/services/backup/backup-status.service';
 import { BackupService, summarizeBackup } from '../../../core/services/backup/backup.service';
+import { CLOCK } from '../../../core/services/clock';
 import { LanguageService } from '../../../core/services/language.service';
+import { DaysAgoPipe } from '../../../shared/pipes/days-ago.pipe';
 import { formatLocalDate } from '../../../shared/pipes/local-date.pipe';
 import { SettingsSection } from '../../../shared/ui/settings-section/settings-section';
 
@@ -24,6 +27,7 @@ export const RESTORED_URL = '/settings?restored=1';
     ButtonLabel,
     ConfirmDialog,
     Message,
+    DaysAgoPipe,
     SettingsSection,
   ],
   providers: [ConfirmationService],
@@ -35,8 +39,10 @@ export class BackupSection {
   private readonly backups = inject(BackupService);
   private readonly confirmation = inject(ConfirmationService);
   private readonly transloco = inject(TranslocoService);
-  private readonly language = inject(LanguageService).current;
   private readonly restart = inject(AppRestartService);
+  protected readonly language = inject(LanguageService).current;
+  protected readonly lastBackupAt = inject(BackupStatusService).lastBackupAt;
+  protected readonly now = inject(CLOCK)();
 
   /** True right after the app restarted on restored data. */
   readonly restored = input(false);

@@ -9,6 +9,9 @@
     <i class="pi pi-cog" aria-hidden="true"></i>
   </a>
 </app-header>
+@if (update.updateReady()) {
+  <app-update-banner (reload)="update.reload()" />
+}
 <main class="content" [class.content--with-timer]="rest.timer()">
   <router-outlet />
 </main>

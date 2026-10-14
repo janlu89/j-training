@@ -306,11 +306,25 @@
         "persisted": "Your data stays on this device and the browser won't delete it to free up space.",
         "notPersisted": "If space runs low the browser may delete your data. Installing the app helps; back up regularly."
       }
+    },
+    "app": {
+      "title": "App",
+      "description": "Once installed, J-Training opens full screen, works offline too and the browser does not delete its data to free up space.",
+      "install": "Install the app",
+      "state": {
+        "standalone": "You are using the installed app.",
+        "installed": "App installed: open it from its icon on the home screen.",
+        "ios": "On iPhone: in Safari tap Share, then “Add to Home Screen”.",
+        "manual": "To install it, open the browser menu and choose “Install app” or “Add to Home screen”."
+      },
+      "version": "Version {{version}}"
     }
   },
   "backup": {
     "title": "Backup",
     "description": "Save all plans and the workout history to a file, to keep them or move them to another device.",
+    "last": "Last backup: {{when}}",
+    "never": "No backup from this device yet.",
     "export": "Export backup",
     "restore": "Restore from file",
     "exported": "Backup saved to downloads: {{fileName}}",
@@ -336,6 +350,14 @@
       "multipleOpenSessions": "The backup is damaged: it contains more than one workout in progress.",
       "at": "Location: {{path}}"
     }
+  },
+  "backupReminder": {
+    "title": "Time for a backup",
+    "since": "Last backup: {{when}}. You have saved more workouts since: export a file so you don't lose them if you change or reset your phone.",
+    "never": "You have not backed up your workouts yet: export a file so you don't lose them if you change or reset your phone.",
+    "export": "Export backup",
+    "later": "Later",
+    "failed": "Backup failed. Try again from Settings."
   },
   "form": {
     "required": "This field is required.",
@@ -409,5 +431,9 @@
       "delete": "Delete",
       "cancel": "Cancel"
     }
+  },
+  "update": {
+    "ready": "A new version is available.",
+    "reload": "Update"
   }
 }

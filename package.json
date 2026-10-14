@@ -1,11 +1,12 @@
 {
   "name": "j-training",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "build:prod": "ng build --configuration production",
+    "build:pages": "ng build --configuration production --base-href /j-training/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:ci": "ng test --watch=false",
@@ -15,6 +16,7 @@
     "e2e": "playwright test"
   },
   "private": true,
+  "license": "MIT",
   "packageManager": "npm@11.9.0",
   "dependencies": {
     "@angular/cdk": "~21.2.14",
@@ -24,6 +26,7 @@
     "@angular/forms": "^21.2.0",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
+    "@angular/service-worker": "^21.2.25",
     "@jsverse/transloco": "~8.4.0",
     "@primeuix/themes": "~2.0.3",
     "chart.js": "~4.5.1",

@@ -8,6 +8,15 @@
     <p-message severity="success">{{ 'backup.restored' | transloco }}</p-message>
   }
 
+  @let last = lastBackupAt();
+  <p class="backup__last">
+    @if (last !== undefined) {
+      {{ 'backup.last' | transloco: { when: (last | daysAgo: now : language()) } }}
+    } @else {
+      {{ 'backup.never' | transloco }}
+    }
+  </p>
+
   <div class="backup__actions">
     <button pButton type="button" [disabled]="busy()" (click)="export()">
       <i class="pi pi-download" pButtonIcon aria-hidden="true"></i>

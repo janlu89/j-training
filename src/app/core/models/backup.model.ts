@@ -57,6 +57,14 @@ export interface BackupIssue {
 
 export type BackupReadResult = { ok: true; backup: BackupFile } | { ok: false; issue: BackupIssue };
 
+/** What the backup reminder needs, read together so that it follows every change. */
+export interface BackupStatus {
+  lastBackupAt?: EpochMs;
+  reminderSnoozedAt?: EpochMs;
+  /** End of the oldest saved or skipped workout that no backup contains yet. */
+  firstUnsavedAt?: EpochMs;
+}
+
 /** What a backup contains, shown before it replaces the data of the device. */
 export interface BackupSummary {
   exportedAt: EpochMs;
