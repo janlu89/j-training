@@ -13,10 +13,16 @@ async function createPlan(page: Page, name: string): Promise<void> {
 }
 
 async function addDay(page: Page, name: string, weekday?: string): Promise<void> {
+  const days = page.getByRole('region');
+  const count = await days.count();
   await page.getByRole('button', { name: 'Aggiungi giorno' }).click();
-  const day = page.getByRole('region').last();
-  await day.getByLabel('Nome del giorno').fill(name);
-  await day.getByLabel('Nome del giorno').press('Enter');
+  // Wait for the new day: otherwise `nth` could still resolve to the previous last day.
+  await expect(days).toHaveCount(count + 1);
+  const day = days.nth(count);
+  const nameInput = day.getByLabel('Nome del giorno');
+  await nameInput.fill(name);
+  await nameInput.press('Enter');
+  await expect(nameInput).toHaveValue(name);
   if (weekday) {
     await day.getByLabel('Giorno della settimana').selectOption({ label: weekday });
   }
