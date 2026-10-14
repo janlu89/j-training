@@ -1,3 +1,4 @@
+export * from './backup.model';
 export * from './entity.model';
 export * from './exercise.model';
 export * from './history.model';

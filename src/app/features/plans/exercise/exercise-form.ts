@@ -3,7 +3,6 @@ import { Exercise, ExerciseInput, ExerciseStatus, LoadUnit } from '../../../core
 
 /** Statuses the user can choose; `rimosso` is set by deleting the exercise. */
 export const EDITABLE_STATUSES: readonly ExerciseStatus[] = ['attivo', 'da_testare', 'sospeso'];
-export const LOAD_UNITS: readonly LoadUnit[] = ['totale', 'per_braccio'];
 export const REST_PRESETS = [60, 90, 120, 150, 180] as const;
 
 /** Builds the typed exercise form. */

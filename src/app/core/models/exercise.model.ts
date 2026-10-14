@@ -3,8 +3,17 @@ import { Entity } from './entity.model';
 /** `rimosso` is a soft delete: hidden from the plan, history preserved. */
 export type ExerciseStatus = 'attivo' | 'da_testare' | 'sospeso' | 'rimosso';
 
+export const EXERCISE_STATUSES: readonly ExerciseStatus[] = [
+  'attivo',
+  'da_testare',
+  'sospeso',
+  'rimosso',
+];
+
 /** Load is either the total weight or the weight per arm. */
 export type LoadUnit = 'totale' | 'per_braccio';
+
+export const LOAD_UNITS: readonly LoadUnit[] = ['totale', 'per_braccio'];
 
 /** A planned exercise. What is actually performed is recorded in `SetLog`. */
 export interface Exercise extends Entity {
