@@ -5,15 +5,44 @@
     @if (statusSeverity(); as severity) {
       <p-tag [severity]="severity" [value]="'exercise.status.' + item.stato | transloco" />
     }
-    <a
-      class="log__edit"
-      [routerLink]="['/plans', item.phaseId, 'exercises', item.id]"
-      [queryParams]="{ returnTo: returnTo() }"
-      [attr.aria-label]="'workout.day.editExercise' | transloco: { exercise: item.esercizio }"
-    >
-      <i class="pi pi-pencil" aria-hidden="true"></i>
-    </a>
+    @if (!isSubstitute()) {
+      <a
+        class="log__edit"
+        [routerLink]="['/plans', item.phaseId, 'exercises', item.id]"
+        [queryParams]="{ returnTo: returnTo() }"
+        [attr.aria-label]="'workout.day.editExercise' | transloco: { exercise: item.esercizio }"
+      >
+        <i class="pi pi-pencil" aria-hidden="true"></i>
+      </a>
+    }
+    @if (!locked()) {
+      <button
+        type="button"
+        class="log__edit"
+        [attr.aria-expanded]="moreOpen()"
+        [attr.aria-controls]="moreOpen() ? moreId() : null"
+        [attr.aria-label]="'workout.day.moreActions' | transloco: { exercise: item.esercizio }"
+        (click)="moreOpen.set(!moreOpen())"
+      >
+        <i class="pi pi-ellipsis-v" aria-hidden="true"></i>
+      </button>
+    }
   </div>
+  @if (replaces(); as replaced) {
+    <p class="log__note">{{ 'workout.day.replaces' | transloco: { exercise: replaced } }}</p>
+  }
+  @if (moreOpen() && !locked()) {
+    <app-exercise-actions
+      [id]="moreId()"
+      [substitute]="isSubstitute()"
+      [recorded]="recorded()"
+      [allDone]="allDone()"
+      (replace)="choose(replace)"
+      (skip)="choose(skip)"
+      (finishHere)="choose(complete)"
+      (removeSubstitute)="choose(removeSubstitute)"
+    />
+  }
 
   <p class="log__plan">
     <span>{{ 'exercise.sets' | transloco: { serie: item.serie, rip: item.rip } }}</span>
@@ -148,4 +177,12 @@
       </button>
     }
   </div>
+
+  @if (allDone() && !locked()) {
+    <!-- Not automatic: the user may still add a set before moving on. -->
+    <button pButton type="button" class="log__complete" [fluid]="true" (click)="complete.emit()">
+      <i class="pi pi-check-circle" pButtonIcon aria-hidden="true"></i>
+      <span pButtonLabel>{{ 'workout.day.complete' | transloco }}</span>
+    </button>
+  }
 </section>

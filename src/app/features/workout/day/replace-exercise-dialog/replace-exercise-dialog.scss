@@ -1,0 +1,13 @@
+@use '../../../../../styles/form';
+
+.replace {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.replace__hint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+}

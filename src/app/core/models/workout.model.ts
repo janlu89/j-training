@@ -24,6 +24,8 @@ export interface WorkoutExercise {
   sets: SetLog[];
   /** Sets of the most recent other session with the same exercise name, by set number. */
   previous: SetLog[];
+  /** Only for an exercise added during the workout: the id of the one it replaces. */
+  replaces?: number;
 }
 
 /** The open session (draft) with its training day. */

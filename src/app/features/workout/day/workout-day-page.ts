@@ -6,13 +6,15 @@ import { ButtonDirective, ButtonIcon, ButtonLabel } from 'primeng/button';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Message } from 'primeng/message';
 import { Tag } from 'primeng/tag';
-import { LoadUpdate, OpenSession, TrainingDay } from '../../../core/models';
+import { Exercise, LoadUpdate, OpenSession, TrainingDay } from '../../../core/models';
 import { LanguageService } from '../../../core/services/language.service';
 import { formatRest } from '../../../core/services/rest-timer/rest-timer.service';
 import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
+import { ClosedExercises } from './closed-exercises/closed-exercises';
 import { ExerciseLog } from './exercise-log/exercise-log';
 import { FinishDayDialog } from './finish-day-dialog/finish-day-dialog';
+import { ReplaceExerciseDialog } from './replace-exercise-dialog/replace-exercise-dialog';
 import { WorkoutDayStore } from './workout-day-store';
 
 /** The workout of one day: record sets during or after training, then save or skip the day. */
@@ -29,8 +31,10 @@ import { WorkoutDayStore } from './workout-day-store';
     Tag,
     LocalDatePipe,
     EmptyState,
+    ClosedExercises,
     ExerciseLog,
     FinishDayDialog,
+    ReplaceExerciseDialog,
   ],
   providers: [WorkoutDayStore, ConfirmationService],
   templateUrl: './workout-day-page.html',
@@ -45,6 +49,8 @@ export class WorkoutDayPage {
   protected readonly store = inject(WorkoutDayStore);
   protected readonly language = inject(LanguageService).current;
   protected readonly finishing = signal(false);
+  /** The exercise whose replacement is being chosen. */
+  protected readonly replacing = signal<Exercise | null>(null);
   protected readonly busy = signal(false);
   protected readonly returnTo = computed(() => `/workout/day/${this.store.dayId()}`);
   protected readonly exerciseRestTime = computed(() =>
@@ -57,6 +63,16 @@ export class WorkoutDayPage {
       this.finishing.set(false);
       await this.router.navigateByUrl('/workout');
     });
+  }
+
+  protected async replace(substituteId: number): Promise<void> {
+    const exercise = this.replacing();
+    if (exercise) {
+      await this.run(async () => {
+        await this.store.replace(exercise.id, substituteId);
+        this.replacing.set(null);
+      });
+    }
   }
 
   protected confirmSkip(day: TrainingDay): void {

@@ -95,6 +95,114 @@ describe('WorkoutSessionRepository', () => {
     expect(await sessions.getAll()).toEqual([]);
   });
 
+  it('closes exercises in order, starting the draft if needed, and reopens them', async () => {
+    await workouts.closeExercise(days[0], { exerciseId: bench, outcome: 'completed' }, 7000);
+    await workouts.recordSet(days[0], set(squat, 1, 80, 8000));
+    await workouts.closeExercise(days[0], { exerciseId: squat, outcome: 'completed' }, 9000);
+    await workouts.closeExercise(days[0], { exerciseId: bench, outcome: 'completed' }, 9500);
+
+    const day = await workouts.getDay(days[0].id);
+    expect(day?.session?.startedAt).toBe(7000);
+    expect(day?.session?.closedExercises).toEqual([
+      { exerciseId: squat, outcome: 'completed' },
+      { exerciseId: bench, outcome: 'completed' },
+    ]);
+
+    await workouts.reopenExercise(days[0], squat);
+
+    expect((await workouts.getDay(days[0].id))?.session?.closedExercises).toEqual([
+      { exerciseId: bench, outcome: 'completed' },
+    ]);
+  });
+
+  it('keeps a draft with finished exercises, and removes it once it is empty', async () => {
+    const log = await workouts.recordSet(days[0], set(squat, 1, 80));
+    await workouts.closeExercise(days[0], { exerciseId: bench, outcome: 'completed' }, 2000);
+
+    await workouts.removeSet(log);
+    expect(await sessions.getAll()).toHaveLength(1);
+
+    await workouts.reopenExercise(days[0], bench);
+    expect(await sessions.getAll()).toEqual([]);
+  });
+
+  it('does not close an exercise while another day has a workout in progress', async () => {
+    await workouts.recordSet(days[1], set(squat, 1, 80));
+
+    await expect(
+      workouts.closeExercise(days[0], { exerciseId: squat, outcome: 'completed' }, 2000),
+    ).rejects.toBeInstanceOf(OpenSessionConflictError);
+  });
+
+  describe('exercises done in place of others', () => {
+    let hack: number;
+    let press: number;
+
+    beforeEach(async () => {
+      const editor = TestBed.inject(PlanEditorRepository);
+      hack = await editor.addExercise(days[1].id, newExerciseInput({ esercizio: 'Hack squat' }));
+      press = await editor.addExercise(days[1].id, newExerciseInput({ esercizio: 'Leg press' }));
+    });
+
+    function hackSet(setNo: number, kg: number): NewSet {
+      return { ...set(squat, setNo, kg), exerciseId: hack, esercizio: 'Hack squat' };
+    }
+
+    it('skips the replaced one and adds the new one after the planned exercises', async () => {
+      await workouts.replaceExercise(days[0], { exerciseId: hack, replaces: squat }, 3000);
+      await workouts.recordSet(days[0], hackSet(1, 100));
+
+      const day = await workouts.getDay(days[0].id);
+      expect(day?.session?.startedAt).toBe(3000);
+      expect(day?.session?.closedExercises).toEqual([{ exerciseId: squat, outcome: 'skipped' }]);
+      expect(
+        day?.exercises.map(({ exercise, replaces, sets }) => [
+          exercise.esercizio,
+          replaces,
+          sets.length,
+        ]),
+      ).toEqual([
+        ['Squat', undefined, 0],
+        ['Panca piana', undefined, 0],
+        ['Hack squat', squat, 1],
+      ]);
+    });
+
+    it('swaps an added exercise without sets, and removes it without a trace', async () => {
+      await workouts.replaceExercise(days[0], { exerciseId: hack, replaces: squat }, 3000);
+
+      await workouts.replaceExercise(days[0], { exerciseId: press, replaces: hack }, 4000);
+      let session = (await workouts.getDay(days[0].id))?.session;
+      expect(session?.substitutes).toEqual([{ exerciseId: press, replaces: squat }]);
+      expect(session?.closedExercises).toEqual([{ exerciseId: squat, outcome: 'skipped' }]);
+
+      await workouts.removeSubstitute(days[0], press);
+      session = (await workouts.getDay(days[0].id))?.session;
+      expect(session?.substitutes).toEqual([]);
+
+      await workouts.reopenExercise(days[0], squat);
+      expect(await sessions.getAll()).toEqual([]);
+    });
+
+    it('keeps an added exercise once it has sets', async () => {
+      await workouts.replaceExercise(days[0], { exerciseId: hack, replaces: squat }, 3000);
+      await workouts.recordSet(days[0], hackSet(1, 100));
+
+      await workouts.removeSubstitute(days[0], hack);
+      await workouts.replaceExercise(days[0], { exerciseId: press, replaces: hack }, 4000);
+
+      const session = (await workouts.getDay(days[0].id))?.session;
+      expect(session?.substitutes).toEqual([
+        { exerciseId: hack, replaces: squat },
+        { exerciseId: press, replaces: hack },
+      ]);
+      expect(session?.closedExercises).toEqual([
+        { exerciseId: squat, outcome: 'skipped' },
+        { exerciseId: hack, outcome: 'skipped' },
+      ]);
+    });
+  });
+
   it('saves the draft and copies the chosen loads into the plan atomically', async () => {
     await workouts.recordSet(days[0], set(squat, 1, 90));
     const session = (await workouts.getDay(days[0].id))!.session!;

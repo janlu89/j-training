@@ -167,6 +167,86 @@ describe('WorkoutDayStore', () => {
     expect(await TestBed.inject(SetLogRepository).getAll()).toHaveLength(1);
   });
 
+  it('moves an exercise to the finished ones and back, keeping its sets', async () => {
+    await store.markAllDone(exerciseId);
+    await settled(() => store.recordedCount() === 3);
+
+    await store.complete(exerciseId);
+    await settled(() => store.sections().closed.length === 1);
+    expect(store.sections().toDo).toEqual([]);
+    expect(store.sections().closed[0].outcome).toBe('completed');
+
+    await store.reopen(exerciseId);
+    await settled(() => store.sections().toDo.length === 1);
+    expect(store.sections().closed).toEqual([]);
+    expect(store.recordedCount()).toBe(3);
+  });
+
+  it('saves only the recorded sets of a finished exercise', async () => {
+    await TestBed.inject(PlanEditorRepository).addExercise(
+      dayId,
+      newExerciseInput({ esercizio: 'Panca piana', serie: 2, rip: '10', ultimoKg: 60 }),
+    );
+    await settled(() => store.exercises().length === 2);
+    await store.toggleSet(exerciseId, 1);
+    await store.complete(exerciseId);
+    await settled(() => store.sections().closed.length === 1);
+
+    store.includeUnticked.set(true);
+    expect(store.untickedEntries().map(({ exercise }) => exercise.esercizio)).toEqual([
+      'Panca piana',
+      'Panca piana',
+    ]);
+    await store.save([]);
+
+    const logs = await TestBed.inject(SetLogRepository).getAll();
+    expect(logs.map((log) => [log.esercizio, log.setNo])).toEqual([
+      ['Squat', 1],
+      ['Panca piana', 1],
+      ['Panca piana', 2],
+    ]);
+  });
+
+  it('skips an exercise: its prefilled sets are not saved with the day', async () => {
+    await TestBed.inject(PlanEditorRepository).addExercise(
+      dayId,
+      newExerciseInput({ esercizio: 'Panca piana', serie: 2, rip: '10', ultimoKg: 60 }),
+    );
+    await settled(() => store.exercises().length === 2);
+
+    await store.skipExercise(exerciseId);
+    await settled(() => store.sections().closed.length === 1);
+
+    expect(store.sections().closed[0].outcome).toBe('skipped');
+    expect(store.includeUnticked()).toBe(true);
+    await store.save([]);
+    const logs = await TestBed.inject(SetLogRepository).getAll();
+    expect(logs.map((log) => log.esercizio)).toEqual(['Panca piana', 'Panca piana']);
+  });
+
+  it('replaces an exercise with one of another day, leaving the plan load alone', async () => {
+    const editor = TestBed.inject(PlanEditorRepository);
+    const otherDay = await editor.addDay(store.workout()!.phase.id, { csvGiorno: 'B' });
+    const hack = await editor.addExercise(
+      otherDay,
+      newExerciseInput({ esercizio: 'Hack squat', serie: 2, rip: '10', ultimoKg: 100 }),
+    );
+    await editor.addExercise(otherDay, newExerciseInput({ esercizio: 'Squat' }));
+    await settled(() => store.replacementOptions().length === 1);
+    expect(store.replacementOptions()[0].id).toBe(hack);
+
+    await store.replace(exerciseId, hack);
+    await settled(() => store.sections().toDo[0].entry.exercise.id === hack);
+
+    expect(store.sections().toDo[0]).toMatchObject({ replaces: 'Squat' });
+    expect(store.sections().closed[0].replacedBy).toEqual(['Hack squat']);
+    expect(store.replacementOptions()).toEqual([]);
+    await store.setInput(hack, 1, { kg: '110', rip: '10' });
+    await store.toggleSet(hack, 1);
+    await settled(() => store.recordedCount() === 1);
+    expect(store.loadProposals()).toEqual([]);
+  });
+
   it('proposes the load used today for the plan', async () => {
     await store.setInput(exerciseId, 1, { kg: '90', rip: '5' });
     await store.toggleSet(exerciseId, 1);

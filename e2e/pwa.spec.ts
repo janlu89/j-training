@@ -69,7 +69,7 @@ test.describe('installable app', () => {
 
     await page.getByRole('link', { name: 'Impostazioni' }).click();
     await expect(page.getByRole('heading', { name: 'Impostazioni' })).toBeVisible();
-    await expect(page.getByText('Versione 1.0.0')).toBeVisible();
+    await expect(page.getByText('Versione 1.1.0')).toBeVisible();
 
     await page.goto('plans');
     await expect(page.getByRole('heading', { name: 'Nessuna scheda importata' })).toBeVisible();

@@ -1,4 +1,7 @@
 import {
+  ClosedExercise,
+  EXERCISE_OUTCOMES,
+  ExerciseSubstitute,
   EXERCISE_STATUSES,
   Exercise,
   LOAD_UNITS,
@@ -66,7 +69,20 @@ export function readSession(r: RecordReader): Session {
     startedAt: r.timestamp('startedAt'),
     ...r.optional('endedAt', (field) => r.timestamp(field)),
     ...r.optional('outcome', (field) => r.oneOf(field, SESSION_OUTCOMES)),
+    ...r.optional('closedExercises', (field) => r.records(field, readClosedExercise)),
+    ...r.optional('substitutes', (field) => r.records(field, readSubstitute)),
   };
+}
+
+function readClosedExercise(r: RecordReader): ClosedExercise {
+  return {
+    exerciseId: r.id('exerciseId'),
+    outcome: r.oneOf('outcome', EXERCISE_OUTCOMES),
+  };
+}
+
+function readSubstitute(r: RecordReader): ExerciseSubstitute {
+  return { exerciseId: r.id('exerciseId'), replaces: r.id('replaces') };
 }
 
 export function readSetLog(r: RecordReader): SetLog {

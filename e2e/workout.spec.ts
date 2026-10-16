@@ -86,6 +86,92 @@ test.describe('workout', () => {
     await expect(page.getByText('82,5 kg')).toBeVisible();
   });
 
+  test('moves a finished exercise to the bottom and brings it back', async ({ page }) => {
+    await openDay(page, 'Giorno 1 · A');
+    const squat = exercise(page, 'Squat');
+    const complete = squat.getByRole('button', { name: 'Esercizio completato' });
+    await expect(complete).toBeHidden();
+    await squat.getByRole('button', { name: 'Segna tutte fatte' }).click();
+    await complete.click();
+
+    await expect(squat).toBeHidden();
+    await expect(page.getByRole('heading', { level: 3 })).toHaveText(['Curl']);
+    // Collapsed by default, kept when the app is closed.
+    await page.reload();
+    const finished = page.getByText('Finiti (1)');
+    const row = page.getByRole('listitem').filter({ hasText: 'Squat' });
+    await expect(finished).toBeVisible();
+    await expect(row).toBeHidden();
+    await finished.click();
+    await expect(row).toContainText('Completato');
+    await expect(row).toContainText('Serie: 3 · 80 kg');
+
+    await row.getByRole('button', { name: 'Riporta su Squat' }).click();
+
+    await expect(finished).toBeHidden();
+    await expect(page.getByRole('heading', { level: 3 })).toHaveText(['Squat', 'Curl']);
+    await expect(
+      exercise(page, 'Squat').getByRole('button', { name: 'Serie 3 fatta' }),
+    ).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('replaces or skips an exercise for today only, and the history says so', async ({
+    page,
+  }) => {
+    await openDay(page, 'Giorno 1 · A');
+    const squat = exercise(page, 'Squat');
+    await squat.getByRole('button', { name: 'Altre azioni per Squat' }).click();
+    await squat.getByRole('button', { name: 'Sostituisci…' }).click();
+
+    const choice = page.getByRole('dialog', { name: 'Sostituisci Squat' });
+    await expect(choice.getByRole('option')).toHaveText([
+      'Scegli un esercizio',
+      'Lat machine',
+      'Trazioni',
+    ]);
+    await choice.getByLabel('Esercizio').selectOption({ label: 'Lat machine' });
+    await choice.getByRole('button', { name: 'Sostituisci', exact: true }).click();
+
+    const lat = exercise(page, 'Lat machine');
+    await expect(lat).toContainText('Al posto di Squat');
+    await expect(lat.getByRole('link', { name: 'Modifica Lat machine' })).toHaveCount(0);
+    await expect(page.getByRole('heading', { level: 3 })).toHaveText(['Lat machine', 'Curl']);
+    await lat.getByLabel('Serie 1, kg').fill('50');
+    await lat.getByRole('button', { name: 'Serie 1 fatta' }).click();
+
+    const curl = exercise(page, 'Curl');
+    await curl.getByRole('button', { name: 'Altre azioni per Curl' }).click();
+    await curl.getByRole('button', { name: 'Salta esercizio' }).click();
+    await expect(curl).toBeHidden();
+
+    await page.getByText('Finiti (2)').click();
+    const squatRow = page.getByRole('listitem').filter({ hasText: 'Squat' });
+    await expect(squatRow).toContainText('Sostituito');
+    await expect(squatRow).toContainText('con Lat machine');
+    await expect(page.getByRole('listitem').filter({ hasText: 'Curl' })).toContainText(
+      'Non eseguito',
+    );
+
+    // Only the ticked set is saved, and the plan of another day keeps its load.
+    await page.getByRole('button', { name: 'Salva giornata' }).click();
+    const save = page.getByRole('dialog', { name: 'Salva giornata' });
+    await expect(save).toContainText('Serie da salvare: 1');
+    await expect(save.getByRole('checkbox', { name: /Lat machine/ })).toHaveCount(0);
+    await save.getByRole('button', { name: 'Salva', exact: true }).click();
+    await expect(page).toHaveURL(/\/workout$/);
+
+    await page.getByRole('link', { name: 'Storico' }).click();
+    await page.getByRole('listitem').first().getByRole('link').click();
+    await expect(
+      page.getByRole('listitem').filter({ has: page.getByRole('link', { name: 'Lat machine' }) }),
+    ).toContainText('50 × 10');
+    const changes = page.getByRole('region', { name: 'Variazioni' });
+    await expect(changes.getByRole('listitem')).toHaveText([
+      'Squat: sostituito con Lat machine',
+      'Curl: non eseguito',
+    ]);
+  });
+
   test('saves a day filled in at the end without ticking any set', async ({ page }) => {
     await openDay(page, 'Giorno 1 · A');
     const squat = exercise(page, 'Squat');
@@ -173,7 +259,9 @@ test.describe('workout', () => {
     await expect(exercise(page, 'Lat machine').getByLabel('Serie 2, kg')).toHaveValue('45');
   });
 
-  test('counts down the last seconds and stops the start signal by itself', async ({ page }) => {
+  test('warns 15 seconds before the end, counts down and stops the start signal by itself', async ({
+    page,
+  }) => {
     await page.addInitScript(() => {
       const vibrations: VibratePattern[] = [];
       Object.assign(window, { vibrations });
@@ -183,6 +271,8 @@ test.describe('workout', () => {
     await openDay(page, 'Giorno 1 · A');
     const squat = exercise(page, 'Squat');
     const rest = page.getByRole('region', { name: 'Recupero', exact: true });
+    const vibrations = () =>
+      page.evaluate(() => (window as unknown as { vibrations: VibratePattern[] }).vibrations);
 
     // Ticking a set never starts a rest: the rest is started by hand.
     await squat.getByRole('button', { name: 'Serie 1 fatta' }).click();
@@ -202,6 +292,12 @@ test.describe('workout', () => {
     await page.getByRole('link', { name: 'Schede' }).click();
     await expect(rest.getByRole('timer')).toHaveText('2:45');
 
+    // 15 seconds before the end, a single short warning: the alarm is not ringing yet.
+    await page.clock.setFixedTime(new Date('2026-10-15T10:02:31'));
+    await expect(rest.getByRole('timer')).toHaveText('0:14');
+    await expect.poll(vibrations).toEqual([[150, 100, 150]]);
+    await expect(rest.getByRole('button', { name: "Ferma l'allarme" })).toBeHidden();
+
     // The countdown sounds in the last 5 seconds...
     await page.clock.setFixedTime(new Date('2026-10-15T10:02:41'));
     await expect(rest.getByRole('timer')).toHaveText('0:04');
@@ -210,8 +306,6 @@ test.describe('workout', () => {
     // ...then the start signal, with vibration, until it stops by itself 15 seconds after zero.
     await page.clock.setFixedTime(new Date('2026-10-15T10:02:46'));
     await expect(rest).toContainText('Recupero finito: tocca a te!');
-    const vibrations = () =>
-      page.evaluate(() => (window as unknown as { vibrations: VibratePattern[] }).vibrations);
     await expect.poll(vibrations, { timeout: 8_000 }).toContainEqual([400, 200, 400]);
 
     await page.clock.setFixedTime(new Date('2026-10-15T10:03:01'));

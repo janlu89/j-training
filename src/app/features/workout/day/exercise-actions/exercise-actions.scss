@@ -1,0 +1,32 @@
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  padding: 0 0.75rem;
+  border-radius: 8px;
+  background: var(--p-surface-50);
+}
+
+// Same link-like buttons as the set actions of the card.
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.75rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--jt-link);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+
+  i {
+    font-size: 0.6875rem;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--p-primary-color);
+    outline-offset: 2px;
+  }
+}

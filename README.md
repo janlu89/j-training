@@ -14,9 +14,10 @@ with a backup file.
 - **Plans**: CSV import with preview and validation, full editor (days, exercises, rests, statuses), archive with a
   single active plan.
 - **Workout**: the day is proposed from the weekday or the rotation, every set is logged with prefilled loads, the
-  draft is saved at every set, the day can be saved or skipped.
-- **Rest timer** based on timestamps and a Web Worker, with sounds in the last seconds, vibration and the screen
-  kept on.
+  draft is saved at every set, the day can be saved or skipped. Finished exercises move to a collapsed section;
+  an exercise can be skipped or replaced for the day only, and the history records it.
+- **Rest timer** based on timestamps and a Web Worker, with a warning 15 seconds before the end, sounds in the
+  last seconds, vibration and the screen kept on.
 - **History and analytics**: workouts by date, history per exercise, load progression at equal reps and weekly
   reps, every chart with its data table.
 - **Export and backup**: plan and sets to Excel (to print) or CSV (for an AI); full, versioned JSON backup and a

@@ -35,3 +35,28 @@
   text-decoration: none;
   overflow-wrap: anywhere;
 }
+
+.changes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.changes__title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.changes__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--p-text-muted-color);
+}
+
+.changes__name {
+  font-weight: 600;
+  color: var(--p-text-color);
+}
