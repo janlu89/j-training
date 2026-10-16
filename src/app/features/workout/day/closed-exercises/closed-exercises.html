@@ -1,0 +1,55 @@
+<!-- Collapsed by default: the section is there to shorten the page. -->
+<details class="closed">
+  <summary class="closed__summary">
+    {{ 'workout.closed.title' | transloco: { count: items().length } }}
+    <i class="pi pi-chevron-down closed__chevron" aria-hidden="true"></i>
+  </summary>
+  <ul class="closed__list">
+    @for (row of rows(); track row.exercise.id) {
+      <li class="closed__item">
+        <div class="closed__text">
+          <span class="closed__name">{{ row.exercise.esercizio }}</span>
+          <span class="closed__meta">
+            <p-tag
+              [severity]="row.severity"
+              [value]="'workout.closed.outcome.' + row.label | transloco"
+            />
+            @if (row.item.replacedBy.length) {
+              {{
+                'workout.closed.replacedBy'
+                  | transloco: { exercises: row.item.replacedBy.join(', ') }
+              }}
+            }
+            @if (row.summary.kg !== null) {
+              {{
+                'workout.closed.summary'
+                  | transloco
+                    : {
+                        sets: row.summary.sets,
+                        kg: row.summary.kg,
+                        unit:
+                          (row.exercise.unitaCarico === 'per_braccio'
+                            ? 'workout.day.kgPerArm'
+                            : 'workout.day.kg'
+                          ) | transloco,
+                      }
+              }}
+            }
+          </span>
+        </div>
+        <button
+          type="button"
+          class="closed__reopen"
+          [disabled]="locked()"
+          [attr.aria-label]="
+            'workout.closed.reopenExercise' | transloco: { exercise: row.exercise.esercizio }
+          "
+          (click)="reopen.emit(row.exercise.id)"
+        >
+          <i class="pi pi-arrow-up" aria-hidden="true"></i>
+          {{ 'workout.closed.reopen' | transloco }}
+        </button>
+      </li>
+    }
+  </ul>
+</details>

@@ -1,6 +1,6 @@
 # J-Training — Architecture
 
-Last updated: 2026-10-15
+Last updated: 2026-10-16
 
 ## Constraints
 - Frontend only: no backend, no login. Data lives only on the device (IndexedDB), never in the cloud.
@@ -30,9 +30,17 @@ Last updated: 2026-10-15
 3. **Exercise statuses**: `attivo` (active), `da_testare` (to test), `sospeso` (paused), `rimosso` (removed). `rimosso` is a soft delete: the exercise disappears from the plan, its history stays.
 4. **Plan status**: `active` / `archived`. Importing a new plan archives the previous one and activates the new one in a single transaction. Two active plans are impossible by construction.
 5. **Training days**: ordered labels (Day 1, 2, 3...) created from the CSV `giorno` values in order of first appearance. The user can link each one to a weekday. The app proposes today's day: the one linked to the current weekday; if the other days have a weekday but today has none, it is a rest day and the next one is proposed; without weekdays, the next day in the rotation (after the last session, completed or skipped). The user can always choose another day.
-6. **Timer**: rest between sets only. Default from `rec_sec`, editable. No session-duration timer for now.
+6. **Timer**: rest between sets only. Default from `rec_sec`, editable. No session-duration timer for now. A single
+   high double beep with a short vibration 15 seconds before the end (the bar turns orange), then the countdown in
+   the last 5 seconds and the start signal.
 7. **History**: per exact exercise name ("Leg press" and "Leg press leggera" are different). The load unit (`totale` / `per_braccio`) is always shown.
 8. **Analytics**: load progression at equal reps; weekly reps per exercise.
+9. **Workout in progress, for today only**: an exercise with every set ticked can be closed as completed, one not
+   done can be skipped, any can be replaced by an exercise of any plan (one per name, the active plan's first).
+   Closed exercises move to a collapsed "Finished" section and can be moved back up; an added exercise without sets
+   can be removed. The plan never changes: what happened is stored on the session, so it survives an app restart,
+   travels in the backup and is shown in the history ("Changes"). Sets of an added exercise go into its own history
+   (by name), and its load is never proposed for the plan.
 
 ## Input CSV format
 Columns: `fase,giorno,ordine,esercizio,tipo,attrezzo,serie,rip,posizione,ultimo_kg,unita_carico,rec_sec,rir,stato,note`
@@ -52,7 +60,9 @@ TrainingDay  { id, phaseId, ordine, csvGiorno, weekday? }   // "Day N" label tra
 Exercise     { id, phaseId, dayId, ordine, esercizio, tipo, attrezzo, serie, rip,
                posizione, ultimo_kg, unita_carico, rec_sec, rir,
                stato: attivo|da_testare|sospeso|rimosso, note, isManual }
-Session      { id, phaseId, dayId, startedAt, endedAt?, outcome?: completed|skipped }
+Session      { id, phaseId, dayId, startedAt, endedAt?, outcome?: completed|skipped,
+               closedExercises?: { exerciseId, outcome: completed|skipped }[],
+               substitutes?: { exerciseId, replaces }[] }       // not indexed: no new schema version
 SetLog       { id, sessionId, exerciseId, esercizio, fase, date, setNo,
                kg, rip, rir?, unita_carico, recSecUsed?, note? }
 ```

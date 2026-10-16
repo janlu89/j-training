@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent } from 'rxjs';
 import { RestTarget, RestTimer } from '../../models';
 import { CLOCK } from '../clock';
-import { ALARM_LEAD_MS, RestAlarm, START_SIGNAL_MS } from './rest-alarm';
+import { ALARM_LEAD_MS, RestAlarm, START_SIGNAL_MS, WARNING_LEAD_MS } from './rest-alarm';
 import { ScreenWakeLock } from './screen-wake-lock';
 import { TICKER } from './ticker';
 
@@ -11,7 +11,8 @@ import { TICKER } from './ticker';
  * The rest timer between sets. One at a time, application-wide, so it keeps running while the
  * user edits an exercise or looks at another page. The remaining time is always `endsAt - now`:
  * ticks only wake the timer up, so throttled or late ticks never make the countdown drift.
- * A countdown sounds in the last seconds and a start signal after zero, which stops by itself.
+ * A warning sounds 15 seconds before the end, a countdown in the last seconds and a start signal
+ * after zero, which stops by itself.
  */
 @Injectable({ providedIn: 'root' })
 export class RestTimerService {
@@ -24,6 +25,8 @@ export class RestTimerService {
   private readonly current = signal<RestTimer | null>(null);
   private readonly now = signal(0);
   private readonly done = signal(false);
+  /** Set while more than 15 seconds are left, so the warning sounds when that line is crossed. */
+  private warningArmed = false;
 
   readonly timer = this.current.asReadonly();
   /** The alarm is sounding: the countdown of the last seconds, then the start signal. */
@@ -35,6 +38,10 @@ export class RestTimerService {
     const timer = this.current();
     return timer ? Math.max(0, timer.endsAt - this.now()) : 0;
   });
+  /** The last 15 seconds, and the time after zero until the rest closes. */
+  readonly closing = computed(
+    () => this.current() !== null && this.remainingMs() <= WARNING_LEAD_MS,
+  );
   /** Elapsed share of the rest, from 0 to 1. */
   readonly progress = computed(() => {
     const timer = this.current();
@@ -57,6 +64,7 @@ export class RestTimerService {
     this.current.set({ target, startedAt: now, endsAt: now + target.seconds * 1000 });
     this.now.set(now);
     this.done.set(false);
+    this.warningArmed = target.seconds * 1000 > WARNING_LEAD_MS;
     this.ticker.start(() => this.tick());
     void this.wakeLock.acquire();
   }
@@ -83,8 +91,9 @@ export class RestTimerService {
   }
 
   /**
-   * Reads the clock. In the last seconds the countdown starts (and stops again if time is added);
-   * the start signal then sounds after zero and, 15 seconds later, the rest closes by itself.
+   * Reads the clock. 15 seconds before the end the warning sounds; in the last seconds the
+   * countdown starts (and stops again if time is added); the start signal then sounds after zero
+   * and, 15 seconds later, the rest closes by itself.
    */
   tick(): void {
     const timer = this.current();
@@ -97,12 +106,29 @@ export class RestTimerService {
       this.stop();
       return;
     }
+    this.warnOnce(timer.endsAt - now);
     if (timer.endsAt - now <= ALARM_LEAD_MS) {
       this.alarm.start(timer.endsAt, now);
     } else {
       this.alarm.stop();
     }
     this.done.set(now >= timer.endsAt);
+  }
+
+  /**
+   * Sounds the warning once, when the time left drops to 15 seconds: never for a rest that short
+   * from the start, again only if added time goes back above it. A late tick that lands in the
+   * last seconds leaves the signal to the countdown.
+   */
+  private warnOnce(remainingMs: number): void {
+    if (remainingMs > WARNING_LEAD_MS) {
+      this.warningArmed = true;
+    } else if (this.warningArmed) {
+      this.warningArmed = false;
+      if (remainingMs > ALARM_LEAD_MS) {
+        this.alarm.warn();
+      }
+    }
   }
 }
 

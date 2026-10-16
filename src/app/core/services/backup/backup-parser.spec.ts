@@ -17,7 +17,19 @@ function validBackup(): BackupFile {
       { id: 2, ...newExercise({ phaseId: 1, dayId: 2, ultimoKg: null, recSec: null }) },
     ],
     sessions: [
-      { id: 1, phaseId: 1, dayId: 1, startedAt: 2_000, endedAt: 3_000, outcome: 'completed' },
+      {
+        id: 1,
+        phaseId: 1,
+        dayId: 1,
+        startedAt: 2_000,
+        endedAt: 3_000,
+        outcome: 'completed',
+        closedExercises: [
+          { exerciseId: 1, outcome: 'completed' },
+          { exerciseId: 2, outcome: 'skipped' },
+        ],
+        substitutes: [{ exerciseId: 3, replaces: 2 }],
+      },
       { id: 2, phaseId: 1, dayId: 2, startedAt: 4_000 },
     ],
     setLogs: [
@@ -94,6 +106,22 @@ describe('parseBackup', () => {
     ['phases', 0, 'id', 1.5, 'phases[0].id'],
     ['phases', 0, 'name', undefined, 'phases[0].name'],
     ['sessions', 0, 'outcome', 'done', 'sessions[0].outcome'],
+    ['sessions', 0, 'closedExercises', {}, 'sessions[0].closedExercises'],
+    ['sessions', 0, 'closedExercises', [7], 'sessions[0].closedExercises[0]'],
+    [
+      'sessions',
+      0,
+      'closedExercises',
+      [{ exerciseId: 1, outcome: 'done' }],
+      'sessions[0].closedExercises[0].outcome',
+    ],
+    [
+      'sessions',
+      0,
+      'substitutes',
+      [{ exerciseId: 3, replaces: 0 }],
+      'sessions[0].substitutes[0].replaces',
+    ],
   ] as const)('points at an invalid value in %s[%i].%s', (table, index, field, value, path) => {
     expect(parse(withValue(table, index, field, value))).toEqual({
       ok: false,

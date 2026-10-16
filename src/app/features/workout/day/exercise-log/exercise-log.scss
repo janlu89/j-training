@@ -21,21 +21,27 @@
   overflow-wrap: anywhere;
 }
 
+// The pencil link and the button that unfolds the extra actions.
 .log__edit {
   display: grid;
   place-items: center;
   flex: 0 0 auto;
   width: 2.75rem;
   height: 2.75rem;
+  padding: 0;
+  border: 0;
   border-radius: 50%;
+  background: none;
   color: var(--jt-icon-muted);
   text-decoration: none;
+  cursor: pointer;
 
   i {
     font-size: var(--jt-icon-size-sm);
   }
 
-  &:hover {
+  &:hover,
+  &[aria-expanded='true'] {
     background: var(--p-content-hover-background);
   }
 
@@ -276,4 +282,8 @@ tbody .sets__no {
     color: var(--p-text-muted-color);
     cursor: default;
   }
+}
+
+.log__complete {
+  min-height: 2.75rem;
 }

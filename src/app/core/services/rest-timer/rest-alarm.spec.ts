@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ALARM_PLATFORM, RestAlarm, START_VIBRATION } from './rest-alarm';
+import { ALARM_PLATFORM, RestAlarm, START_VIBRATION, WARNING_VIBRATION } from './rest-alarm';
 
 /** Just enough of Web Audio to check what the alarm schedules. */
 function fakeAudioContext() {
@@ -114,6 +114,30 @@ describe('RestAlarm', () => {
     expect(vibrate).toHaveBeenCalledTimes(4);
     const output = context.createGain.mock.results[0].value;
     expect(output.gain.setTargetAtTime).toHaveBeenCalledWith(0, 100, expect.any(Number));
+  });
+
+  it('warns with one high double beep and a short vibration, without ringing', () => {
+    const context = fakeAudioContext();
+    const { alarm, vibrate } = setup(context);
+    alarm.prepare();
+
+    alarm.warn();
+
+    expect(beeps(context)).toEqual([
+      [1_760, 100],
+      [1_760, 100.25],
+    ]);
+    expect(vibrate).toHaveBeenCalledExactlyOnceWith(WARNING_VIBRATION);
+    expect(alarm.ringing()).toBe(false);
+  });
+
+  it('still vibrates for the warning without Web Audio', () => {
+    const { alarm, vibrate } = setup(null);
+    alarm.prepare();
+
+    alarm.warn();
+
+    expect(vibrate).toHaveBeenCalledWith(WARNING_VIBRATION);
   });
 
   it('stops vibrating by itself after the start signal', () => {

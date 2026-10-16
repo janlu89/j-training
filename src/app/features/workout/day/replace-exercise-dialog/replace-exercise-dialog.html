@@ -1,0 +1,42 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [header]="'workout.replace.title' | transloco: { exercise: exercise() }"
+  [style]="{ width: 'min(28rem, calc(100vw - 2rem))' }"
+>
+  <div class="replace">
+    <p class="replace__hint">{{ 'workout.replace.hint' | transloco }}</p>
+    @if (options().length) {
+      <div class="field">
+        <label class="field__label" for="replace-exercise">
+          {{ 'workout.replace.label' | transloco }}
+        </label>
+        <select #choice id="replace-exercise" (change)="select(choice.value)">
+          <option value="" disabled [selected]="selected() === null">
+            {{ 'workout.replace.placeholder' | transloco }}
+          </option>
+          @for (option of options(); track option.id) {
+            <option [value]="option.id" [selected]="option.id === selected()">
+              {{ option.esercizio }}
+            </option>
+          }
+        </select>
+      </div>
+    } @else {
+      <p class="replace__hint">{{ 'workout.replace.none' | transloco }}</p>
+    }
+  </div>
+
+  <ng-template #footer>
+    <button pButton type="button" severity="secondary" (click)="visible.set(false)">
+      <span pButtonLabel>{{ 'editor.confirm.cancel' | transloco }}</span>
+    </button>
+    <button pButton type="button" [disabled]="busy() || selected() === null" (click)="confirm()">
+      <i class="pi pi-arrow-right-arrow-left" pButtonIcon aria-hidden="true"></i>
+      <span pButtonLabel>{{ 'workout.replace.confirm' | transloco }}</span>
+    </button>
+  </ng-template>
+</p-dialog>

@@ -1,0 +1,22 @@
+<button type="button" class="action" (click)="replace.emit()">
+  <i class="pi pi-arrow-right-arrow-left" aria-hidden="true"></i>
+  {{ 'workout.day.replace' | transloco }}
+</button>
+@if (!recorded()) {
+  @if (substitute()) {
+    <button type="button" class="action" (click)="removeSubstitute.emit()">
+      <i class="pi pi-times" aria-hidden="true"></i>
+      {{ 'workout.day.removeSubstitute' | transloco }}
+    </button>
+  } @else {
+    <button type="button" class="action" (click)="skip.emit()">
+      <i class="pi pi-ban" aria-hidden="true"></i>
+      {{ 'workout.day.skipExercise' | transloco }}
+    </button>
+  }
+} @else if (!allDone()) {
+  <button type="button" class="action" (click)="finishHere.emit()">
+    <i class="pi pi-flag" aria-hidden="true"></i>
+    {{ 'workout.day.finishHere' | transloco }}
+  </button>
+}
