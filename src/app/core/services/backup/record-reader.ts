@@ -66,6 +66,19 @@ export class RecordReader {
     return this.record[field] === null ? null : read(field);
   }
 
+  /** A list of nested records, each read with its own path (`sessions[0].closedExercises[1]`). */
+  records<T>(field: string, read: (reader: RecordReader) => T): T[] {
+    const value = this.record[field];
+    if (!Array.isArray(value)) {
+      return this.fail(field);
+    }
+    return value.map((item: unknown, index) =>
+      isPlainObject(item)
+        ? read(new RecordReader(item, `${this.path}.${field}[${index}]`))
+        : this.fail(`${field}[${index}]`),
+    );
+  }
+
   /** An absent field stays absent, so the restored record has exactly the keys of the original. */
   optional<K extends string, T>(field: K, read: (field: K) => T): Partial<Record<K, T>> {
     return this.record[field] === undefined ? {} : ({ [field]: read(field) } as Record<K, T>);

@@ -12,11 +12,25 @@
   box-shadow: 0 -4px 12px rgb(20 33 61 / 8%);
 }
 
-.bar--ringing {
-  background: var(--p-primary-50);
+// Last 15 seconds and alarm: orange 100 keeps navy and orange 800 text above 6:1.
+.bar--closing {
+  border-top-color: var(--p-primary-300);
+  background: var(--p-primary-100);
+
+  .bar__label {
+    color: var(--jt-navy);
+  }
 
   .bar__time {
     color: var(--p-primary-800);
+  }
+
+  .bar__button:not(.bar__button--primary) {
+    border-color: var(--p-primary-300);
+
+    &:hover {
+      background: var(--p-primary-50);
+    }
   }
 }
 

@@ -21,6 +21,8 @@ export const ALARM_PLATFORM = new InjectionToken<AlarmPlatform>('ALARM_PLATFORM'
 export const ALARM_LEAD_MS = 5_000;
 /** After zero the start signal repeats for this long, then stops by itself. */
 export const START_SIGNAL_MS = 15_000;
+/** A single warning sounds when this much of the rest is left, to get ready for the next set. */
+export const WARNING_LEAD_MS = 15_000;
 
 const PIPS = 5;
 const PIP_HZ = 880;
@@ -30,17 +32,21 @@ const GO_HZ = 1_320;
 const GO_S = 0.7;
 /** After the first "go", a short double beep repeats until the signal ends. */
 const REPEAT_EVERY_S = 1.5;
-const REPEAT_BEEP_S = 0.15;
-const REPEAT_GAP_S = 0.25;
+/** Two short beeps, the second starting this long after the first: under half a second. */
+const DOUBLE_BEEP_S = 0.15;
+const DOUBLE_BEEP_GAP_S = 0.25;
+/** The warning is the highest sound of the rest, so it is never mistaken for the start signal. */
+const WARNING_HZ = 1_760;
 const VOLUME = 0.4;
 const FADE_S = 0.01;
 export const START_VIBRATION = [400, 200, 400];
+export const WARNING_VIBRATION = [150, 100, 150];
 
 /**
- * End-of-rest signal, generated with Web Audio (no audio file to download or cache): a pip per
- * second in the last five seconds, a long "go" at zero, then a repeated double beep and vibration
- * for 15 seconds. Every sound is scheduled on the audio clock at once, so it stays on time even
- * when the page's own timers are throttled.
+ * Rest signals, generated with Web Audio (no audio file to download or cache): a high double beep
+ * 15 seconds before the end, then a pip per second in the last five seconds, a long "go" at zero,
+ * and a repeated double beep and vibration for 15 seconds. The end signal is scheduled on the audio
+ * clock at once, so it stays on time even when the page's own timers are throttled.
  */
 @Injectable({ providedIn: 'root' })
 export class RestAlarm {
@@ -93,13 +99,24 @@ export class RestAlarm {
     this.output = null;
   }
 
+  /**
+   * "15 seconds left": one high double beep and a short vibration, at once. Less than half a
+   * second and separate from the countdown, which it never sets ringing.
+   */
+  warn(): void {
+    this.platform.vibrate(WARNING_VIBRATION);
+    const output = this.createOutput();
+    if (output && this.context) {
+      this.doubleBeep(output, this.context.currentTime, WARNING_HZ);
+    }
+  }
+
   private scheduleSounds(secondsToZero: number): void {
     const context = this.context;
-    if (!context) {
+    const output = this.createOutput();
+    if (!context || !output) {
       return;
     }
-    const output = context.createGain();
-    output.connect(context.destination);
     this.output = output;
     const now = context.currentTime;
     const zero = now + Math.max(0, secondsToZero);
@@ -112,9 +129,24 @@ export class RestAlarm {
     }
     this.beep(output, zero, GO_HZ, GO_S);
     for (let at = zero + REPEAT_EVERY_S; at < zero + START_SIGNAL_MS / 1000; at += REPEAT_EVERY_S) {
-      this.beep(output, at, GO_HZ, REPEAT_BEEP_S);
-      this.beep(output, at + REPEAT_GAP_S, GO_HZ, REPEAT_BEEP_S);
+      this.doubleBeep(output, at, GO_HZ);
     }
+  }
+
+  /** A volume node for a group of sounds, connected to the speakers; null without Web Audio. */
+  private createOutput(): GainNode | null {
+    const context = this.context;
+    if (!context) {
+      return null;
+    }
+    const output = context.createGain();
+    output.connect(context.destination);
+    return output;
+  }
+
+  private doubleBeep(output: GainNode, at: number, hz: number): void {
+    this.beep(output, at, hz, DOUBLE_BEEP_S);
+    this.beep(output, at + DOUBLE_BEEP_GAP_S, hz, DOUBLE_BEEP_S);
   }
 
   private beep(output: GainNode, at: number, hz: number, seconds: number): void {

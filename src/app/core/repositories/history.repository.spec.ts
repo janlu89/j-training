@@ -87,6 +87,22 @@ describe('HistoryRepository', () => {
     ]);
   });
 
+  it('lists the exercises left out of a saved session, with what replaced them', async () => {
+    const hack = await editor.addExercise(dayB.id, newExerciseInput({ esercizio: 'Hack squat' }));
+    await workouts.replaceExercise(dayA, { exerciseId: hack, replaces: squat }, 100);
+    await workouts.closeExercise(dayA, { exerciseId: bench, outcome: 'skipped' }, 100);
+    const hackSet = { ...set(squat, 1, 90, 100), exerciseId: hack, esercizio: 'Hack squat' };
+
+    const id = await workouts.saveDay(dayA, [hackSet], 200, []);
+    const detail = await history.getSession(id);
+
+    expect(detail?.exercises.map(({ esercizio }) => esercizio)).toEqual(['Hack squat']);
+    expect(detail?.skipped).toEqual([
+      { esercizio: 'Squat', replacedBy: ['Hack squat'] },
+      { esercizio: 'Panca piana', replacedBy: [] },
+    ]);
+  });
+
   it('does not show a workout still in progress', async () => {
     await workouts.recordSet(dayA, set(squat, 1, 80, 100));
     const draft = (await workouts.getDay(dayA.id))!.session!;

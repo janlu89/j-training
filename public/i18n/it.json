@@ -67,11 +67,39 @@
       "exerciseRest": "Recupero {{time}}",
       "exerciseRestStart": "Avvia il recupero di {{time}} prima di {{exercise}}",
       "markAll": "Segna tutte fatte",
+      "complete": "Esercizio completato",
+      "moreActions": "Altre azioni per {{exercise}}",
+      "replace": "Sostituisci…",
+      "skipExercise": "Salta esercizio",
+      "finishHere": "Termina qui",
+      "removeSubstitute": "Togli dall'allenamento",
+      "replaces": "Al posto di {{exercise}}",
+      "allClosed": "Hai finito tutti gli esercizi: salva la giornata.",
       "save": "Salva giornata",
       "skip": "Salta giornata",
       "discard": "Scarta bozza",
       "saveHint": "Inserisci kg e ripetizioni di almeno una serie per salvare la giornata.",
       "fixInvalid": "Correggi kg o ripetizioni delle serie evidenziate prima di salvare."
+    },
+    "closed": {
+      "title": "Finiti ({{count}})",
+      "summary": "Serie: {{sets}} · {{kg}} {{unit}}",
+      "outcome": {
+        "completed": "Completato",
+        "skipped": "Non eseguito",
+        "replaced": "Sostituito"
+      },
+      "replacedBy": "con {{exercises}}",
+      "reopen": "Riporta su",
+      "reopenExercise": "Riporta su {{exercise}}"
+    },
+    "replace": {
+      "title": "Sostituisci {{exercise}}",
+      "hint": "Solo per oggi: la scheda non cambia. Le serie vanno nello storico dell'esercizio scelto.",
+      "label": "Esercizio",
+      "placeholder": "Scegli un esercizio",
+      "none": "Nelle tue schede non ci sono altri esercizi.",
+      "confirm": "Sostituisci"
     },
     "finish": {
       "title": "Salva giornata",
@@ -243,6 +271,9 @@
     "skipped": "Saltata",
     "skippedDay": "Giornata saltata: nessuna serie registrata.",
     "deletedDay": "Giorno eliminato dalla scheda",
+    "changes": "Variazioni",
+    "notPerformed": "non eseguito",
+    "replacedBy": "sostituito con {{exercises}}",
     "counts": "Serie: {{sets}} · Esercizi: {{exercises}}",
     "set": "Serie {{set}}: {{kg}} kg per {{rip}} ripetizioni",
     "unit": {

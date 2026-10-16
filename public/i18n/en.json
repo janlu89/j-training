@@ -67,11 +67,39 @@
       "exerciseRest": "Rest {{time}}",
       "exerciseRestStart": "Start the {{time}} rest before {{exercise}}",
       "markAll": "Mark all done",
+      "complete": "Exercise done",
+      "moreActions": "More actions for {{exercise}}",
+      "replace": "Replace…",
+      "skipExercise": "Skip exercise",
+      "finishHere": "Finish here",
+      "removeSubstitute": "Remove from the workout",
+      "replaces": "Instead of {{exercise}}",
+      "allClosed": "Every exercise is finished: save the day.",
       "save": "Save day",
       "skip": "Skip day",
       "discard": "Discard draft",
       "saveHint": "Enter the kg and reps of at least one set to save the day.",
       "fixInvalid": "Fix the kg or reps of the highlighted sets before saving."
+    },
+    "closed": {
+      "title": "Finished ({{count}})",
+      "summary": "Sets: {{sets}} · {{kg}} {{unit}}",
+      "outcome": {
+        "completed": "Completed",
+        "skipped": "Not done",
+        "replaced": "Replaced"
+      },
+      "replacedBy": "with {{exercises}}",
+      "reopen": "Move up",
+      "reopenExercise": "Move {{exercise}} back up"
+    },
+    "replace": {
+      "title": "Replace {{exercise}}",
+      "hint": "Only for today: the plan does not change. The sets go into the history of the chosen exercise.",
+      "label": "Exercise",
+      "placeholder": "Choose an exercise",
+      "none": "Your plans have no other exercises.",
+      "confirm": "Replace"
     },
     "finish": {
       "title": "Save day",
@@ -243,6 +271,9 @@
     "skipped": "Skipped",
     "skippedDay": "Day skipped: no sets recorded.",
     "deletedDay": "Day deleted from the plan",
+    "changes": "Changes",
+    "notPerformed": "not done",
+    "replacedBy": "replaced with {{exercises}}",
     "counts": "Sets: {{sets}} · Exercises: {{exercises}}",
     "set": "Set {{set}}: {{kg}} kg for {{rip}} reps",
     "unit": {

@@ -10,6 +10,7 @@ import {
   SessionExercise,
   SessionSummary,
   SetLog,
+  SkippedExercise,
   TrainingDay,
 } from '../models';
 
@@ -53,7 +54,10 @@ export class HistoryRepository {
     return from(liveQuery(() => this.getSessions()));
   }
 
-  /** A finished session with its sets grouped by exercise, in plan order. */
+  /**
+   * A finished session with its sets grouped by exercise, in plan order, and the exercises left
+   * out of it.
+   */
   getSession(sessionId: number): Promise<SessionDetail | undefined> {
     const { db } = this;
     return db.transaction(
@@ -78,6 +82,7 @@ export class HistoryRepository {
           planName: phase?.name ?? '',
           day,
           exercises: await this.groupByExercise(logs),
+          skipped: await this.skippedExercises(session),
         };
       },
     );
@@ -159,6 +164,32 @@ export class HistoryRepository {
       sessions.flatMap((session) => (session && isFinished(session) ? [session.id] : [])),
     );
     return logs.filter((log) => finished.has(log.sessionId));
+  }
+
+  /**
+   * The exercises closed as skipped, with the names of those done in their place. An exercise
+   * deleted from the plan afterwards is left out: its name is no longer known.
+   */
+  private async skippedExercises(session: Session): Promise<SkippedExercise[]> {
+    const skipped = (session.closedExercises ?? []).filter(({ outcome }) => outcome === 'skipped');
+    const substitutes = session.substitutes ?? [];
+    const exercises = await this.db.exercises.bulkGet([
+      ...skipped.map(({ exerciseId }) => exerciseId),
+      ...substitutes.map(({ exerciseId }) => exerciseId),
+    ]);
+    const names = new Map(
+      exercises.flatMap((exercise) =>
+        exercise ? [[exercise.id, exercise.esercizio] as const] : [],
+      ),
+    );
+    return skipped.flatMap(({ exerciseId }) => {
+      const esercizio = names.get(exerciseId);
+      const replacedBy = substitutes.flatMap(({ exerciseId: id, replaces }) => {
+        const name = replaces === exerciseId ? names.get(id) : undefined;
+        return name ? [name] : [];
+      });
+      return esercizio ? [{ esercizio, replacedBy }] : [];
+    });
   }
 
   /** Groups sets by exercise, in plan order; exercises no longer in the plan go last. */

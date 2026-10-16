@@ -1,4 +1,4 @@
-<section class="bar" [class.bar--ringing]="ringing()" [attr.aria-label]="'timer.title' | transloco">
+<section class="bar" [class.bar--closing]="closing()" [attr.aria-label]="'timer.title' | transloco">
   <div class="bar__track" aria-hidden="true">
     <span class="bar__fill" [style.transform]="'scaleX(' + progress() + ')'"></span>
   </div>

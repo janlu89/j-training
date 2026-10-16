@@ -22,12 +22,20 @@ export interface SessionExercise {
   sets: SetLog[];
 }
 
+/** A planned exercise left out of a saved workout, with the exercises done in its place. */
+export interface SkippedExercise {
+  esercizio: string;
+  replacedBy: string[];
+}
+
 /** A saved workout with every set, exercises in plan order. */
 export interface SessionDetail {
   session: Session;
   planName: string;
   day?: TrainingDay;
   exercises: SessionExercise[];
+  /** Exercises left out or replaced, in the order they were closed. */
+  skipped: SkippedExercise[];
 }
 
 /** One exercise name of the history, with how often and how recently it was trained. */

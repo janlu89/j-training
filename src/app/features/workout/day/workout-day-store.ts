@@ -2,19 +2,15 @@ import { Injectable, computed, inject, linkedSignal } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { map, of } from 'rxjs';
-import { LoadUpdate, OpenSession, SetEntry, WorkoutExercise } from '../../../core/models';
+import { LoadUpdate, OpenSession, SetEntry } from '../../../core/models';
 import { LanguageService } from '../../../core/services/language.service';
 import { RestSettingsService } from '../../../core/services/rest-timer/rest-settings.service';
 import { RestTimerService } from '../../../core/services/rest-timer/rest-timer.service';
 import { proposeLoadUpdates } from '../../../core/services/workout/load-updates';
 import { WorkoutSessionService } from '../../../core/services/workout-session.service';
+import { ExerciseRows, ExerciseSections, splitSections } from './exercise-sections';
 import { SetInput, SetRow, buildRows } from './set-rows';
 import { WorkoutDrafts } from './workout-drafts';
-
-export interface ExerciseRows {
-  entry: WorkoutExercise;
-  rows: SetRow[];
-}
 
 /**
  * State of the workout page of one day: the live data from the database merged with what the
@@ -56,12 +52,29 @@ export class WorkoutDayStore {
     }));
   });
 
+  /** Exercises still to do, in plan order, and the finished ones shown at the bottom. */
+  readonly sections = computed<ExerciseSections>(() =>
+    splitSections(this.exercises(), this.workout()?.session?.closedExercises ?? []),
+  );
+
+  /**
+   * What can be done in place of an exercise: every exercise of every plan, one per name, except
+   * those already in today's workout.
+   */
+  readonly replacementOptions = computed(() => {
+    const today = new Set(this.exercises().map(({ entry }) => entry.exercise.esercizio));
+    return this.choices().filter((exercise) => !today.has(exercise.esercizio));
+  });
+
   /** Another day has a workout in progress: this one cannot be recorded until it is resolved. */
   readonly locked = computed(() => !!this.workout()?.otherOpenSession);
   readonly recordedCount = computed(() => this.rows().filter(isDone).length);
-  /** Sets filled in but not ticked: they can be saved with the day ("fill in at the end"). */
+  /**
+   * Sets filled in but not ticked: they can be saved with the day ("fill in at the end"). Only
+   * for exercises still to do: a finished exercise keeps just the sets it recorded.
+   */
   readonly untickedEntries = computed<SetEntry[]>(() =>
-    this.exercises().flatMap(({ entry, rows }) =>
+    this.sections().toDo.flatMap(({ entry, rows }) =>
       rows.flatMap((row) =>
         !isDone(row) && row.values
           ? [{ exercise: entry.exercise, setNo: row.setNo, values: row.values }]
@@ -79,19 +92,30 @@ export class WorkoutDayStore {
     () =>
       !this.hasInvalidRecorded() && (this.recordedCount() > 0 || this.untickedEntries().length > 0),
   );
-  /** Loads that will be saved, compared with the plan. */
-  readonly loadProposals = computed(() =>
-    proposeLoadUpdates(
-      this.exercises().map(({ entry, rows }) => ({
+  /**
+   * Loads that will be saved, compared with the plan. Exercises added during the workout are left
+   * out: they belong to another day or plan.
+   */
+  readonly loadProposals = computed(() => {
+    const unticked = this.includeUnticked() ? this.untickedEntries() : [];
+    const planned = this.exercises().filter(({ entry }) => entry.replaces === undefined);
+    return proposeLoadUpdates(
+      planned.map(({ entry, rows }) => ({
         exercise: entry.exercise,
-        loads: rows.flatMap((row) =>
-          row.values && (isDone(row) || this.includeUnticked()) ? [row.values.kg] : [],
-        ),
+        loads: [
+          ...rows.flatMap((row) => (isDone(row) && row.values ? [row.values.kg] : [])),
+          ...unticked.flatMap((set) =>
+            set.exercise.id === entry.exercise.id ? [set.values.kg] : [],
+          ),
+        ],
       })),
-    ),
-  );
+    );
+  });
 
   private readonly rows = computed(() => this.exercises().flatMap(({ rows }) => rows));
+  private readonly choices = toSignal(this.sessions.watchSubstituteChoices(), {
+    initialValue: [],
+  });
 
   /** Keeps what the user types; a set already recorded is updated in the database at once. */
   async setInput(exerciseId: number, setNo: number, input: SetInput): Promise<void> {
@@ -153,6 +177,46 @@ export class WorkoutDayStore {
       if (!isDone(row) && row.values) {
         await this.record(exerciseId, row);
       }
+    }
+  }
+
+  /** Moves an exercise whose sets are all done to the finished ones, at the bottom of the page. */
+  async complete(exerciseId: number): Promise<void> {
+    const workout = this.workout();
+    if (workout) {
+      await this.sessions.closeExercise(workout, exerciseId, 'completed');
+    }
+  }
+
+  /** Moves an exercise not done today to the finished ones, as not performed. */
+  async skipExercise(exerciseId: number): Promise<void> {
+    const workout = this.workout();
+    if (workout) {
+      await this.sessions.closeExercise(workout, exerciseId, 'skipped');
+    }
+  }
+
+  /** Does another exercise in its place, for today only. */
+  async replace(exerciseId: number, substituteId: number): Promise<void> {
+    const workout = this.workout();
+    if (workout) {
+      await this.sessions.replaceExercise(workout, exerciseId, substituteId);
+    }
+  }
+
+  /** Takes an exercise added during the workout, still without sets, out of it. */
+  async removeSubstitute(exerciseId: number): Promise<void> {
+    const workout = this.workout();
+    if (workout) {
+      await this.sessions.removeSubstitute(workout, exerciseId);
+    }
+  }
+
+  /** Brings a finished exercise back to its place, with its sets as they were. */
+  async reopen(exerciseId: number): Promise<void> {
+    const workout = this.workout();
+    if (workout) {
+      await this.sessions.reopenExercise(workout, exerciseId);
     }
   }
 

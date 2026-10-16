@@ -40,6 +40,24 @@
           </li>
         }
       </ul>
+      @if (detail.skipped.length) {
+        <section class="changes" aria-labelledby="session-changes">
+          <h3 class="changes__title" id="session-changes">{{ 'history.changes' | transloco }}</h3>
+          <ul class="changes__list">
+            @for (item of detail.skipped; track $index) {
+              <li>
+                <span class="changes__name">{{ item.esercizio }}</span
+                >:
+                @if (item.replacedBy.length) {
+                  {{ 'history.replacedBy' | transloco: { exercises: item.replacedBy.join(', ') } }}
+                } @else {
+                  {{ 'history.notPerformed' | transloco }}
+                }
+              </li>
+            }
+          </ul>
+        </section>
+      }
     }
   </div>
 } @else if (!detail.isLoading()) {

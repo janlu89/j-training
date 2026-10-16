@@ -3,7 +3,10 @@ import Dexie, { liveQuery } from 'dexie';
 import { Observable, from } from 'rxjs';
 import { AppDatabase } from '../db/app-database';
 import {
+  ClosedExercise,
   EpochMs,
+  Exercise,
+  ExerciseSubstitute,
   LoadUpdate,
   NewEntity,
   OpenSession,
@@ -34,7 +37,10 @@ export class OpenSessionConflictError extends Error {
 export class WorkoutSessionRepository {
   private readonly db = inject(AppDatabase);
 
-  /** A training day with its exercises, today's draft and the previous sets of each exercise. */
+  /**
+   * A training day with its exercises, today's draft and the previous sets of each exercise. The
+   * exercises added to the draft in place of others follow the planned ones.
+   */
   getDay(dayId: number): Promise<WorkoutDay | undefined> {
     const { db } = this;
     return db.transaction(
@@ -55,21 +61,26 @@ export class WorkoutSessionRepository {
         const sets = session
           ? await db.setLogs.where('sessionId').equals(session.id).toArray()
           : [];
-        const exercises = await db.exercises
+        const planned = await db.exercises
           .where('[dayId+ordine]')
           .between([dayId, Dexie.minKey], [dayId, Dexie.maxKey])
           .filter((exercise) => exercise.stato !== 'rimosso')
           .toArray();
+        const exercises: { exercise: Exercise; replaces?: number }[] = [
+          ...planned.map((exercise) => ({ exercise })),
+          ...(await this.substitutesOf(session)),
+        ];
         return {
           phase,
           day,
           session,
           otherOpenSession: open && !session ? await this.withDay(open) : undefined,
           exercises: await Promise.all(
-            exercises.map(async (exercise) => ({
+            exercises.map(async ({ exercise, replaces }) => ({
               exercise,
               sets: bySetNo(sets.filter((set) => set.exerciseId === exercise.id)),
               previous: await this.previousSets(exercise.esercizio, session?.id),
+              replaces,
             })),
           ),
         };
@@ -107,7 +118,7 @@ export class WorkoutSessionRepository {
     await this.db.setLogs.update(setLogId, { kg, rip });
   }
 
-  /** Removes a recorded set; a draft left without sets is removed too. */
+  /** Removes a recorded set; a draft left empty is removed too. */
   removeSet(setLogId: number): Promise<void> {
     const { db } = this;
     return db.transaction('rw', db.sessions, db.setLogs, async () => {
@@ -116,11 +127,92 @@ export class WorkoutSessionRepository {
         return;
       }
       await db.setLogs.delete(setLogId);
-      const session = await db.sessions.get(log.sessionId);
-      const remaining = await db.setLogs.where('sessionId').equals(log.sessionId).count();
-      if (session && session.endedAt === undefined && remaining === 0) {
-        await db.sessions.delete(session.id);
+      await this.removeIfEmpty(log.sessionId);
+    });
+  }
+
+  /**
+   * Moves an exercise to the finished ones of the day's draft, last in order; closing it again
+   * only moves it to the end. Starts the draft when needed, like the first recorded set.
+   */
+  closeExercise(day: TrainingDay, closed: ClosedExercise, at: EpochMs): Promise<void> {
+    const { db } = this;
+    return db.transaction('rw', db.sessions, async () => {
+      const sessionId = await this.openSessionFor(day, at);
+      const session = await db.sessions.get(sessionId);
+      const others = (session?.closedExercises ?? []).filter(
+        ({ exerciseId }) => exerciseId !== closed.exerciseId,
+      );
+      await db.sessions.update(sessionId, { closedExercises: [...others, closed] });
+    });
+  }
+
+  /**
+   * Replaces an exercise for this workout only: the new one comes after it and the replaced one is
+   * closed as skipped, keeping any set it recorded. A substitute without sets is swapped instead,
+   * so trying another machine leaves no trace. Starts the draft when needed.
+   */
+  replaceExercise(day: TrainingDay, substitute: ExerciseSubstitute, at: EpochMs): Promise<void> {
+    const { db } = this;
+    return db.transaction('rw', db.sessions, db.setLogs, async () => {
+      const sessionId = await this.openSessionFor(day, at);
+      const session = await db.sessions.get(sessionId);
+      const substitutes = session?.substitutes ?? [];
+      if (substitutes.some(({ exerciseId }) => exerciseId === substitute.exerciseId)) {
+        return;
       }
+      const swapped = substitutes.find(({ exerciseId }) => exerciseId === substitute.replaces);
+      if (swapped && !(await this.hasSets(sessionId, swapped.exerciseId))) {
+        await db.sessions.update(sessionId, {
+          substitutes: [
+            ...substitutes.filter((item) => item !== swapped),
+            { exerciseId: substitute.exerciseId, replaces: swapped.replaces },
+          ],
+        });
+        return;
+      }
+      const closed = (session?.closedExercises ?? []).filter(
+        ({ exerciseId }) => exerciseId !== substitute.replaces,
+      );
+      await db.sessions.update(sessionId, {
+        substitutes: [...substitutes, substitute],
+        closedExercises: [...closed, { exerciseId: substitute.replaces, outcome: 'skipped' }],
+      });
+    });
+  }
+
+  /** Takes an added exercise without sets out of the workout, as if it had never been added. */
+  removeSubstitute(day: TrainingDay, exerciseId: number): Promise<void> {
+    const { db } = this;
+    return db.transaction('rw', db.sessions, db.setLogs, async () => {
+      const open = await this.findOpen();
+      if (open?.dayId !== day.id || (await this.hasSets(open.id, exerciseId))) {
+        return;
+      }
+      await db.sessions.update(open.id, {
+        substitutes: (open.substitutes ?? []).filter((item) => item.exerciseId !== exerciseId),
+        closedExercises: (open.closedExercises ?? []).filter(
+          (closed) => closed.exerciseId !== exerciseId,
+        ),
+      });
+      await this.removeIfEmpty(open.id);
+    });
+  }
+
+  /** Brings a finished exercise back among those to do; a draft left empty is removed. */
+  reopenExercise(day: TrainingDay, exerciseId: number): Promise<void> {
+    const { db } = this;
+    return db.transaction('rw', db.sessions, db.setLogs, async () => {
+      const open = await this.findOpen();
+      if (open?.dayId !== day.id) {
+        return;
+      }
+      await db.sessions.update(open.id, {
+        closedExercises: (open.closedExercises ?? []).filter(
+          (closed) => closed.exerciseId !== exerciseId,
+        ),
+      });
+      await this.removeIfEmpty(open.id);
     });
   }
 
@@ -204,6 +296,45 @@ export class WorkoutSessionRepository {
       return existing.id;
     }
     return this.db.setLogs.add({ ...set, sessionId });
+  }
+
+  /** A draft without sets, finished or added exercises goes, as if the day was never started. */
+  private async removeIfEmpty(sessionId: number): Promise<void> {
+    const session = await this.db.sessions.get(sessionId);
+    if (
+      !session ||
+      session.endedAt !== undefined ||
+      session.closedExercises?.length ||
+      session.substitutes?.length
+    ) {
+      return;
+    }
+    if ((await this.db.setLogs.where('sessionId').equals(sessionId).count()) === 0) {
+      await this.db.sessions.delete(sessionId);
+    }
+  }
+
+  private async hasSets(sessionId: number, exerciseId: number): Promise<boolean> {
+    const set = await this.db.setLogs
+      .where('sessionId')
+      .equals(sessionId)
+      .filter((log) => log.exerciseId === exerciseId)
+      .first();
+    return set !== undefined;
+  }
+
+  /** The exercises added to a draft, with the one each replaces; deleted ones are left out. */
+  private async substitutesOf(
+    session: Session | undefined,
+  ): Promise<{ exercise: Exercise; replaces: number }[]> {
+    const substitutes = session?.substitutes ?? [];
+    const exercises = await this.db.exercises.bulkGet(
+      substitutes.map(({ exerciseId }) => exerciseId),
+    );
+    return substitutes.flatMap(({ replaces }, index) => {
+      const exercise = exercises[index];
+      return exercise ? [{ exercise, replaces }] : [];
+    });
   }
 
   /** `endedAt` is not indexed: a scan, cheap for the few hundred sessions of a personal log. */

@@ -6,8 +6,8 @@ import { RestTimer } from '../../models';
 export const REST_STEP_SECONDS = 15;
 
 /**
- * The running rest above the bottom navigation: time left, ±15 s, stop. In the last seconds the
- * alarm starts, and a "stop the alarm" button replaces the other controls once the rest is over.
+ * The running rest above the bottom navigation: time left, ±15 s, stop. It turns orange in the
+ * last 15 seconds; in the last seconds the alarm starts, and a "stop the alarm" button replaces the other controls once the rest is over.
  * Native buttons only: the bar is part of the shell, so it must not pull PrimeNG into the
  * initial bundle.
  */
@@ -25,6 +25,8 @@ export class RestTimerBar {
   /** Elapsed share of the rest, from 0 to 1. */
   readonly progress = input.required<number>();
   readonly finished = input(false);
+  /** The last 15 seconds: the bar turns orange together with the warning sound. */
+  readonly closing = input(false);
   /** The alarm is sounding: from the last seconds until the user stops it. */
   readonly ringing = input(false);
 

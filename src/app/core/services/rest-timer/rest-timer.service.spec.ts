@@ -25,6 +25,7 @@ describe('RestTimerService', () => {
     prepare: ReturnType<typeof vi.fn>;
     start: ReturnType<typeof vi.fn>;
     stop: ReturnType<typeof vi.fn>;
+    warn: ReturnType<typeof vi.fn>;
     ringing: ReturnType<typeof signal<boolean>>;
   };
   let wakeLock: { acquire: ReturnType<typeof vi.fn>; release: ReturnType<typeof vi.fn> };
@@ -38,6 +39,7 @@ describe('RestTimerService', () => {
       prepare: vi.fn(),
       start: vi.fn(() => ringing.set(true)),
       stop: vi.fn(() => ringing.set(false)),
+      warn: vi.fn(),
       ringing,
     };
     wakeLock = {
@@ -106,6 +108,67 @@ describe('RestTimerService', () => {
     expect(timer.ringing()).toBe(false);
     expect(ticker.running).toBe(false);
     expect(wakeLock.release).toHaveBeenCalledOnce();
+  });
+
+  it('warns once when 15 seconds are left', () => {
+    timer.start(squat);
+
+    advance(74_000);
+    expect(alarm.warn).not.toHaveBeenCalled();
+    advance(1_000);
+    expect(alarm.warn).toHaveBeenCalledOnce();
+    expect(timer.ringing()).toBe(false);
+
+    advance(1_000);
+    advance(9_000);
+    advance(5_000);
+    expect(alarm.warn).toHaveBeenCalledOnce();
+  });
+
+  it('warns after a late tick, unless it lands in the countdown', () => {
+    timer.start(squat);
+    advance(82_000);
+    expect(alarm.warn).toHaveBeenCalledOnce();
+
+    timer.start(squat);
+    advance(86_000);
+    expect(alarm.warn).toHaveBeenCalledOnce();
+    expect(timer.ringing()).toBe(true);
+  });
+
+  it('is closing from 15 seconds before the end until the rest is dismissed', () => {
+    timer.start(squat);
+
+    advance(74_000);
+    expect(timer.closing()).toBe(false);
+    advance(1_000);
+    expect(timer.closing()).toBe(true);
+    advance(20_000);
+    expect(timer.closing()).toBe(true);
+
+    timer.stop();
+    expect(timer.closing()).toBe(false);
+  });
+
+  it('never warns when the rest is 15 seconds or less', () => {
+    timer.start({ ...squat, seconds: 15 });
+    advance(0);
+    advance(5_000);
+    expect(alarm.warn).not.toHaveBeenCalled();
+  });
+
+  it('warns again only when added time goes back above 15 seconds', () => {
+    timer.start(squat);
+    advance(80_000);
+    expect(alarm.warn).toHaveBeenCalledOnce();
+
+    timer.adjust(-3);
+    expect(alarm.warn).toHaveBeenCalledOnce();
+
+    timer.adjust(15);
+    expect(timer.remainingMs()).toBe(22_000);
+    advance(7_000);
+    expect(alarm.warn).toHaveBeenCalledTimes(2);
   });
 
   it('silences the alarm and lets the screen sleep only when the user stops it', () => {
